@@ -55,7 +55,8 @@ function Navigation() {
     if (location.pathname === '/') {
       e.preventDefault()
       if (location.hash) {
-        window.history.replaceState(null, '', '/')
+        const base = import.meta.env.BASE_URL
+        window.history.replaceState(null, '', base.endsWith('/') ? base : base + '/')
       }
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }

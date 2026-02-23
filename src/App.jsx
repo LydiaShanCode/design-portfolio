@@ -38,13 +38,14 @@ function ScrollToHash() {
 
 function App() {
   return (
-    <Router>
+    <Router basename={import.meta.env.BASE_URL}>
       <div className="min-h-screen bg-white">
         <CustomCursor />
         <WaterCanvas />
         <Navigation />
         <ScrollToHash />
-        <Routes>
+        <div className="relative z-40">
+          <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/play" element={<Play />} />
           <Route
@@ -66,6 +67,7 @@ function App() {
             }
           />
         </Routes>
+        </div>
       </div>
     </Router>
   )
