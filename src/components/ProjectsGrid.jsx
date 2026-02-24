@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
 import ProjectCard from './ProjectCard'
 import projectsData from '../data/projects.json'
 import designSystemImage from '../assets/card image - design system.svg'
@@ -11,11 +12,38 @@ import shopifyIcon from '../assets/shopify-icon.svg'
 import searchEyeIcon from '../assets/searcheye icon.svg'
 import tdIcon from '../assets/td icon.svg'
 
+function SwipeCard({ children, onSwipe }) {
+  const x = useMotionValue(0)
+  const rotate = useTransform(x, [-200, 200], [-15, 15])
+  const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0])
+
+  const handleDragEnd = (_, info) => {
+    const offsetThreshold = 100
+    const velocityThreshold = 500
+    if (Math.abs(info.offset.x) > offsetThreshold || Math.abs(info.velocity.x) > velocityThreshold) {
+      const exitX = info.offset.x > 0 ? 400 : -400
+      animate(x, exitX, { duration: 0.3 }).then(() => onSwipe())
+    } else {
+      animate(x, 0, { type: 'spring', stiffness: 500, damping: 30 })
+    }
+  }
+
+  return (
+    <motion.div
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.9}
+      style={{ x, rotate, opacity }}
+      onDragEnd={handleDragEnd}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
 function ProjectsGrid() {
   const [projects, setProjects] = useState([])
   const [cardOrder, setCardOrder] = useState([0, 1, 2, 3, 4])
-  const [swipeState, setSwipeState] = useState({ isDragging: false, startX: 0, currentX: 0, cardIndex: null })
-  const [swipingCard, setSwipingCard] = useState(null)
   const [isMobile, setIsMobile] = useState(false)
   const stackRef = useRef(null)
 
@@ -49,63 +77,6 @@ function ProjectsGrid() {
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
-
-  const handleSwipeStart = useCallback((e, cardIndex) => {
-    if (!isMobile) return
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX
-    setSwipeState({
-      isDragging: true,
-      startX: clientX,
-      currentX: clientX,
-      cardIndex,
-    })
-  }, [isMobile])
-
-  const handleSwipeMove = useCallback((e) => {
-    if (!swipeState.isDragging || !isMobile) return
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX
-    setSwipeState((prev) => ({ ...prev, currentX: clientX }))
-  }, [swipeState.isDragging, isMobile])
-
-  const handleSwipeEnd = useCallback(() => {
-    if (!swipeState.isDragging || !isMobile) return
-    
-    const deltaX = swipeState.currentX - swipeState.startX
-    const threshold = 80
-    
-    if (Math.abs(deltaX) > threshold) {
-      const direction = deltaX > 0 ? 'right' : 'left'
-      setSwipingCard({ index: swipeState.cardIndex, direction })
-      
-      setTimeout(() => {
-        setCardOrder((prev) => {
-          const newOrder = [...prev]
-          const firstCard = newOrder.shift()
-          newOrder.push(firstCard)
-          return newOrder
-        })
-        setSwipingCard(null)
-      }, 300)
-    }
-    
-    setSwipeState({ isDragging: false, startX: 0, currentX: 0, cardIndex: null })
-  }, [swipeState, isMobile])
-
-  useEffect(() => {
-    if (!isMobile) return
-    
-    window.addEventListener('mousemove', handleSwipeMove)
-    window.addEventListener('mouseup', handleSwipeEnd)
-    window.addEventListener('touchmove', handleSwipeMove, { passive: true })
-    window.addEventListener('touchend', handleSwipeEnd)
-    
-    return () => {
-      window.removeEventListener('mousemove', handleSwipeMove)
-      window.removeEventListener('mouseup', handleSwipeEnd)
-      window.removeEventListener('touchmove', handleSwipeMove)
-      window.removeEventListener('touchend', handleSwipeEnd)
-    }
-  }, [isMobile, handleSwipeMove, handleSwipeEnd])
 
   useEffect(() => {
     const stack = stackRef.current
@@ -176,40 +147,29 @@ function ProjectsGrid() {
     }
   }, [projects.length])
 
-  const getSwipeTransform = (orderPosition) => {
-    if (!isMobile) return {}
-    
-    if (swipeState.isDragging && orderPosition === 0) {
-      const deltaX = swipeState.currentX - swipeState.startX
-      const rotation = deltaX * 0.05
-      return {
-        transform: `translateX(${deltaX}px) rotate(${rotation}deg)`,
-        transition: 'none',
-      }
-    }
-    
-    if (swipingCard && orderPosition === 0) {
-      const exitX = swipingCard.direction === 'right' ? 400 : -400
-      return {
-        transform: `translateX(${exitX}px) rotate(${swipingCard.direction === 'right' ? 20 : -20}deg)`,
-        opacity: 0,
-        transition: 'transform 300ms ease-out, opacity 300ms ease-out',
-      }
-    }
-    
-    return {}
-  }
+  const cycleStack = useCallback(() => {
+    setCardOrder((prev) => {
+      const next = [...prev]
+      next.push(next.shift())
+      return next
+    })
+  }, [])
 
   const getMobileStackStyle = (orderPosition) => {
     if (!isMobile) return {}
-    
-    const scale = 1 - orderPosition * 0.04
-    const translateY = orderPosition * 12
+
+    const rotations = [0, -3, 4, -2, 3]
+    const scale = 1 - orderPosition * 0.03
     const zIndex = 10 - orderPosition
-    
+    const peekOffset = 12
+    const translateX = orderPosition === 0 ? 0 : (orderPosition % 2 === 1 ? -1 : 1) * Math.ceil(orderPosition / 2) * peekOffset
+    const translateY = orderPosition === 0 ? 0 : Math.ceil(orderPosition / 2) * 4
+
     return {
       '--mobile-scale': scale,
+      '--mobile-translate-x': `${translateX}px`,
       '--mobile-translate-y': `${translateY}px`,
+      '--mobile-rotate': `${rotations[orderPosition] || 0}deg`,
       '--mobile-z-index': zIndex,
     }
   }
@@ -222,28 +182,31 @@ function ProjectsGrid() {
             cardOrder.map((originalIndex, orderPosition) => {
               const project = projects[originalIndex]
               if (!project) return null
-              
+
+              const card = (
+                <ProjectCard
+                  project={{
+                    ...project,
+                    image: imageAssets[project.imageKey],
+                    ribbon: ribbonAssets[project.ribbonKey],
+                    icon: iconAssets[project.iconKey],
+                  }}
+                  stackIndex={originalIndex}
+                  isMobileStack={true}
+                />
+              )
+
               return (
                 <div
                   key={project.id}
                   className={`work-card-mobile-wrapper ${orderPosition === 0 ? 'work-card-mobile-wrapper--top' : ''}`}
-                  style={{
-                    ...getMobileStackStyle(orderPosition),
-                    ...getSwipeTransform(orderPosition),
-                  }}
-                  onMouseDown={(e) => orderPosition === 0 && handleSwipeStart(e, originalIndex)}
-                  onTouchStart={(e) => orderPosition === 0 && handleSwipeStart(e, originalIndex)}
+                  style={getMobileStackStyle(orderPosition)}
                 >
-                  <ProjectCard
-                    project={{
-                      ...project,
-                      image: imageAssets[project.imageKey],
-                      ribbon: ribbonAssets[project.ribbonKey],
-                      icon: iconAssets[project.iconKey],
-                    }}
-                    stackIndex={originalIndex}
-                    isMobileStack={true}
-                  />
+                  {orderPosition === 0 ? (
+                    <SwipeCard onSwipe={cycleStack}>{card}</SwipeCard>
+                  ) : (
+                    card
+                  )}
                 </div>
               )
             })
@@ -262,23 +225,6 @@ function ProjectsGrid() {
             ))
           )}
         </div>
-        {isMobile && (
-          <>
-            <div className="work-stack-hint">
-              <span className="work-stack-hint-arrow">←</span>
-              <span>Swipe to explore</span>
-              <span className="work-stack-hint-arrow">→</span>
-            </div>
-            <div className="work-stack-dots">
-              {cardOrder.map((originalIndex, i) => (
-                <span
-                  key={originalIndex}
-                  className={`work-stack-dot ${i === 0 ? 'work-stack-dot--active' : ''}`}
-                />
-              ))}
-            </div>
-          </>
-        )}
       </div>
     </section>
   )

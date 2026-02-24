@@ -380,7 +380,7 @@ body {
   }
 }
 
-/* Mobile swipeable card stack */
+/* Mobile swipeable card stack - Tinder-style side peek */
 @media (max-width: 640px) {
   .work-stack--mobile {
     height: 540px;
@@ -388,18 +388,23 @@ body {
     align-items: center;
     justify-content: center;
     position: relative;
-    touch-action: pan-y;
   }
 
   .work-card-mobile-wrapper {
     position: absolute;
-    width: 90vw;
-    max-width: 340px;
-    transform: scale(var(--mobile-scale, 1)) translateY(var(--mobile-translate-y, 0));
+    left: 50%;
+    top: 0;
+    width: 85vw;
+    max-width: 320px;
     z-index: var(--mobile-z-index, 1);
+    transform: translateX(-50%)
+      scale(var(--mobile-scale, 1))
+      translateX(var(--mobile-translate-x, 0))
+      translateY(var(--mobile-translate-y, 0))
+      rotate(var(--mobile-rotate, 0deg));
     transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1),
                 opacity 300ms ease;
-    transform-origin: center bottom;
+    transform-origin: center center;
   }
 
   .work-card-mobile-wrapper--top {
@@ -416,56 +421,6 @@ body {
     height: 480px;
     transform: none;
     pointer-events: none;
-  }
-
-  .work-stack-hint {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 20px;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #001dd9;
-    opacity: 0.5;
-  }
-
-  .work-stack-hint-arrow {
-    animation: hint-sway 1.5s ease-in-out infinite;
-  }
-
-  .work-stack-hint-arrow:first-child {
-    animation-direction: reverse;
-  }
-
-  @keyframes hint-sway {
-    0%, 100% {
-      transform: translateX(0);
-    }
-    50% {
-      transform: translateX(4px);
-    }
-  }
-
-  .work-stack-dots {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 16px;
-  }
-
-  .work-stack-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: rgba(0, 29, 217, 0.2);
-    transition: background 200ms ease, transform 200ms ease;
-  }
-
-  .work-stack-dot--active {
-    background: #001dd9;
-    transform: scale(1.2);
   }
 
   .work-stack--mobile .work-card-mobile-wrapper:nth-child(n+4) {
@@ -1104,17 +1059,20 @@ body {
 
 .postcard-to {
   margin-bottom: 12px;
+  text-align: left;
 }
 
 .postcard-to-label {
   font-family: 'Geist', system-ui, sans-serif;
   font-size: clamp(10px, 1.5vw, 14px);
   margin-bottom: 4px;
+  text-align: left;
 }
 
 .postcard-to-email {
   font-family: 'Geist', system-ui, sans-serif;
   font-size: clamp(10px, 1.5vw, 14px);
+  text-align: left;
 }
 
 .postcard-lines {
@@ -1196,6 +1154,17 @@ body {
 
   .footer-postcard {
     max-width: 320px;
+  }
+
+  .postcard-textarea,
+  .postcard-from-input {
+    font-size: 16px;
+  }
+
+  .postcard-to,
+  .postcard-to-label,
+  .postcard-to-email {
+    text-align: left;
   }
 }
 

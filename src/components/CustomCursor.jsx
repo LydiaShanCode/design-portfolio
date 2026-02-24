@@ -30,11 +30,12 @@ function CustomCursor() {
     const handleMouseEnter = (e) => {
       const target = e.target
       if (
-        target.tagName === 'A' ||
-        target.tagName === 'BUTTON' ||
-        target.closest('a') ||
-        target.closest('button') ||
-        target.closest('[data-hoverable]')
+        target instanceof Element &&
+        (target.tagName === 'A' ||
+          target.tagName === 'BUTTON' ||
+          target.closest('a') ||
+          target.closest('button') ||
+          target.closest('[data-hoverable]'))
       ) {
         isHovering = true
         cursor.classList.add('hover')
@@ -51,7 +52,7 @@ function CustomCursor() {
       handleMouseMove(e)
       const target = document.elementFromPoint(e.clientX, e.clientY)
       if (
-        target &&
+        target instanceof Element &&
         (target.tagName === 'A' ||
           target.tagName === 'BUTTON' ||
           target.closest('a') ||
