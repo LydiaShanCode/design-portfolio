@@ -3,6 +3,10 @@
   cursor: none !important;
 }
 
+html {
+  overflow-x: clip;
+}
+
 body {
   overflow-x: hidden;
 }

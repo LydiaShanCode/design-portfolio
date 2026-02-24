@@ -26,8 +26,8 @@ function Hero() {
       <div className="flex w-full flex-col items-center justify-center">
         <div className="mb-2 text-center leading-[0.95] lg:hidden">
           <h1 className="font-heading text-[clamp(32px,9vw,44px)] sm:text-[clamp(42px,11vw,76px)] font-light tracking-tight">
-            <span>LYDIA IS </span>
-            <span className="inline-block min-w-[6.5ch] text-left">
+            <span className="block">LYDIA IS</span>
+            <span className="block min-w-[6.5ch]">
               <DynamicTitle />
             </span>
           </h1>
@@ -43,7 +43,7 @@ function Hero() {
             <DynamicTitle />
           </div>
         </div>
-        <div className="-mt-1 mb-3 flex w-full items-center justify-center sm:mb-4 lg:hidden">
+        <div className="mb-3 flex w-full items-center justify-center sm:mb-4 lg:hidden">
           <KoiFish />
         </div>
         <p className="hero-subtext body-text text-center mb-4 text-base sm:text-lg lg:text-base">

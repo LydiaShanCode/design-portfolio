@@ -106,6 +106,26 @@ function KoiFish() {
   // Determine which frame to show
   const displayFrame = isLoading ? animatedFrame : (frames[currentFrameIndex] || '')
 
+  const [fishScale, setFishScale] = useState(1)
+
+  useEffect(() => {
+    if (!containerRef.current || !fishRef.current) return
+
+    const updateScale = () => {
+      const cW = containerRef.current.clientWidth
+      const cH = containerRef.current.clientHeight
+      const fW = fishRef.current.scrollWidth
+      const fH = fishRef.current.scrollHeight
+      if (fW > 0 && fH > 0) {
+        setFishScale(Math.min(cW / fW, cH / fH, 1))
+      }
+    }
+
+    updateScale()
+    window.addEventListener('resize', updateScale)
+    return () => window.removeEventListener('resize', updateScale)
+  }, [displayFrame])
+
   return (
     <div
       ref={containerRef}
@@ -123,8 +143,8 @@ function KoiFish() {
             lineHeight: '1',
             color: '#112CD8',
             transformOrigin: 'center',
-            opacity: isLoading ? 0.7 : 0.9, // Slightly more transparent while loading
-            transform: 'translate(-50%, -50%)',
+            opacity: isLoading ? 0.7 : 0.9,
+            transform: `translate(-50%, -50%) scale(${fishScale})`,
             transition: isLoading ? 'none' : 'opacity 0.3s ease-in',
           }}
         >
