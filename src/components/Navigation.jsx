@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import logo from '@src/assets/logo.svg'
 
 function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
+  const [workInView, setWorkInView] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
   const isPlayPage = location.pathname === '/play'
@@ -13,7 +14,7 @@ function Navigation() {
     { name: 'Work', href: '/#work', isHash: true },
     { name: 'Play', href: '/play', isHash: false },
     { name: 'About', href: '/about', isHash: false },
-    { name: 'Resume', href: '/resume', isHash: false },
+    { name: 'CV', href: '/resume', isHash: false },
   ]
   const leftItems = menuItems.slice(0, 2)
   const rightItems = menuItems.slice(2)
@@ -28,6 +29,21 @@ function Navigation() {
     // On Play page, start hidden
     setIsVisible(false)
   }, [isPlayPage])
+
+  useEffect(() => {
+    if (location.pathname !== '/') {
+      setWorkInView(false)
+      return
+    }
+    const workSection = document.getElementById('work')
+    if (!workSection) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setWorkInView(entry.isIntersecting),
+      { threshold: 0.2 }
+    )
+    observer.observe(workSection)
+    return () => observer.disconnect()
+  }, [location.pathname])
 
   const handleWorkClick = (e) => {
       e.preventDefault()
@@ -65,8 +81,7 @@ function Navigation() {
 
   const isItemActive = (item) => {
     if (item.isHash && item.name === 'Work') {
-      // Work is active when on home page
-      return location.pathname === '/'
+      return workInView
     }
     return location.pathname === item.href
   }
@@ -123,7 +138,7 @@ function Navigation() {
         />
       )}
       <nav 
-        className={`fixed top-0 left-0 right-0 z-50 text-current bg-gradient-to-b from-white/80 via-white/60 to-transparent backdrop-blur-sm transition-transform duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 hidden md:block text-current bg-gradient-to-b from-white/80 via-white/60 to-transparent backdrop-blur-sm transition-transform duration-300 ${
           isVisible ? 'translate-y-0' : '-translate-y-full'
         }`}
         onMouseEnter={handleNavMouseEnter}
@@ -132,8 +147,8 @@ function Navigation() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-16">
-            {/* Mobile + Medium Logo */}
-            <div className="flex-shrink-0 lg:hidden">
+            {/* Tablet Logo (hidden on mobile, shown md to lg) */}
+            <div className="hidden flex-shrink-0 md:block lg:hidden">
               <Link to="/" data-hoverable onClick={handleLogoClick}>
                 <img src={logo} alt="Lydia" className="h-6 w-6" />
               </Link>
@@ -224,9 +239,9 @@ function Navigation() {
               </div>
             </div>
 
-            {/* Mobile menu button */}
+            {/* Tablet menu button (hidden on mobile, shown md-down to lg) */}
             <button
-              className="md:hidden p-2 ml-auto"
+              className="hidden p-2 ml-auto"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               data-hoverable
               aria-label="Toggle menu"
@@ -250,37 +265,64 @@ function Navigation() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 bg-white text-current">
-            <div className="px-4 pt-2 pb-3 space-y-1">
-              {menuItems.map((item) => (
-                item.isHash ? (
-                  <button
-                    key={item.name}
-                    type="button"
-                    onClick={handleWorkClick}
-                    className="block w-full text-left px-3 py-2 text-current hover:text-current hover:bg-gray-50 rounded-md transition-colors duration-200"
-                    data-hoverable
-                  >
-                    {item.name}
-                  </button>
-                ) : (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className="block px-3 py-2 text-current hover:text-current hover:bg-gray-50 rounded-md transition-colors duration-200"
-                    data-hoverable
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                )
-              ))}
-            </div>
-          </div>
-        )}
       </nav>
+
+      {/* Mobile bottom nav bar */}
+      <div className="fixed bottom-5 left-0 right-0 z-50 flex justify-center px-4 md:hidden">
+        <div className="inline-flex items-center gap-5 rounded-full border border-white/30 bg-white/60 px-6 py-2.5 shadow-lg backdrop-blur-xl">
+          {leftItems.map((item) =>
+            item.isHash ? (
+              <button
+                key={item.name}
+                type="button"
+                onClick={handleWorkClick}
+                className={`text-[11px] tracking-wide transition-colors ${
+                  isItemActive(item) ? 'font-medium text-black' : 'text-black/50'
+                }`}
+              >
+                {item.name}
+              </button>
+            ) : (
+              <Link
+                key={item.name}
+                to={item.href}
+                className={`text-[11px] tracking-wide transition-colors ${
+                  isItemActive(item) ? 'font-medium text-black' : 'text-black/50'
+                }`}
+              >
+                {item.name}
+              </Link>
+            )
+          )}
+          <Link to="/" onClick={handleLogoClick} className="flex-shrink-0">
+            <img src={logo} alt="Home" className="block h-3.5 w-3.5" />
+          </Link>
+          {rightItems.map((item) =>
+            item.isHash ? (
+              <button
+                key={item.name}
+                type="button"
+                onClick={handleWorkClick}
+                className={`text-[11px] tracking-wide transition-colors ${
+                  isItemActive(item) ? 'font-medium text-black' : 'text-black/50'
+                }`}
+              >
+                {item.name}
+              </button>
+            ) : (
+              <Link
+                key={item.name}
+                to={item.href}
+                className={`text-[11px] tracking-wide transition-colors ${
+                  isItemActive(item) ? 'font-medium text-black' : 'text-black/50'
+                }`}
+              >
+                {item.name}
+              </Link>
+            )
+          )}
+        </div>
+      </div>
     </>
   )
 }

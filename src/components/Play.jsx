@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import KoiFish from './KoiFish'
 import TextScrub from './TextScrub'
+import shaderVideo from '../assets/Playground-page/shader-experiment-one/Shader-experiment-one.mov'
 
 function Play() {
   const playItems = useMemo(
@@ -12,6 +13,15 @@ function Play() {
         size: 'large',
         typeLabel: 'Animation',
         previewNote: 'ASCII fish',
+      },
+      {
+        id: 'shader-experiment',
+        title: 'Shader Experiment One',
+        type: 'shader-experiment',
+        size: 'wide',
+        typeLabel: 'Shader',
+        href: 'https://shush-manage-12467479.figma.site/',
+        videoSrc: shaderVideo,
       },
       {
         id: 'text-scrub',
@@ -61,6 +71,18 @@ function Play() {
             <TextScrub />
           </div>
         )
+      case 'shader-experiment':
+        return (
+          <div className="play-card-video">
+            <video
+              src={item.videoSrc}
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          </div>
+        )
       case 'image':
         return <img src={item.previewSrc} alt={item.title} />
       case 'video':
@@ -98,6 +120,31 @@ function Play() {
         return (
           <div className="play-modal-text-scrub">
             <TextScrub />
+          </div>
+        )
+      case 'shader-experiment':
+        return (
+          <div className="play-modal-shader">
+            <video
+              src={item.videoSrc}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="play-modal-video"
+            />
+            <a
+              href={item.href}
+              target="_blank"
+              rel="noreferrer"
+              className="play-modal-link-btn"
+              data-hoverable
+            >
+              View live experiment
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" width="16" height="16">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-4.5-6H18m0 0v4.5m0-4.5-7.5 7.5" />
+              </svg>
+            </a>
           </div>
         )
       case 'image':

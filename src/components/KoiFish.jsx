@@ -130,7 +130,7 @@ function KoiFish() {
     <div
       ref={containerRef}
       className="koi-container relative inline-block"
-      style={{ width: 'min(700px, 92vw)', height: 'min(550px, 72vw)' }}
+      style={{ width: 'min(550px, 100vw)', height: 'min(420px, 87vw)' }}
     >
       {displayFrame && (
         <div
@@ -141,7 +141,7 @@ function KoiFish() {
             whiteSpace: 'pre',
             fontSize: 'clamp(8px, 1.4vw, 12px)',
             lineHeight: '1',
-            color: '#112CD8',
+            color: 'var(--color-primary)',
             transformOrigin: 'center',
             opacity: isLoading ? 0.7 : 0.9,
             transform: `translate(-50%, -50%) scale(${fishScale})`,

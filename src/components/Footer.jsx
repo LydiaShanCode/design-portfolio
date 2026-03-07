@@ -41,8 +41,8 @@ function Footer() {
     <footer className="footer-section">
       <div className="footer-inner">
         <div className="footer-left">
-          <h2 className="footer-heading">
-            thanks for<br />stopping by <span className="footer-smiley">☺</span>
+          <h2 className="footer-heading uppercase italic">
+            Thank you for<br />stopping by
           </h2>
           <div className="footer-links">
             {socialLinks.map((link, index) => (

@@ -214,57 +214,67 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
           </div>
         </div>
         <div className="postcard-right">
-          <div className="postcard-to">
-            <div className="postcard-to-label">To:</div>
-            <div className="postcard-to-email-row">
-              <div className="postcard-to-email">{CONTACT_EMAIL}</div>
-              <button
-                type="button"
-                className={`postcard-copy-btn ${copiedEmail ? 'is-copied' : ''}`}
-                onClick={handleCopyEmail}
-                aria-label={copiedEmail ? 'Email copied' : 'Copy email address'}
-                title={copiedEmail ? 'Copied!' : 'Copy email'}
-                data-hoverable
-              >
-                {copiedEmail ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="postcard-copy-icon"
+          <div className="postcard-right-top">
+            <div className="postcard-to">
+              <div className="postcard-to-mobile-row">
+                <span className="postcard-to-label">To:</span>
+                <span className="postcard-to-email postcard-to-email-tap" onClick={handleCopyEmail}>
+                  {copiedEmail ? 'Copied!' : CONTACT_EMAIL}
+                </span>
+              </div>
+              <div className="postcard-to-desktop-row">
+                <div className="postcard-to-label">To:</div>
+                <div className="postcard-to-email-row">
+                  <div className="postcard-to-email">{CONTACT_EMAIL}</div>
+                  <button
+                    type="button"
+                    className={`postcard-copy-btn ${copiedEmail ? 'is-copied' : ''}`}
+                    onClick={handleCopyEmail}
+                    aria-label={copiedEmail ? 'Email copied' : 'Copy email address'}
+                    title={copiedEmail ? 'Copied!' : 'Copy email'}
+                    data-hoverable
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.6}
-                    stroke="currentColor"
-                    className="postcard-copy-icon"
-                  >
-                    <rect x="9" y="8" width="10" height="12" rx="2" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 16V6a2 2 0 0 1 2-2h8" />
-                  </svg>
-                )}
-              </button>
+                    {copiedEmail ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className="postcard-copy-icon"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.6}
+                        stroke="currentColor"
+                        className="postcard-copy-icon"
+                      >
+                        <rect x="9" y="8" width="10" height="12" rx="2" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 16V6a2 2 0 0 1 2-2h8" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="postcard-lines">
-            <div className="postcard-line"></div>
-          </div>
-          <div className="postcard-from postcard-from-right">
-            <span className="postcard-from-label">From:</span>
-            <input
-              type="email"
-              value={fromEmail}
-              onChange={(e) => setFromEmail(e.target.value)}
-              placeholder="Your email here"
-              className="postcard-from-input"
-            />
+            <div className="postcard-lines">
+              <div className="postcard-line"></div>
+            </div>
+            <div className="postcard-from postcard-from-right">
+              <span className="postcard-from-label">From:</span>
+              <input
+                type="email"
+                value={fromEmail}
+                onChange={(e) => setFromEmail(e.target.value)}
+                placeholder="Your email here"
+                className="postcard-from-input"
+              />
+            </div>
           </div>
           {showSend && (
             <button

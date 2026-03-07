@@ -44,6 +44,17 @@ function formatDate(dateString) {
   })
 }
 
+function formatDateShort(dateString) {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  if (isNaN(date.getTime())) return dateString
+  
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
 const ArrowUpRightIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -147,19 +158,22 @@ function ActivityLog() {
   }
 
   return (
-    <section id="activity-log" className="py-20 px-4 bg-white overflow-x-hidden">
+    <section id="activity-log" className="pt-10 pb-4 lg:py-20 px-4 bg-white overflow-x-hidden">
       <div className="max-w-6xl mx-auto w-full">
-        {/* Top divider */}
-        <div className="border-t border-dashed border-current opacity-20 mb-12" />
+        {/* Top divider - desktop only */}
+        <div className="hidden lg:block border-t border-dashed border-current opacity-20 mb-12" />
         
         <div className="flex flex-col lg:flex-row lg:gap-12">
           {/* Left heading */}
-          <h2 className="text-2xl lg:text-3xl font-heading font-light mb-8 lg:mb-0 lg:w-64 lg:flex-shrink-0">
+          <h2 className="hidden lg:block text-3xl font-heading font-light lg:w-64 lg:flex-shrink-0">
             RECENT ACTIVITIES
           </h2>
           
           {/* Activity list */}
-          <div className="flex-1">
+          <div className="flex-1 rounded-2xl border border-dashed border-current/20 p-4 lg:rounded-none lg:border-0 lg:p-0">
+            <p className="lg:hidden text-xs uppercase opacity-50 mb-3" style={{ letterSpacing: '-1px' }}>
+              Recently...
+            </p>
             {activities.map((activity, index) => {
               const tags = activity.Tags ? activity.Tags.split(',').map(t => t.trim()).filter(Boolean) : []
               const hasLink = activity.Link && activity.Link.trim()
@@ -168,17 +182,17 @@ function ActivityLog() {
                 <div className="py-3 text-xs overflow-hidden flex flex-col gap-2 lg:grid lg:grid-cols-[minmax(0,1.7fr)_140px_220px_120px_20px] lg:items-center lg:gap-x-6">
                   {/* Icon + Group + Event */}
                   <div className="flex items-start lg:items-center gap-3 min-w-0">
-                    <span className="flex-shrink-0 relative mt-0.5 lg:mt-0">
+                    <span className="hidden lg:block flex-shrink-0 relative mt-0.5 lg:mt-0">
                       <DocumentIcon className="group-hover:opacity-0 transition-opacity duration-200" />
                       <DocumentTextIcon className="absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                     </span>
                     <div className="flex min-w-0 flex-1 items-start justify-between gap-4">
-                      <span className="break-words">
+                      <span className="min-w-0 break-words">
                         {activity['Name of group'] && <span className="font-bold">{activity['Name of group']}, </span>}
                         {activity['Community/Event'] || activity.Event || 'Untitled'}
                       </span>
-                      <span className="flex items-center gap-2 text-right lg:hidden">
-                        <span>{formatDate(activity.Date)}</span>
+                      <span className="flex flex-shrink-0 items-center gap-2 text-right whitespace-nowrap lg:hidden">
+                        <span>{formatDateShort(activity.Date)}</span>
                         {hasLink && <ArrowUpRightIcon />}
                       </span>
                     </div>
