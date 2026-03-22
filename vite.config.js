@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => ({
-  base: command === 'build' ? '/design-portfolio/' : '/',
+  base: '/',
   plugins: [react()],
   assetsInclude: ['**/*.MP4', '**/*.PNG'],
   resolve: {
