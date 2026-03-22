@@ -9,6 +9,7 @@ import Play from './components/Play'
 import WaterCanvas from './components/WaterCanvas'
 import CustomCursor from './components/CustomCursor'
 import ComingSoon from './components/ComingSoon'
+import ProjectPage from './components/ProjectPage'
 
 function Home() {
   return (
@@ -16,7 +17,6 @@ function Home() {
       <Hero />
       <ProjectsGrid />
       <ActivityLog />
-      <Footer />
     </>
   )
 }
@@ -28,10 +28,20 @@ function ScrollToHash() {
     if (!location.hash) return
     const id = location.hash.replace('#', '')
     const element = document.getElementById(id)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
+    if (!element) return
+    element.scrollIntoView({ behavior: 'smooth' })
   }, [location.hash, location.pathname])
+
+  return null
+}
+
+function ScrollToTopOnNavigate() {
+  const { pathname, hash } = useLocation()
+
+  useEffect(() => {
+    if (hash) return
+    window.scrollTo(0, 0)
+  }, [pathname, hash])
 
   return null
 }
@@ -44,29 +54,16 @@ function App() {
         <WaterCanvas />
         <Navigation />
         <ScrollToHash />
+        <ScrollToTopOnNavigate />
         <div className="relative z-40">
           <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/play" element={<Play />} />
-          <Route
-            path="/about"
-            element={
-              <ComingSoon
-                title="About"
-                message="The story, the process, and the small details are on the way."
-              />
-            }
-          />
-          <Route
-            path="/resume"
-            element={
-              <ComingSoon
-                title="Resume"
-                message="I am polishing the latest highlights and will post the full resume soon."
-              />
-            }
-          />
+          <Route path="/project/:slug" element={<ProjectPage />} />
+          <Route path="/about" element={<ComingSoon />} />
+          <Route path="/resume" element={<ComingSoon />} />
         </Routes>
+        <Footer />
         </div>
       </div>
     </Router>

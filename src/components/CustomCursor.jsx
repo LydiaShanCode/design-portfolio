@@ -13,8 +13,8 @@ function CustomCursor() {
 
     const updateCursor = () => {
       // Smooth elastic motion - cursor trails behind actual position
-      cursorDotRef.current.x += (cursorPositionRef.current.x - cursorDotRef.current.x) * 0.15
-      cursorDotRef.current.y += (cursorPositionRef.current.y - cursorDotRef.current.y) * 0.15
+      cursorDotRef.current.x = cursorPositionRef.current.x
+      cursorDotRef.current.y = cursorPositionRef.current.y
 
       cursor.style.left = `${cursorDotRef.current.x}px`
       cursor.style.top = `${cursorDotRef.current.y}px`

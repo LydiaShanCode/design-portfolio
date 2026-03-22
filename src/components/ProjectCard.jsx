@@ -1,6 +1,8 @@
+import { useRef } from 'react'
 import cardboardTexture from '../assets/cardboard texture blue.svg'
 
-function ProjectCard({ project, stackIndex = 0, stackClassName = '', isMobileStack = false }) {
+function ProjectCard({ project, stackIndex = 0, stackClassName = '', isMobileStack = false, onSelect }) {
+  const cardRef = useRef(null)
   const {
     title,
     company,
@@ -11,9 +13,17 @@ function ProjectCard({ project, stackIndex = 0, stackClassName = '', isMobileSta
     ribbon,
   } = project
 
+  const handleClick = (e) => {
+    if (!onSelect) return
+    e.preventDefault()
+    const rect = cardRef.current?.getBoundingClientRect()
+    onSelect(project, rect)
+  }
+
   return (
-    <a
-      href={`#project-${project.id}`}
+    <button
+      ref={cardRef}
+      type="button"
       className={`work-card ${isMobileStack ? 'work-card--mobile' : `work-card-${stackIndex}`} group relative block overflow-hidden transition-all duration-300 ${stackClassName}`}
       style={{
         backgroundImage: `url(${cardboardTexture})`,
@@ -21,7 +31,7 @@ function ProjectCard({ project, stackIndex = 0, stackClassName = '', isMobileSta
       }}
       data-hoverable
       data-stack-index={stackIndex}
-      onClick={isMobileStack ? (e) => e.preventDefault() : undefined}
+      onClick={handleClick}
     >
       <div className="work-card-inner">
         <div className="work-card-header">
@@ -48,7 +58,7 @@ function ProjectCard({ project, stackIndex = 0, stackClassName = '', isMobileSta
           ))}
         </ul>
       </div>
-    </a>
+    </button>
   )
 }
 

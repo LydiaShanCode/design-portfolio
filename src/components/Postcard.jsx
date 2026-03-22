@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import postcardBg from '../assets/postcard3.png'
+import postcardBg from '../assets/postcard.png'
 
 const CONTACT_EMAIL = 'lydiashan.c@gmail.com'
 
@@ -217,13 +217,13 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
           <div className="postcard-right-top">
             <div className="postcard-to">
               <div className="postcard-to-mobile-row">
-                <span className="postcard-to-label">To:</span>
+                <span className="postcard-to-label"></span>
                 <span className="postcard-to-email postcard-to-email-tap" onClick={handleCopyEmail}>
                   {copiedEmail ? 'Copied!' : CONTACT_EMAIL}
                 </span>
               </div>
               <div className="postcard-to-desktop-row">
-                <div className="postcard-to-label">To:</div>
+                <div className="postcard-to-label"></div>
                 <div className="postcard-to-email-row">
                   <div className="postcard-to-email">{CONTACT_EMAIL}</div>
                   <button
@@ -284,16 +284,6 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
               data-hoverable
             >
               Send
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
-                className="postcard-send-icon"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
-              </svg>
             </button>
           )}
         </div>

@@ -9,6 +9,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export default defineConfig(({ command }) => ({
   base: command === 'build' ? '/design-portfolio/' : '/',
   plugins: [react()],
+  assetsInclude: ['**/*.MP4', '**/*.PNG'],
   resolve: {
     alias: {
       '@src': path.resolve(__dirname, 'src'),

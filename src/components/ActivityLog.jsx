@@ -228,7 +228,7 @@ function ActivityLog() {
               )
               
               return (
-                <div key={index}>
+                <div key={index} data-activity-row>
                   {hasLink ? (
                     <a
                       href={activity.Link}

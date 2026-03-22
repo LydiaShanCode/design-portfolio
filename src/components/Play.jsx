@@ -7,18 +7,20 @@ function Play() {
   const playItems = useMemo(
     () => [
       {
-        id: 'koi',
-        title: 'Koi Fish',
-        type: 'koi',
+        id: 'listening-room',
+        title: 'Listening Room',
+        year: '2026',
+        type: 'iframe',
         size: 'large',
-        typeLabel: 'Animation',
-        previewNote: 'ASCII fish',
+        typeLabel: 'Three.js Experiment',
+        href: 'https://chute-tint-71818613.figma.site/',
       },
       {
         id: 'shader-experiment',
         title: 'Shader Experiment One',
+        year: '2026',
         type: 'shader-experiment',
-        size: 'wide',
+        size: 'small',
         typeLabel: 'Shader',
         href: 'https://shush-manage-12467479.figma.site/',
         videoSrc: shaderVideo,
@@ -26,10 +28,20 @@ function Play() {
       {
         id: 'text-scrub',
         title: 'Text Scrub Animation',
+        year: '2025',
         type: 'text-scrub',
         size: 'wide',
         typeLabel: 'Interaction',
         previewNote: 'Hover reveal',
+      },
+      {
+        id: 'koi',
+        title: 'Koi Fish',
+        year: '2025',
+        type: 'koi',
+        size: 'tall',
+        typeLabel: 'Animation',
+        previewNote: 'ASCII fish',
       },
     ],
     []
@@ -97,6 +109,17 @@ function Play() {
             <code>{item.previewCode}</code>
           </pre>
         )
+      case 'iframe':
+        return (
+          <div className="play-card-iframe">
+            <iframe
+              src={item.href}
+              title={item.title}
+              loading="lazy"
+              sandbox="allow-scripts allow-same-origin"
+            />
+          </div>
+        )
       case 'link':
         return (
           <div className="play-link-preview">
@@ -133,18 +156,6 @@ function Play() {
               playsInline
               className="play-modal-video"
             />
-            <a
-              href={item.href}
-              target="_blank"
-              rel="noreferrer"
-              className="play-modal-link-btn"
-              data-hoverable
-            >
-              View live experiment
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" width="16" height="16">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-4.5-6H18m0 0v4.5m0-4.5-7.5 7.5" />
-              </svg>
-            </a>
           </div>
         )
       case 'image':
@@ -160,6 +171,16 @@ function Play() {
           <pre className="play-code-full">
             <code>{item.code}</code>
           </pre>
+        )
+      case 'iframe':
+        return (
+          <div className="play-modal-iframe">
+            <iframe
+              src={item.href}
+              title={item.title}
+              sandbox="allow-scripts allow-same-origin"
+            />
+          </div>
         )
       case 'link':
         return (
@@ -178,20 +199,18 @@ function Play() {
   return (
     <section id="play" className="play-section">
       <div className="play-inner">
-        <div className="play-header">
-          <p className="play-subtitle">
-            Small experiments, sketches, and playful artifacts.
-          </p>
-        </div>
         <div className="play-grid">
-          {playItems.map((item) => (
+          {playItems.map((item, index) => (
             <button
               key={item.id}
               type="button"
               className={`play-card play-card--${item.size}`}
               onClick={() => setActiveItem(item)}
             >
-              <span className="play-card-badge">{item.typeLabel}</span>
+              <div className="play-card-hover-badge">
+                {item.year && <span className="play-card-hover-badge-year">{item.year}</span>}
+                <span className="play-card-hover-badge-title">{item.title}</span>
+              </div>
               <div className="play-card-preview">{renderPreview(item)}</div>
             </button>
           ))}
@@ -209,9 +228,29 @@ function Play() {
               ✕
             </button>
             <div className="play-modal-body">
-              <div className="play-modal-title">
-                <h3>{activeItem.title}</h3>
-                <span>{activeItem.typeLabel}</span>
+              <div className="play-modal-header">
+                <div className="play-modal-title">
+                  {activeItem.year && <span className="play-modal-title-year">{activeItem.year}</span>}
+                  <span className="play-modal-title-name">
+                    {activeItem.title}
+                    {activeItem.typeLabel && <><span className="play-modal-title-dot">·</span>{activeItem.typeLabel}</>}
+                  </span>
+                </div>
+                {activeItem.href && (
+                  <a
+                    href={activeItem.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="play-modal-try-link"
+                    data-hoverable
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Try it yourself
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" width="12" height="12" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                  </a>
+                )}
               </div>
               <div className="play-modal-content">{renderModalContent(activeItem)}</div>
             </div>

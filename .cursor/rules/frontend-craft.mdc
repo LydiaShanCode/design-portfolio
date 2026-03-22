@@ -1,0 +1,193 @@
+---
+description: Frontend coding, UX/UI design, and graphic design best practices for building highly polished portfolio interfaces. Applied to all React components, CSS/Tailwind styling, interactions, typography, animations, and visual/UX decisions.
+globs: 
+alwaysApply: true
+---
+
+# Frontend Craft
+
+Best practices for coding agents and design agents working on this portfolio. Every decision should serve craft, clarity, and feel.
+
+---
+
+## Core Philosophy
+
+**"Working" is not enough — it must feel right.** Optimizing for function without considering feel produces mediocre interfaces. Watch transitions, hover states, and micro-interactions. If something looks off, it is off.
+
+**Pointing beats describing.** When giving visual feedback, be precise. Reference exact selectors, elements, and properties — not vague descriptions like "the button looks off."
+
+**Iteration is the process.** Highly polished products come from dozens of passes, not one-shots. Each pass should count. Ship tight loops: build, observe, refine.
+
+**Constraint breeds creativity.** Elegant solutions come from working within tight constraints (e.g. three SVG lines per icon, a single `<canvas>`, two props). Resist adding complexity — find the simplest structure that supports the full range of behavior.
+
+**Details compound.** The difference between good and great is the accumulation of considered small moments: a hover that breathes, a transition that morphs instead of swaps, a font pairing that sings.
+
+---
+
+## Frontend Coding
+
+### Component Architecture
+
+- Functional components with hooks, one main export per file
+- PascalCase filenames: `KoiFish.jsx`, `ProjectCard.jsx`
+- Local state with `useState`/`useRef` — no global state library
+- `useCallback`/`useMemo` for expensive computations and stable references
+- Destructure props in function parameters with sensible defaults
+- Colocate related logic; extract to custom hooks when reused across 2+ components
+
+### Performance Patterns
+
+- `requestAnimationFrame` for 60fps animation loops — never `setInterval`
+- Direct DOM mutation for high-frequency updates (counters, positions) rather than React re-renders
+- `IntersectionObserver` for scroll-triggered behavior
+- `ResizeObserver` for responsive layout logic
+- Throttle mouse/scroll handlers to ~16ms
+- `will-change` on elements with frequent transforms; remove when idle
+- Lazy-load heavy assets (videos, large images) below the fold
+
+### CSS & Styling
+
+- **Hybrid approach**: Tailwind utilities for layout/spacing + custom CSS for component styles + design tokens as custom properties
+- **BEM-like naming**: `work-card`, `work-card-inner`, `work-card--mobile`
+- **Modifiers with double dash**: `play-card--small`, `play-card--wide`
+- **Design tokens live in `:root`** in `index.css` — never hardcode colors, shadows, radii, or easing
+- **Responsive breakpoints** (mobile-first):
+  - `640px` — small mobile
+  - `720px` — large mobile / play grid
+  - `768px` — tablet
+  - `1024px` — desktop (custom cursor, full nav, card stack)
+
+### Animation & Interaction
+
+- CSS transitions for simple state changes (hover, active, focus)
+- CSS `@keyframes` for looping/entrance animations
+- `requestAnimationFrame` + lerp for smooth continuous motion (cursor trailing, chart lines)
+- Framer Motion for gesture-driven interactions (drag, swipe)
+- **Easing matters**: use `--ease-smooth` for UI transitions, `--ease-dramatic` for theatrical motion. Never use `linear` for UI elements
+- **Morph, don't swap**: icons and shapes should transform through their geometry, not crossfade
+- Transitions should have a clear beginning, middle, and end — avoid abrupt starts or stops
+
+### Accessibility
+
+- `aria-label` on icon-only buttons and interactive elements
+- `aria-hidden="true"` on decorative elements
+- Visible focus styles for keyboard navigation
+- Touch targets minimum 44x44px on mobile
+- Don't rely on color alone to convey meaning
+- `prefers-reduced-motion` — disable non-essential animations
+
+### Code Quality
+
+- No comments that narrate what code does. Comment only non-obvious intent, tradeoffs, or constraints
+- Consistent terminology — pick one term and use it everywhere
+- Event cleanup in `useEffect` return functions
+- Guard against null refs before DOM operations
+- `data-hoverable` attribute for custom cursor hover targets
+
+---
+
+## UX / UI Design
+
+### Layout & Hierarchy
+
+- **One focal point per viewport.** Don't compete for attention. Guide the eye with size, contrast, and whitespace
+- **Whitespace is structure.** Generous spacing signals importance and creates breathing room. Cramped layouts feel unfinished
+- **Group by proximity.** Related elements closer together, unrelated elements further apart. No ambiguous gaps
+- **Consistent grid.** Use the 12-column grid at desktop, collapse to 8-col at tablet, single-column on mobile
+- **Progressive disclosure.** Show the minimum needed upfront; reveal detail on interaction (modals, expandable cards)
+
+### Typography
+
+- **Two font families max**: `Cormorant Garamond` (serif) for headings and personality, `Geist` (sans) for body and UI, `Geist Mono` for code
+- **Type scale with ratios** — don't pick arbitrary sizes. Use `clamp()` for fluid scaling between breakpoints
+- **Line length 45–75 characters** for readability on body text
+- **Weight creates hierarchy**: bold for primary, medium for secondary, regular for body. Don't lean on size alone
+- **Letter-spacing**: tighter on large headings (−0.5px), wider on small uppercase labels (0.08–0.2em)
+
+### Color & Contrast
+
+- **Primary blue `#001dd9`** as the single accent. Derive everything else from it
+- **Minimal palette.** White background, near-black text, one accent. Restraint is sophistication
+- **4.5:1 contrast minimum** for body text. 3:1 for large text (18px+)
+- **Opacity for depth**: use `rgba` and opacity to create layers, not new colors
+- Surface hierarchy: `--color-bg` > `--color-surface` > `--color-surface-dark`
+
+### Interaction Design
+
+- **Every interactive element needs three states**: default, hover, active. No exceptions
+- **Hover feedback within 100ms.** Humans perceive delays above this as sluggish
+- **Transitions 200–300ms** for UI state changes. Shorter feels abrupt, longer feels slow
+- **Entrance animations 200–400ms.** Exit animations can be faster (150–250ms)
+- **Drag interactions need visual affordance**: cursor change, shadow lift, scale shift
+- **Provide undo/escape.** Every modal closes on Escape and backdrop click. Every destructive action has a way back
+
+### Responsive & Mobile
+
+- **Touch-first on mobile.** No hover-dependent interactions. Anything revealed on hover must be accessible another way
+- **Bottom-reachable navigation** on mobile — thumbs reach the bottom of the screen, not the top
+- **Simplify, don't shrink.** Mobile isn't a smaller desktop. Rethink layout, reduce cognitive load, prioritize primary actions
+- **Native cursor on mobile** (< 1024px). Custom cursor is desktop-only
+- **Swipe gestures** for card stacks and carousels on mobile with Framer Motion drag
+
+---
+
+## Graphic & Visual Design
+
+### Composition
+
+- **Asymmetry over symmetry** for visual interest. Offset elements create tension and movement
+- **Stacked/overlapping cards** create depth without 3D. Use rotation, offset, and shadow to imply layers
+- **Leave room for the eye to rest.** Not every area needs content. Empty space is a design element
+
+### Imagery & Assets
+
+- **SVG for icons and illustrations** — never raster. Inline SVG for interactive/animated elements
+- **Video for motion previews**: autoplay, loop, muted, playsInline. Object-fit cover for card crops
+- **Consistent border radius** from the token scale: `--radius-xs` through `--radius-2xl`. Don't mix arbitrary values
+- **Shadows create hierarchy**, not decoration. Cards float above the page; modals float above cards
+
+### Motion & Delight
+
+- **Entrance animations should feel like arrival**, not appearance. Use `translateY` + opacity, not just opacity
+- **Stagger sibling animations** by 40–80ms for a cascading reveal
+- **Looping animations should breathe** — sinusoidal easing, not mechanical repetition
+- **Parallax and scroll-linked motion** should be subtle. If the user notices the effect more than the content, dial it back
+- **Easter eggs reward exploration.** The koi fish catching a postcard, ASCII art animations, interactive text — these moments of surprise build emotional connection
+
+### Brand & Consistency
+
+- **One accent color.** Everything derives from `--color-primary`. Adding a second accent dilutes identity
+- **Consistent voice in micro-copy.** Playful but not childish. "Small experiments, sketches, and playful artifacts" sets the tone
+- **Badge/pill pattern** for labels and categories. Uppercase, small, letter-spaced, semi-transparent background with backdrop blur
+- **Glass morphism sparingly**: `backdrop-filter: blur()` with semi-transparent backgrounds for overlays and badges only
+
+---
+
+## Anti-Patterns
+
+- Crossfading between states when morphing is possible
+- Using `linear` easing for UI transitions
+- Hardcoding colors, shadows, or radii instead of using tokens
+- Adding a comment that says what the next line of code does
+- Hover-only interactions with no mobile alternative
+- Animations longer than 400ms for UI state changes
+- Multiple competing focal points in one viewport
+- Arbitrary font sizes that don't follow the type scale
+- `z-index` wars — use a defined layer system
+- Adding dependencies for things achievable with vanilla CSS or a single `<canvas>`
+
+---
+
+## Quick Reference: Design Tokens
+
+| Token | Value | Use |
+|---|---|---|
+| `--color-primary` | `#001dd9` | Accent, links, interactive |
+| `--color-bg` | `#ffffff` | Page background |
+| `--color-surface` | `#f8f8fb` | Card/section backgrounds |
+| `--ease-smooth` | `cubic-bezier(0.22, 0.61, 0.36, 1)` | UI transitions |
+| `--ease-dramatic` | `cubic-bezier(0.12, 0.8, 0.2, 1)` | Theatrical motion |
+| `--radius-sm` to `--radius-2xl` | `8px` to `28px` | Border radius scale |
+| `--radius-full` | `9999px` | Pills, circles |
+| `--max-w-content` | `1200px` | Content container |
+| `--max-w-modal` | `1100px` | Modal container |

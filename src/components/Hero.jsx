@@ -70,13 +70,15 @@ function Hero() {
             </a>
           </span>
         </p>
-        <Chip
-          href="https://www.instagram.com/p/DR2ZgRXjlw1/?img_index=1"
-          icon={<ArrowUpRightIcon />}
-          className="hidden sm:inline-flex border-blue-300 px-[10px] py-1 text-[12px]"
-        >
-          Sometimes making music
-        </Chip>
+        <div>
+          <Chip
+            href="https://www.instagram.com/p/DR2ZgRXjlw1/?img_index=1"
+            icon={<ArrowUpRightIcon />}
+            className="hidden sm:inline-flex border-blue-300 px-[10px] py-1 text-[12px]"
+          >
+            Sometimes making music
+          </Chip>
+        </div>
       </div>
     </section>
   )

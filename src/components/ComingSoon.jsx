@@ -1,16 +1,13 @@
-function ComingSoon({ title, message }) {
+import KoiFish from './KoiFish'
+
+function ComingSoon() {
   return (
-    <main className="min-h-screen pt-24 pb-16 px-4 flex items-center justify-center">
-      <div className="max-w-xl text-center">
-        <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">
-          Coming soon
-        </p>
-        <h1 className="heading-text text-3xl md:text-4xl lg:text-5xl font-light font-heading">
-          {title}
-        </h1>
-        <p className="body-text text-sm md:text-base text-gray-600 mt-4">
-          {message}
-        </p>
+    <main className="coming-soon-page">
+      <div className="coming-soon-inner">
+        <div className="coming-soon-koi">
+          <KoiFish />
+        </div>
+        <p className="coming-soon-text">coming soon</p>
       </div>
     </main>
   )

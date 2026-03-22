@@ -19,16 +19,23 @@ function Navigation() {
   const leftItems = menuItems.slice(0, 2)
   const rightItems = menuItems.slice(2)
 
-  // Handle hover visibility for Play page
+  const lastScrollY = useRef(0)
+  const scrollTimer = useRef(null)
+
   useEffect(() => {
-    if (!isPlayPage) {
-      setIsVisible(true)
-      return
+    const onScroll = () => {
+      const y = window.scrollY
+      if (y > 80 && y > lastScrollY.current) {
+        setIsVisible(false)
+      }
+      lastScrollY.current = y
+
+      if (y <= 10) setIsVisible(true)
     }
 
-    // On Play page, start hidden
-    setIsVisible(false)
-  }, [isPlayPage])
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   useEffect(() => {
     if (location.pathname !== '/') {
@@ -138,7 +145,7 @@ function Navigation() {
         />
       )}
       <nav 
-        className={`fixed top-0 left-0 right-0 z-50 hidden md:block text-current bg-gradient-to-b from-white/80 via-white/60 to-transparent backdrop-blur-sm transition-transform duration-300 ${
+        className={`nav-blur fixed top-0 left-0 right-0 z-50 hidden md:block text-current transition-transform duration-300 ${
           isVisible ? 'translate-y-0' : '-translate-y-full'
         }`}
         onMouseEnter={handleNavMouseEnter}

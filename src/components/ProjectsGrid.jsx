@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
 import ProjectCard from './ProjectCard'
-import projectsData from '../data/projects.json'
+import ProjectPreview from './ProjectPreview'
+import projectsFromMd from '../data/projectLoader'
 import designSystemImage from '../assets/card image - design system.svg'
 import flowOfFundsImage from '../assets/Card image - flow of funds.svg'
 import shopPayExperimentsImage from '../assets/card image - shop pay experiments.svg'
@@ -11,11 +12,17 @@ import currentRibbon from '../assets/current ribbon.svg'
 import shopifyIcon from '../assets/shopify-icon.svg'
 import searchEyeIcon from '../assets/searcheye icon.svg'
 import tdIcon from '../assets/td icon.svg'
+import flowOfFundsVideo from '../assets/projects/payouts-uplift/payouts uplift final video.MP4'
 
-function SwipeCard({ children, onSwipe }) {
+function SwipeCard({ children, onSwipe, onTap }) {
   const x = useMotionValue(0)
   const rotate = useTransform(x, [-200, 200], [-15, 15])
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0])
+  const dragStartRef = useRef(null)
+
+  const handleDragStart = (_, info) => {
+    dragStartRef.current = { x: info.point.x, y: info.point.y }
+  }
 
   const handleDragEnd = (_, info) => {
     const offsetThreshold = 100
@@ -25,6 +32,11 @@ function SwipeCard({ children, onSwipe }) {
       animate(x, exitX, { duration: 0.3 }).then(() => onSwipe())
     } else {
       animate(x, 0, { type: 'spring', stiffness: 500, damping: 30 })
+      if (dragStartRef.current) {
+        const dx = Math.abs(info.point.x - dragStartRef.current.x)
+        const dy = Math.abs(info.point.y - dragStartRef.current.y)
+        if (dx < 5 && dy < 5 && onTap) onTap()
+      }
     }
   }
 
@@ -34,6 +46,7 @@ function SwipeCard({ children, onSwipe }) {
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.9}
       style={{ x, rotate, opacity }}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
       {children}
@@ -45,6 +58,8 @@ function ProjectsGrid() {
   const [projects, setProjects] = useState([])
   const [cardOrder, setCardOrder] = useState([0, 1, 2, 3, 4])
   const [isMobile, setIsMobile] = useState(false)
+  const [selectedProject, setSelectedProject] = useState(null)
+  const [cardRect, setCardRect] = useState(null)
   const stackRef = useRef(null)
 
   const imageAssets = {
@@ -53,6 +68,10 @@ function ProjectsGrid() {
     shopPayExperiments: shopPayExperimentsImage,
     tdInventory: tdInventoryImage,
     internationalCommerce: internationalCommerceImage,
+  }
+
+  const videoAssets = {
+    flowOfFunds: flowOfFundsVideo,
   }
 
   const ribbonAssets = {
@@ -65,8 +84,26 @@ function ProjectsGrid() {
     td: tdIcon,
   }
 
+  const enrichProject = (project) => ({
+    ...project,
+    image: imageAssets[project.imageKey],
+    ribbon: ribbonAssets[project.ribbonKey],
+    icon: iconAssets[project.iconKey],
+    video: videoAssets[project.videoKey] || null,
+  })
+
+  const handleSelect = useCallback((project, rect) => {
+    setCardRect(rect)
+    setSelectedProject(project)
+  }, [])
+
+  const handleClosePreview = useCallback(() => {
+    setSelectedProject(null)
+    setCardRect(null)
+  }, [])
+
   useEffect(() => {
-    setProjects(projectsData.projects)
+    setProjects(projectsFromMd)
   }, [])
 
   useEffect(() => {
@@ -183,16 +220,13 @@ function ProjectsGrid() {
               const project = projects[originalIndex]
               if (!project) return null
 
+              const enriched = enrichProject(project)
               const card = (
                 <ProjectCard
-                  project={{
-                    ...project,
-                    image: imageAssets[project.imageKey],
-                    ribbon: ribbonAssets[project.ribbonKey],
-                    icon: iconAssets[project.iconKey],
-                  }}
+                  project={enriched}
                   stackIndex={originalIndex}
                   isMobileStack={true}
+                  onSelect={orderPosition === 0 ? handleSelect : undefined}
                 />
               )
 
@@ -203,7 +237,12 @@ function ProjectsGrid() {
                   style={getMobileStackStyle(orderPosition)}
                 >
                   {orderPosition === 0 ? (
-                    <SwipeCard onSwipe={cycleStack}>{card}</SwipeCard>
+                    <SwipeCard
+                      onSwipe={cycleStack}
+                      onTap={() => handleSelect(enriched, null)}
+                    >
+                      {card}
+                    </SwipeCard>
                   ) : (
                     card
                   )}
@@ -214,18 +253,22 @@ function ProjectsGrid() {
             projects.slice(0, 5).map((project, index) => (
               <ProjectCard
                 key={project.id}
-                project={{
-                  ...project,
-                  image: imageAssets[project.imageKey],
-                  ribbon: ribbonAssets[project.ribbonKey],
-                  icon: iconAssets[project.iconKey],
-                }}
+                project={enrichProject(project)}
                 stackIndex={index}
+                onSelect={handleSelect}
               />
             ))
           )}
         </div>
       </div>
+
+      {selectedProject && (
+        <ProjectPreview
+          project={selectedProject}
+          cardRect={cardRect}
+          onClose={handleClosePreview}
+        />
+      )}
     </section>
   )
 }
