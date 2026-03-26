@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lydiashancode.github.io/design-portfolio/sitemap.xml

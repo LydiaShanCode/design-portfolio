@@ -2,14 +2,50 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Lydia Shan — Product Designer</title>
+    <meta name="description" content="Portfolio of Lydia Shan, a product designer currently at Shopify. Designing, building, and making things that feel right." />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/design-portfolio/favicon.svg" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://lydiashancode.github.io/design-portfolio/" />
+    <meta property="og:title" content="Lydia Shan — Product Designer" />
+    <meta property="og:description" content="Portfolio of Lydia Shan, a product designer currently at Shopify. Designing, building, and making things that feel right." />
+    <meta property="og:image" content="https://lydiashancode.github.io/design-portfolio/og-image.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Lydia Shan — Product Designer" />
+    <meta name="twitter:description" content="Portfolio of Lydia Shan, a product designer currently at Shopify." />
+    <meta name="twitter:image" content="https://lydiashancode.github.io/design-portfolio/og-image.png" />
+
+    <!-- Theme color -->
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <title>Lydia - Portfolio</title>
-    <script type="module" crossorigin src="/design-portfolio/assets/index-NPf-uwwV.js"></script>
-    <link rel="stylesheet" crossorigin href="/design-portfolio/assets/index-BtFEqJkR.css">
+
+    <!-- GitHub Pages SPA redirect handler -->
+    <script>
+      (function(l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
+    <script type="module" crossorigin src="/assets/index-tpnjcnWA.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ZewUdy6_.css">
   </head>
   <body>
     <div id="root"></div>
