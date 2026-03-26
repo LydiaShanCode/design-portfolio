@@ -1,7 +1,15 @@
 import { useRef } from 'react'
 import cardboardTexture from '../assets/cardboard texture blue.svg'
+import videoOverlay from '../assets/projects/work card overlay 3 .png'
 
-function ProjectCard({ project, stackIndex = 0, stackClassName = '', isMobileStack = false, onSelect }) {
+function ProjectCard({
+  project,
+  stackIndex = 0,
+  stackClassName = '',
+  isMobileStack = false,
+  shouldAutoplay = false,
+  onSelect,
+}) {
   const cardRef = useRef(null)
   const {
     title,
@@ -11,6 +19,7 @@ function ProjectCard({ project, stackIndex = 0, stackClassName = '', isMobileSta
     image,
     icon,
     ribbon,
+    video,
   } = project
 
   const handleClick = (e) => {
@@ -40,7 +49,23 @@ function ProjectCard({ project, stackIndex = 0, stackClassName = '', isMobileSta
             <img className="work-card-icon" src={icon} alt="" aria-hidden="true" />
           ) : null}
         </div>
-        {image ? (
+        {video && shouldAutoplay ? (
+          <div className="work-card-image work-card-image--video">
+            <video
+              src={video}
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+            <img
+              src={videoOverlay}
+              alt=""
+              aria-hidden="true"
+              className="work-card-video-overlay"
+            />
+          </div>
+        ) : image ? (
           <div className="work-card-image">
             <img src={image} alt={`${title} preview`} />
           </div>
@@ -49,9 +74,6 @@ function ProjectCard({ project, stackIndex = 0, stackClassName = '', isMobileSta
           <span>{company}</span>
           <span>{date}</span>
         </div>
-        {ribbon ? (
-          <img className="work-card-ribbon" src={ribbon} alt="Current project" />
-        ) : null}
         <ul className="work-card-highlights">
           {highlights.map((item) => (
             <li key={item}>{item}</li>

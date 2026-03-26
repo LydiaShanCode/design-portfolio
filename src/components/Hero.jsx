@@ -22,7 +22,7 @@ const ArrowUpRightIcon = () => (
 
 function Hero() {
   return (
-    <section id="hero" className="hero-section px-4 pt-6 pb-4 sm:py-16 lg:py-20">
+    <section id="hero" className="hero-section px-4 pt-0 pb-4 sm:py-16 lg:py-20">
       <div className="flex w-full flex-col items-center justify-center">
         <div className="-mx-4 mb-0 flex w-[calc(100%+2rem)] items-center justify-center sm:mb-5 lg:mx-0 lg:hidden lg:w-full">
           <KoiFish />

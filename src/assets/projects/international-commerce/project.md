@@ -3,7 +3,8 @@ id: 2
 title: International Commerce
 slug: international-commerce
 company: Shopify
-date: 2024–2026
+protected: false
+date: "2 weeks · 2025"
 timeline: 2024–Present
 highlights:
   - 0 → 1 product
@@ -13,7 +14,8 @@ highlights:
 imageKey: internationalCommerce
 iconKey: shopify
 ribbonKey: current
-videoKey: null
+videoKey: internationalCommerce
+prototypeUrl: ""
 team:
   - name: Lydia Shan
     role: DES

@@ -1,35 +1,42 @@
-import { useMemo, Children, isValidElement } from 'react'
+import { useMemo, useState, Children, isValidElement } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import Markdown from 'react-markdown'
 import projectsFromMd from '../data/projectLoader'
 import IterationsViewer from './IterationsViewer'
-import designSystemImage from '../assets/card image - design system.svg'
-import flowOfFundsImage from '../assets/Card image - flow of funds.svg'
-import shopPayExperimentsImage from '../assets/card image - shop pay experiments.svg'
-import tdInventoryImage from '../assets/card image - TD inventory management.svg'
-import internationalCommerceImage from '../assets/card-image-international commerce.svg'
+import CaseStudyGate from './CaseStudyGate'
+import designSystemImage from '../assets/projects/design-system/ design system - work card image.png'
+import flowOfFundsImage from '../assets/projects/payouts-uplift/payouts uplift - work card image.png'
+import shopBalanceImage from '../assets/projects/shop-balance/shop balance - work card image.png'
+import internationalCommerceImage from '../assets/projects/international-commerce/international commerce - work card image.png'
+import listeningRoomImage from '../assets/projects/Listening Room/listening room - work card image.png'
 import shopifyIcon from '../assets/shopify-icon.svg'
 import searchEyeIcon from '../assets/searcheye icon.svg'
-import tdIcon from '../assets/td icon.svg'
 import flowOfFundsVideo from '../assets/projects/payouts-uplift/payouts uplift final video.MP4'
+import designSystemVideo from '../assets/projects/design-system/Design System Final Video.MP4'
+import internationalCommerceVideo from '../assets/projects/international-commerce/International Commerce Final video.MP4'
+import shopBalanceVideo from '../assets/projects/shop-balance/Shop Balance final video.MP4'
+import listeningRoomVideo from '../assets/projects/Listening Room/Listening Room final video.MP4'
 import ticketImage from '../assets/project ticket.png'
 
 const imageAssets = {
   designSystem: designSystemImage,
   flowOfFunds: flowOfFundsImage,
-  shopPayExperiments: shopPayExperimentsImage,
-  tdInventory: tdInventoryImage,
+  shopBalance: shopBalanceImage,
   internationalCommerce: internationalCommerceImage,
+  listeningRoom: listeningRoomImage,
 }
 
 const videoAssets = {
+  designSystem: designSystemVideo,
   flowOfFunds: flowOfFundsVideo,
+  internationalCommerce: internationalCommerceVideo,
+  shopBalance: shopBalanceVideo,
+  listeningRoom: listeningRoomVideo,
 }
 
 const iconAssets = {
   shopify: shopifyIcon,
   searchEye: searchEyeIcon,
-  td: tdIcon,
 }
 
 const projectAssetModules = import.meta.glob(
@@ -94,7 +101,7 @@ function buildMarkdownComponents(slug, project) {
           const rest = arr.slice(1).map((c) => (typeof c === 'string' ? c.replace(/^\s*—\s*/, '') : c))
           return (
             <div className="project-page-mode-row">
-              <span className="project-page-mode-chip">
+              <span className="project-page-mode-chip btn-hover">
                 {icon}
                 {label}
               </span>
@@ -105,7 +112,7 @@ function buildMarkdownComponents(slug, project) {
         const rest = arr.slice(1).map((c) => (typeof c === 'string' ? c.replace(/^\s*—\s*/, '') : c))
         return (
           <div className="project-page-issue">
-            <span className="project-page-issue-chip">{label}</span>
+            <span className="project-page-issue-chip btn-hover">{label}</span>
             <span className="project-page-issue-description">{rest}</span>
           </div>
         )
@@ -238,6 +245,7 @@ function renderProjectContent(content, components) {
 
 function ProjectPage() {
   const { slug } = useParams()
+  const [unlocked, setUnlocked] = useState(false)
 
   const project = useMemo(() => {
     const raw = projectsFromMd.find((p) => p.slug === slug)
@@ -313,6 +321,20 @@ function ProjectPage() {
                 Watch Walkthrough
               </a>
             ) : null}
+            {project.prototypeUrl ? (
+              <a
+                href={project.prototypeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="project-page-walkthrough"
+                data-hoverable
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="16" height="16">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                </svg>
+                Try it out
+              </a>
+            ) : null}
           </div>
           {project.team && project.team.length > 0 ? (
             <div className="project-page-meta-col">
@@ -329,16 +351,18 @@ function ProjectPage() {
           </div>
         </div>
 
-        {hasContent ? (
-          <div className="project-page-content">
-            {renderProjectContent(project.content, mdComponents)}
-          </div>
-        ) : (
+        {!hasContent ? (
           <div className="project-page-coming-soon">
             <p className="project-page-coming-soon-label">Coming soon</p>
             <p className="project-page-coming-soon-text">
               The full case study for {project.title} is on the way.
             </p>
+          </div>
+        ) : project.protected && !unlocked ? (
+          <CaseStudyGate slug={slug} onUnlock={() => setUnlocked(true)} />
+        ) : (
+          <div className="project-page-content">
+            {renderProjectContent(project.content, mdComponents)}
           </div>
         )}
 

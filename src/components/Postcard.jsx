@@ -226,39 +226,6 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
                 <div className="postcard-to-label"></div>
                 <div className="postcard-to-email-row">
                   <div className="postcard-to-email">{CONTACT_EMAIL}</div>
-                  <button
-                    type="button"
-                    className={`postcard-copy-btn ${copiedEmail ? 'is-copied' : ''}`}
-                    onClick={handleCopyEmail}
-                    aria-label={copiedEmail ? 'Email copied' : 'Copy email address'}
-                    title={copiedEmail ? 'Copied!' : 'Copy email'}
-                    data-hoverable
-                  >
-                    {copiedEmail ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={2}
-                        stroke="currentColor"
-                        className="postcard-copy-icon"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.6}
-                        stroke="currentColor"
-                        className="postcard-copy-icon"
-                      >
-                        <rect x="9" y="8" width="10" height="12" rx="2" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 16V6a2 2 0 0 1 2-2h8" />
-                      </svg>
-                    )}
-                  </button>
                 </div>
               </div>
             </div>
@@ -279,7 +246,7 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
           {showSend && (
             <button
               type="button"
-              className="postcard-send"
+              className="postcard-send btn-hover btn-hover--solid"
               onClick={handleSendButtonClick}
               data-hoverable
             >

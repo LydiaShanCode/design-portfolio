@@ -283,8 +283,8 @@ function Navigation() {
                 key={item.name}
                 type="button"
                 onClick={handleWorkClick}
-                className={`text-[11px] tracking-wide transition-colors ${
-                  isItemActive(item) ? 'font-medium text-black' : 'text-black/50'
+                className={`text-[13px] tracking-wide transition-colors ${
+                  isItemActive(item) ? 'font-medium text-[var(--color-primary)]' : 'text-[var(--color-primary)]/50'
                 }`}
               >
                 {item.name}
@@ -293,8 +293,8 @@ function Navigation() {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-[11px] tracking-wide transition-colors ${
-                  isItemActive(item) ? 'font-medium text-black' : 'text-black/50'
+                className={`text-[13px] tracking-wide transition-colors ${
+                  isItemActive(item) ? 'font-medium text-[var(--color-primary)]' : 'text-[var(--color-primary)]/50'
                 }`}
               >
                 {item.name}
@@ -310,8 +310,8 @@ function Navigation() {
                 key={item.name}
                 type="button"
                 onClick={handleWorkClick}
-                className={`text-[11px] tracking-wide transition-colors ${
-                  isItemActive(item) ? 'font-medium text-black' : 'text-black/50'
+                className={`text-[13px] tracking-wide transition-colors ${
+                  isItemActive(item) ? 'font-medium text-[var(--color-primary)]' : 'text-[var(--color-primary)]/50'
                 }`}
               >
                 {item.name}
@@ -320,8 +320,8 @@ function Navigation() {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-[11px] tracking-wide transition-colors ${
-                  isItemActive(item) ? 'font-medium text-black' : 'text-black/50'
+                className={`text-[13px] tracking-wide transition-colors ${
+                  isItemActive(item) ? 'font-medium text-[var(--color-primary)]' : 'text-[var(--color-primary)]/50'
                 }`}
               >
                 {item.name}

@@ -3,7 +3,8 @@ id: 3
 title: Payouts Uplift
 slug: payouts-uplift
 company: Shopify
-date: 2024–2026
+protected: true
+date: "3 weeks · 2025"
 timeline: Jan 2025 – Mar 2025
 highlights:
   - B2B Fintech
@@ -15,6 +16,7 @@ iconKey: shopify
 ribbonKey: current
 videoKey: flowOfFunds
 walkthroughUrl: https://screen.studio/share/4MpkN24h
+prototypeUrl: ""
 caseStudyReady: true
 iterationTabs:
   - Final

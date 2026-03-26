@@ -1,3 +1,62 @@
+/* ─── Design System: Button hover effects ─── */
+
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes border-rotate {
+  to { --border-angle: 360deg; }
+}
+
+/*
+ * .btn-hover  — base utility for all interactive pill / chip / CTA buttons.
+ *   Provides:  shine sweep (::after) + rotating gradient border on hover.
+ *   Outline variant (default): inner fill = #fff.
+ *   Solid variant (.btn-hover--solid): inner fill = var(--color-primary).
+ */
+.btn-hover {
+  position: relative;
+  overflow: hidden;
+  --border-angle: 0deg;
+  animation: none;
+}
+
+.btn-hover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+
+.btn-hover:hover::after {
+  transform: translateX(100%);
+  transition: transform 900ms ease;
+}
+
+.btn-hover:hover {
+  border-color: transparent;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    conic-gradient(from var(--border-angle), #c1c9ff, #001dd9, #c1c9ff) border-box;
+  animation: border-rotate 900ms linear forwards;
+}
+
+.btn-hover--solid:hover {
+  background:
+    linear-gradient(var(--color-primary), var(--color-primary)) padding-box,
+    conic-gradient(from var(--border-angle), #c1c9ff, #001dd9, #c1c9ff) border-box;
+}
+
 /* Nav blur — seamless fade */
 .nav-blur {
   background: transparent;
@@ -138,6 +197,11 @@ body {
   height: 32px;
   background-color: rgba(0, 0, 0, 0.2);
   border: 2px solid rgba(0, 0, 0, 0.5);
+}
+
+.custom-cursor.hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Koi fish animation container */
@@ -309,13 +373,28 @@ body {
 .work-card-image {
   border-radius: var(--radius-xs);
   overflow: hidden;
-  background-color: var(--color-surface-dark);
 }
 
-.work-card-image img {
+.work-card-image img,
+.work-card-image video {
   display: block;
   width: 100%;
   height: auto;
+  object-fit: cover;
+}
+
+.work-card-image--video {
+  position: relative;
+}
+
+.work-card-video-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  pointer-events: none;
+  mix-blend-mode: multiply;
 }
 
 .work-card-meta {
@@ -585,11 +664,11 @@ body {
 .play-card-hover-badge-year {
   padding: 4px 10px;
   border-radius: var(--radius-full);
-  background: rgba(120, 120, 120, 0.25);
+  background: #22262b;
   font-family: 'Geist', system-ui, sans-serif;
   font-size: 12px;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.7);
+  color: #ffffff;
   line-height: 1;
 }
 
@@ -757,7 +836,8 @@ body {
 .play-modal-title-year {
   padding: 4px 10px;
   border-radius: var(--radius-full);
-  background: rgba(120, 120, 120, 0.25);
+  background: #22262b;
+  color: #ffffff;
   font-family: 'Geist', system-ui, sans-serif;
   font-size: 12px;
   font-weight: 500;
@@ -1062,10 +1142,21 @@ body {
 .footer-section {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-gradient-mid) 50%, var(--color-gradient-end) 100%);
-  padding: 80px 40px;
+  background: var(--color-bg) url('/src/assets/footer gradient.svg') center / cover no-repeat;
+  padding: 160px 40px 40px;
+}
+
+.footer-copyright {
+  margin-top: auto;
+  padding-bottom: 24px;
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 12px;
+  letter-spacing: -0.5px;
+  opacity: 0.5;
+  align-self: flex-start;
 }
 
 .footer-inner {
@@ -1078,13 +1169,16 @@ body {
 }
 
 .footer-left {
-  flex: 1;
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
 }
 
 .footer-heading {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 50px;
+  font-size: 20px;
   font-weight: 400;
+  font-style: italic;
   line-height: 1.1;
   margin-bottom: 24px;
 }
@@ -1094,21 +1188,23 @@ body {
 }
 
 .footer-links {
-  font-family: 'Geist', system-ui, sans-serif;
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .footer-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
-  transition: opacity 0.2s ease;
+  color: inherit;
+  opacity: 0.6;
+  transition: opacity 200ms ease;
 }
 
 .footer-link:hover {
-  opacity: 0.7;
-}
-
-.footer-separator {
-  opacity: 0.5;
+  opacity: 1;
 }
 
 .footer-right {
@@ -1177,6 +1273,12 @@ body {
   display: flex;
   flex-direction: column;
   padding-top: 18%;
+}
+
+.postcard-right-top {
+  height: fit-content;
+  padding-top: 16px;
+  padding-bottom: 16px;
 }
 
 .postcard-message-area {
@@ -1309,11 +1411,12 @@ body {
   }
 
   .footer-heading {
-    font-size: 28px;
+    font-size: 22px;
   }
 
   .footer-links {
     font-size: 12px;
+    justify-content: center;
   }
 
   .footer-right {
@@ -1342,6 +1445,20 @@ body {
   .postcard-to-email {
     text-align: left;
   }
+
+  .postcard-to-email,
+  .postcard-to-email-tap {
+    font-size: 18px;
+  }
+
+  .footer-copyright {
+    align-self: center;
+  }
+
+}
+
+.postcard-from-label {
+  display: none;
 }
 
 /* Restored postcard + fish interaction overrides */
@@ -1440,7 +1557,7 @@ body {
 .postcard-from-input,
 .postcard-to-email {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(10px, 1.5vw, 14px);
+  font-size: clamp(14px, 2vw, 20px);
 }
 
 @media (min-width: 640px) {
@@ -1448,7 +1565,7 @@ body {
   .postcard-to-label,
   .postcard-from-input,
   .postcard-to-email {
-    font-size: 14px;
+    font-size: 20px;
   }
 }
 
@@ -1457,6 +1574,7 @@ body {
   align-items: center;
   gap: 6px;
   min-width: 0;
+  margin-top: 16px;
 }
 
 .postcard-to-email {
@@ -1511,7 +1629,7 @@ body {
   align-items: center;
   gap: 5px;
   background: var(--color-primary);
-  border: none;
+  border: 1px solid transparent;
   font-family: 'Geist', system-ui, sans-serif;
   font-size: clamp(10px, 1.2vw, 12px);
   font-weight: 500;
@@ -1529,7 +1647,6 @@ body {
 }
 
 .postcard-send:hover {
-  opacity: 0.7;
   transform: translateY(-1px);
   box-shadow: var(--shadow-send-hover);
 }
@@ -1546,7 +1663,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 12px;
   z-index: 2000;
   perspective: 1200px;
 }
@@ -1665,16 +1782,17 @@ body {
 .project-preview-info {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
   padding: 24px 32px 32px;
 }
 
 /* Video area — sits at top of the card */
 .project-preview-video-wrap {
+  position: relative;
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--color-surface);
-  padding: 12px;
+  padding: 0;
 }
 
 .project-preview-video {
@@ -1694,6 +1812,174 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.15em;
   color: var(--color-text-muted);
+}
+
+/* ── Preview Password Overlay ── */
+.project-preview-video-wrap--hide-cursor {
+  cursor: none;
+}
+
+.project-preview-video-wrap--hide-cursor * {
+  cursor: none !important;
+}
+
+.project-preview-password-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 200ms var(--ease-smooth);
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.project-preview-video-wrap:hover .project-preview-password-overlay,
+.project-preview-password-overlay--active {
+  opacity: 1 !important;
+  pointer-events: auto;
+}
+
+/* In idle mode the pill follows the cursor (positioned via JS) */
+.project-preview-password-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(28px) saturate(1.8) brightness(1.1);
+  -webkit-backdrop-filter: blur(28px) saturate(1.8) brightness(1.1);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: var(--radius-full);
+  color: rgba(0, 0, 0, 0.55);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: none;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+  pointer-events: auto;
+  will-change: transform;
+  transition: background 180ms var(--ease-smooth), box-shadow 180ms var(--ease-smooth);
+}
+
+.project-preview-password-btn:hover {
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.18);
+}
+
+.project-preview-password-btn--disabled {
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(28px) saturate(1.8) brightness(1.1);
+  -webkit-backdrop-filter: blur(28px) saturate(1.8) brightness(1.1);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  color: rgba(0, 0, 0, 0.55);
+  cursor: default;
+  pointer-events: none;
+}
+
+/* In input mode the overlay captures clicks but doesn't reposition children */
+.project-preview-password-overlay--active {
+  overflow: visible;
+}
+
+.project-preview-password-form {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  padding: 0 0 0 12px;
+  transition: border-color 300ms var(--ease-smooth), background 300ms var(--ease-smooth);
+}
+
+.project-preview-password-lock {
+  flex-shrink: 0;
+  margin-right: 8px;
+  color: var(--color-primary);
+  transition: color 300ms var(--ease-smooth);
+}
+
+.project-preview-password-form--unlocked .project-preview-password-lock {
+  animation: lock-unlock 500ms var(--ease-dramatic) forwards;
+}
+
+@keyframes lock-unlock {
+  0%   { transform: scale(1) rotate(0deg); opacity: 1; }
+  40%  { transform: scale(1.25) rotate(-12deg); opacity: 1; }
+  60%  { transform: scale(1.15) rotate(4deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.project-preview-password-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  width: 160px;
+  padding: 10px 0;
+}
+
+.project-preview-password-input::placeholder {
+  color: rgba(0, 29, 217, 0.45);
+}
+
+.project-preview-password-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: 50%;
+  margin: 3px;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 150ms var(--ease-smooth), transform 150ms var(--ease-smooth);
+}
+
+.project-preview-password-submit:hover {
+  background: #0016a8;
+  transform: scale(1.05);
+}
+
+@keyframes preview-password-shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-8px); }
+  40%       { transform: translateX(7px); }
+  60%       { transform: translateX(-5px); }
+  80%       { transform: translateX(4px); }
+}
+
+.project-preview-password-form--shake {
+  animation: preview-password-shake 0.45s var(--ease-smooth);
+}
+
+.project-preview-password-form--mobile {
+  position: static;
+  display: flex;
+  width: 100%;
+  margin-top: 8px;
+  transform: none;
+}
+
+.project-preview-password-form--mobile .project-preview-password-input {
+  flex: 1;
+  width: auto;
 }
 
 .project-preview-title-row {
@@ -1738,8 +2024,9 @@ body {
 /* Footer — company+CTA left | team center | duration right */
 .project-preview-footer {
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
   gap: 16px;
 }
 
@@ -1749,6 +2036,12 @@ body {
   gap: 4px;
   flex: 1;
   min-width: 0;
+}
+
+.project-preview-cta-col--desktop {
+  flex: none;
+  margin-left: auto;
+  align-self: flex-end;
 }
 
 .project-preview-highlights {
@@ -1768,11 +2061,11 @@ body {
 .project-preview-cta {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 0;
+  gap: 6px;
+  padding: 8px 16px;
   margin: 0;
-  border: none;
-  border-radius: 0;
+  border: 1px dotted var(--color-badge-border);
+  border-radius: var(--radius-full);
   background: transparent;
   color: var(--color-primary);
   font-family: 'Geist', system-ui, sans-serif;
@@ -1782,19 +2075,29 @@ body {
   white-space: nowrap;
   text-transform: uppercase;
   letter-spacing: -0.01em;
-  transition: opacity 200ms ease;
+  transition: border 200ms ease;
   flex-shrink: 0;
+}
+
+.project-preview-cta--disabled {
+  pointer-events: none;
+  opacity: 0.45;
+  cursor: default;
+}
+
+.project-preview-mobile-cta {
+  display: none;
 }
 
 .project-preview-cta--mobile {
   display: none;
 }
 
-.project-preview-cta:hover {
-  opacity: 0.6;
-}
-
 @media (max-width: 900px) {
+  .project-preview-password-overlay {
+    display: none;
+  }
+
   .project-preview-company-name--mobile {
     display: none;
   }
@@ -1809,12 +2112,41 @@ body {
 }
 
 @media (max-width: 719px) {
+  .project-preview-overlay::before {
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  .project-preview-card {
+    width: 100%;
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-preview-close {
+    width: 24px;
+    height: 24px;
+    top: 12px;
+    right: 12px;
+    font-size: 11px;
+  }
+
   .project-preview-body {
     padding: 6px;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .project-preview-video-wrap {
+    border-radius: 18px;
+  }
+
+  .project-preview-video {
+    border-radius: 18px;
   }
 
   .project-preview-info {
-    padding: 16px;
+    padding: 8px;
   }
 
   .project-preview-title-row {
@@ -1845,10 +2177,15 @@ body {
     display: none;
   }
 
+  .project-preview-mobile-cta {
+    display: block;
+  }
+
   .project-preview-cta--mobile {
     display: inline-flex;
     width: 100%;
     justify-content: center;
+    margin-top: auto;
     padding: 10px 20px;
     margin-top: 8px;
     border: 1px solid var(--color-text-placeholder);
@@ -1863,6 +2200,52 @@ body {
     opacity: 1;
     background: var(--color-surface);
     border-color: var(--color-primary);
+  }
+}
+
+@media (max-width: 640px) {
+  .project-preview-card {
+    width: 85vw;
+    max-width: 320px;
+    height: 480px;
+    max-height: none;
+  }
+
+  .project-preview-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .project-preview-video-wrap {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .project-preview-video,
+  .project-preview-video-wrap video,
+  .project-preview-video-wrap img {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .project-preview-info {
+    flex-shrink: 0;
+  }
+
+  .project-preview-title-row {
+    justify-content: center;
+    margin-top: 8px;
+    margin-bottom: 4px;
+  }
+
+  .project-preview-title {
+    text-align: center;
+  }
+
+  .project-preview-footer {
+    display: none;
   }
 }
 
@@ -1924,7 +2307,7 @@ body {
 .project-page-meta-col {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
   flex: 1;
   min-width: 0;
 }
@@ -1950,7 +2333,8 @@ body {
   font-size: 13px;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
   opacity: 0.7;
 }
 
@@ -2133,12 +2517,13 @@ body {
   box-sizing: border-box;
   padding: 6px 14px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--color-badge-border);
+  border: 1px dotted var(--color-badge-border);
   background: transparent;
   font-family: 'Geist', system-ui, sans-serif;
   font-size: 12px;
   font-weight: 400;
   color: var(--color-primary);
+  transition: border 200ms ease;
 }
 
 .project-page-mode-chip svg {
@@ -2268,14 +2653,15 @@ body {
 .project-page-issue-chip {
   display: inline-flex;
   align-self: flex-start;
-  padding: 6px 14px;
+  padding: 4px 10px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--color-badge-border);
+  border: 1px dotted var(--color-badge-border);
   background: transparent;
   font-family: 'Geist', system-ui, sans-serif;
   font-size: 12px;
   font-weight: 400;
   color: var(--color-primary);
+  transition: border 200ms ease;
 }
 
 .project-page-issue-description {
@@ -2411,18 +2797,10 @@ body {
   }
 }
 
-.iterations-tab:hover {
-  border-color: rgba(0, 29, 217, 0.3);
-}
-
 .iterations-tab--active {
   background: var(--color-primary);
   border-color: var(--color-primary);
   color: #ffffff;
-}
-
-.iterations-tab--active:hover {
-  border-color: var(--color-primary);
 }
 
 .iterations-image-wrap {
@@ -2454,6 +2832,116 @@ body {
   .iterations-viewer {
     width: 100%;
   }
+}
+
+/* Case study password gate */
+.case-study-gate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  margin: 48px 0;
+}
+
+.case-study-gate-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.case-study-gate-label {
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-primary);
+  opacity: 0.5;
+}
+
+.case-study-gate-hint {
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-primary);
+  opacity: 0.65;
+  margin: 0;
+}
+
+.case-study-gate-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.case-study-gate-input {
+  flex: 1;
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--color-primary);
+  background: transparent;
+  border: 1px solid rgba(0, 29, 217, 0.2);
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  outline: none;
+  transition: border-color 180ms ease;
+}
+
+.case-study-gate-input::placeholder {
+  color: var(--color-primary);
+  opacity: 0.35;
+}
+
+.case-study-gate-input:focus {
+  border-color: var(--color-primary);
+}
+
+.case-study-gate-input--error {
+  border-color: rgba(200, 40, 40, 0.5);
+}
+
+.case-study-gate-submit {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 20px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  border: none;
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ffffff;
+  transition: opacity 180ms ease, transform 180ms ease;
+  white-space: nowrap;
+}
+
+.case-study-gate-submit:hover {
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+
+.case-study-gate-error {
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 12px;
+  color: rgba(180, 30, 30, 0.85);
+  letter-spacing: 0.01em;
+}
+
+@keyframes gate-shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+
+.case-study-gate-row--shake {
+  animation: gate-shake 0.45s var(--ease-smooth);
 }
 
 /* Work card button reset */

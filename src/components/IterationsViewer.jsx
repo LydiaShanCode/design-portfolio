@@ -65,7 +65,7 @@ function IterationGroup({ group, groupIdx, tabs, activeIdx, onTabChange, resolve
             <button
               key={label}
               type="button"
-              className={`iterations-tab ${tabIdx === activeIdx ? 'iterations-tab--active' : ''}`}
+              className={`iterations-tab btn-hover ${tabIdx === activeIdx ? 'iterations-tab--active btn-hover--solid' : ''}`}
               onClick={() => onTabChange(groupIdx, tabIdx)}
               data-hoverable
             >

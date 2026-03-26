@@ -51,6 +51,13 @@ function CustomCursor() {
     const handleMouseMoveWithHover = (e) => {
       handleMouseMove(e)
       const target = document.elementFromPoint(e.clientX, e.clientY)
+      const shouldHide = target instanceof Element && target.closest('[data-hide-cursor]')
+      if (shouldHide) {
+        if (!cursor.classList.contains('hidden')) cursor.classList.add('hidden')
+      } else {
+        cursor.classList.remove('hidden')
+      }
+
       if (
         target instanceof Element &&
         (target.tagName === 'A' ||

@@ -1,27 +1,39 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from 'react'
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
 import ProjectCard from './ProjectCard'
 import ProjectPreview from './ProjectPreview'
 import projectsFromMd from '../data/projectLoader'
-import designSystemImage from '../assets/card image - design system.svg'
-import flowOfFundsImage from '../assets/Card image - flow of funds.svg'
-import shopPayExperimentsImage from '../assets/card image - shop pay experiments.svg'
-import tdInventoryImage from '../assets/card image - TD inventory management.svg'
-import internationalCommerceImage from '../assets/card-image-international commerce.svg'
+import designSystemImage from '../assets/projects/design-system/ design system - work card image.png'
+import flowOfFundsImage from '../assets/projects/payouts-uplift/payouts uplift - work card image.png'
+import shopBalanceImage from '../assets/projects/shop-balance/shop balance - work card image.png'
+import internationalCommerceImage from '../assets/projects/international-commerce/international commerce - work card image.png'
+import listeningRoomImage from '../assets/projects/Listening Room/listening room - work card image.png'
 import currentRibbon from '../assets/current ribbon.svg'
 import shopifyIcon from '../assets/shopify-icon.svg'
 import searchEyeIcon from '../assets/searcheye icon.svg'
-import tdIcon from '../assets/td icon.svg'
 import flowOfFundsVideo from '../assets/projects/payouts-uplift/payouts uplift final video.MP4'
+import designSystemVideo from '../assets/projects/design-system/Design System Final Video.MP4'
+import internationalCommerceVideo from '../assets/projects/international-commerce/International Commerce Final video.MP4'
+import shopBalanceVideo from '../assets/projects/shop-balance/Shop Balance final video.MP4'
+import listeningRoomVideo from '../assets/projects/Listening Room/Listening Room final video.MP4'
 
-function SwipeCard({ children, onSwipe, onTap }) {
+const SwipeCard = forwardRef(function SwipeCard({ children, onSwipe, onTap, onDragStart: onDragStartProp }, ref) {
   const x = useMotionValue(0)
   const rotate = useTransform(x, [-200, 200], [-15, 15])
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0])
-  const dragStartRef = useRef(null)
 
-  const handleDragStart = (_, info) => {
-    dragStartRef.current = { x: info.point.x, y: info.point.y }
+  useImperativeHandle(ref, () => ({
+    triggerSwipe() {
+      return animate(x, -400, {
+        type: 'spring',
+        stiffness: 80,
+        damping: 20,
+      }).then(() => onSwipe())
+    },
+  }))
+
+  const handleDragStart = () => {
+    onDragStartProp?.()
   }
 
   const handleDragEnd = (_, info) => {
@@ -32,11 +44,6 @@ function SwipeCard({ children, onSwipe, onTap }) {
       animate(x, exitX, { duration: 0.3 }).then(() => onSwipe())
     } else {
       animate(x, 0, { type: 'spring', stiffness: 500, damping: 30 })
-      if (dragStartRef.current) {
-        const dx = Math.abs(info.point.x - dragStartRef.current.x)
-        const dy = Math.abs(info.point.y - dragStartRef.current.y)
-        if (dx < 5 && dy < 5 && onTap) onTap()
-      }
     }
   }
 
@@ -48,30 +55,41 @@ function SwipeCard({ children, onSwipe, onTap }) {
       style={{ x, rotate, opacity }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onTap={onTap}
     >
       {children}
     </motion.div>
   )
-}
+})
+
+const AUTO_SWIPE_INTERVAL = 10000
 
 function ProjectsGrid() {
   const [projects, setProjects] = useState([])
   const [cardOrder, setCardOrder] = useState([0, 1, 2, 3, 4])
   const [isMobile, setIsMobile] = useState(false)
+  const [desktopHoverIndex, setDesktopHoverIndex] = useState(null)
   const [selectedProject, setSelectedProject] = useState(null)
   const [cardRect, setCardRect] = useState(null)
   const stackRef = useRef(null)
+  const swipeCardRef = useRef(null)
+  const autoSwipeTimerRef = useRef(null)
+  const userInteractedRef = useRef(false)
 
   const imageAssets = {
     designSystem: designSystemImage,
     flowOfFunds: flowOfFundsImage,
-    shopPayExperiments: shopPayExperimentsImage,
-    tdInventory: tdInventoryImage,
+    shopBalance: shopBalanceImage,
     internationalCommerce: internationalCommerceImage,
+    listeningRoom: listeningRoomImage,
   }
 
   const videoAssets = {
+    designSystem: designSystemVideo,
     flowOfFunds: flowOfFundsVideo,
+    internationalCommerce: internationalCommerceVideo,
+    shopBalance: shopBalanceVideo,
+    listeningRoom: listeningRoomVideo,
   }
 
   const ribbonAssets = {
@@ -81,7 +99,6 @@ function ProjectsGrid() {
   const iconAssets = {
     shopify: shopifyIcon,
     searchEye: searchEyeIcon,
-    td: tdIcon,
   }
 
   const enrichProject = (project) => ({
@@ -108,7 +125,13 @@ function ProjectsGrid() {
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 640)
+      const mobile = window.innerWidth <= 640
+      setIsMobile(mobile)
+      if (mobile) {
+        setCardOrder([2, 0, 1, 3, 4])
+      } else {
+        setCardOrder([0, 1, 2, 3, 4])
+      }
     }
     checkMobile()
     window.addEventListener('resize', checkMobile)
@@ -150,11 +173,13 @@ function ProjectsGrid() {
     const setHoverIndex = (index) => {
       stack.style.setProperty('--hover-index', String(index))
       stack.dataset.cardHover = 'true'
+      if (!isMobile) setDesktopHoverIndex(index)
     }
 
     const clearHoverIndex = () => {
       stack.style.removeProperty('--hover-index')
       delete stack.dataset.cardHover
+      if (!isMobile) setDesktopHoverIndex(null)
     }
 
     const handlers = cards.map((card) => {
@@ -182,7 +207,7 @@ function ProjectsGrid() {
         card.removeEventListener('blur', onLeave)
       })
     }
-  }, [projects.length])
+  }, [projects.length, isMobile])
 
   const cycleStack = useCallback(() => {
     setCardOrder((prev) => {
@@ -191,6 +216,29 @@ function ProjectsGrid() {
       return next
     })
   }, [])
+
+  const handleUserInteraction = useCallback(() => {
+    userInteractedRef.current = true
+    clearInterval(autoSwipeTimerRef.current)
+  }, [])
+
+  useEffect(() => {
+    if (!isMobile) {
+      clearInterval(autoSwipeTimerRef.current)
+      return
+    }
+
+    autoSwipeTimerRef.current = setInterval(() => {
+      if (userInteractedRef.current) return
+      if (swipeCardRef.current) {
+        swipeCardRef.current.triggerSwipe()
+      } else {
+        cycleStack()
+      }
+    }, AUTO_SWIPE_INTERVAL)
+
+    return () => clearInterval(autoSwipeTimerRef.current)
+  }, [isMobile, cycleStack])
 
   const getMobileStackStyle = (orderPosition) => {
     if (!isMobile) return {}
@@ -226,6 +274,7 @@ function ProjectsGrid() {
                   project={enriched}
                   stackIndex={originalIndex}
                   isMobileStack={true}
+                  shouldAutoplay={false}
                   onSelect={orderPosition === 0 ? handleSelect : undefined}
                 />
               )
@@ -238,8 +287,10 @@ function ProjectsGrid() {
                 >
                   {orderPosition === 0 ? (
                     <SwipeCard
+                      ref={swipeCardRef}
                       onSwipe={cycleStack}
                       onTap={() => handleSelect(enriched, null)}
+                      onDragStart={handleUserInteraction}
                     >
                       {card}
                     </SwipeCard>
@@ -255,6 +306,7 @@ function ProjectsGrid() {
                 key={project.id}
                 project={enrichProject(project)}
                 stackIndex={index}
+                shouldAutoplay={index === desktopHoverIndex}
                 onSelect={handleSelect}
               />
             ))
