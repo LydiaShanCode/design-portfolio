@@ -275,15 +275,15 @@ function Navigation() {
       </nav>
 
       {/* Mobile bottom nav bar */}
-      <div className="fixed bottom-5 left-0 right-0 z-50 flex justify-center px-4 md:hidden">
-        <div className="inline-flex items-center gap-5 rounded-full border border-white/30 bg-white/60 px-6 py-2.5 shadow-lg backdrop-blur-xl">
+      <div className="fixed bottom-5 left-0 right-0 z-50 flex justify-center px-3 md:hidden">
+        <div className="inline-flex items-center gap-4 min-[400px]:gap-6 min-[480px]:gap-7 rounded-full border border-white/30 bg-white/60 px-5 min-[400px]:px-6 min-[480px]:px-8 py-3 min-[480px]:py-4 shadow-lg backdrop-blur-xl">
           {leftItems.map((item) =>
             item.isHash ? (
               <button
                 key={item.name}
                 type="button"
                 onClick={handleWorkClick}
-                className={`text-[13px] tracking-wide transition-colors ${
+                className={`text-[13px] min-[400px]:text-[14px] min-[480px]:text-[15px] tracking-wide transition-colors ${
                   isItemActive(item) ? 'font-medium text-[var(--color-primary)]' : 'text-[var(--color-primary)]/50'
                 }`}
               >
@@ -293,7 +293,7 @@ function Navigation() {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-[13px] tracking-wide transition-colors ${
+                className={`text-[13px] min-[400px]:text-[14px] min-[480px]:text-[15px] tracking-wide transition-colors ${
                   isItemActive(item) ? 'font-medium text-[var(--color-primary)]' : 'text-[var(--color-primary)]/50'
                 }`}
               >
@@ -302,7 +302,7 @@ function Navigation() {
             )
           )}
           <Link to="/" onClick={handleLogoClick} className="flex-shrink-0">
-            <img src={logo} alt="Home" className="block h-3.5 w-3.5" />
+            <img src={logo} alt="Home" className="block h-3.5 w-3.5 min-[480px]:h-4 min-[480px]:w-4" />
           </Link>
           {rightItems.map((item) =>
             item.isHash ? (
@@ -310,7 +310,7 @@ function Navigation() {
                 key={item.name}
                 type="button"
                 onClick={handleWorkClick}
-                className={`text-[13px] tracking-wide transition-colors ${
+                className={`text-[13px] min-[400px]:text-[14px] min-[480px]:text-[15px] tracking-wide transition-colors ${
                   isItemActive(item) ? 'font-medium text-[var(--color-primary)]' : 'text-[var(--color-primary)]/50'
                 }`}
               >
@@ -320,7 +320,7 @@ function Navigation() {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-[13px] tracking-wide transition-colors ${
+                className={`text-[13px] min-[400px]:text-[14px] min-[480px]:text-[15px] tracking-wide transition-colors ${
                   isItemActive(item) ? 'font-medium text-[var(--color-primary)]' : 'text-[var(--color-primary)]/50'
                 }`}
               >

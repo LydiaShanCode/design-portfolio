@@ -21,6 +21,7 @@ const SwipeCard = forwardRef(function SwipeCard({ children, onSwipe, onTap, onDr
   const x = useMotionValue(0)
   const rotate = useTransform(x, [-200, 200], [-15, 15])
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0])
+  const hasDraggedRef = useRef(false)
 
   useImperativeHandle(ref, () => ({
     triggerSwipe() {
@@ -33,6 +34,7 @@ const SwipeCard = forwardRef(function SwipeCard({ children, onSwipe, onTap, onDr
   }))
 
   const handleDragStart = () => {
+    hasDraggedRef.current = true
     onDragStartProp?.()
   }
 
@@ -45,6 +47,7 @@ const SwipeCard = forwardRef(function SwipeCard({ children, onSwipe, onTap, onDr
     } else {
       animate(x, 0, { type: 'spring', stiffness: 500, damping: 30 })
     }
+    setTimeout(() => { hasDraggedRef.current = false }, 0)
   }
 
   return (
@@ -56,6 +59,7 @@ const SwipeCard = forwardRef(function SwipeCard({ children, onSwipe, onTap, onDr
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onTap={onTap}
+      onClickCapture={(e) => { if (hasDraggedRef.current) e.stopPropagation() }}
     >
       {children}
     </motion.div>

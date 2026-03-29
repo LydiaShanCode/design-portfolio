@@ -83,12 +83,8 @@
   }
 }
 
-html {
-  overflow-x: clip;
-}
-
 body {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Global text color */

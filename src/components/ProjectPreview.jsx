@@ -26,7 +26,10 @@ function ProjectPreview({ project, cardRect, onClose }) {
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
 
+  useEffect(() => {
     const handleKey = (e) => {
       if (e.key === 'Escape') {
         if (passwordPhase === 'input' || passwordPhase === 'error') {
@@ -42,7 +45,6 @@ function ProjectPreview({ project, cardRect, onClose }) {
     const timer = setTimeout(() => setPhase('open'), 500)
 
     return () => {
-      document.body.style.overflow = ''
       window.removeEventListener('keydown', handleKey)
       clearTimeout(timer)
     }
