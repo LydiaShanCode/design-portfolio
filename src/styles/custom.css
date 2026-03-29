@@ -2998,7 +2998,7 @@ button.work-card {
 /* Resume page */
 .resume-page {
   min-height: 100vh;
-  padding: 120px 80px 80px;
+  padding: 120px 200px 80px;
   display: flex;
   justify-content: center;
 }
