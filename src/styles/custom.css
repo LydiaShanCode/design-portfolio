@@ -1145,7 +1145,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--color-bg) url('/src/assets/footer gradient.svg') center / cover no-repeat;
+  background: var(--color-bg) url('../assets/footer gradient.svg') center / cover no-repeat;
   padding: 160px 40px 40px;
 }
 
@@ -1191,6 +1191,7 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
+  width: fit-content;
 }
 
 .footer-link {
@@ -1205,6 +1206,15 @@ body {
 
 .footer-link:hover {
   opacity: 1;
+}
+
+button.footer-link {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
 }
 
 .footer-right {
@@ -2984,3 +2994,234 @@ button.work-card {
   color: var(--color-primary);
   opacity: 0.6;
 }
+
+/* Resume page */
+.resume-page {
+  min-height: 100vh;
+  padding: 120px 80px 80px;
+  display: flex;
+  justify-content: center;
+}
+
+.resume-shell {
+  width: min(var(--max-w-content), 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.resume-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.resume-label {
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-primary);
+}
+
+.resume-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.resume-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  opacity: 1;
+  transition: opacity 200ms ease;
+}
+
+.resume-action:hover {
+  opacity: 1;
+}
+
+.resume-pages {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.resume-page-card {
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.react-pdf__Document {
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+}
+
+.resume-page-card .react-pdf__Page {
+  display: block;
+}
+
+.resume-page-card .react-pdf__Page__canvas {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+}
+
+@media (max-width: 768px) {
+  .resume-page {
+    padding: 72px 16px 60px;
+  }
+}
+
+/* ── About Page ── */
+.about-page {
+  min-height: 100vh;
+  padding: 120px 5vw 100px;
+  display: flex;
+  justify-content: center;
+}
+
+.about-content {
+  width: min(380px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+
+/* Left column: card group */
+.about-card-group {
+  position: relative;
+  flex-shrink: 0;
+  width: 260px;
+  height: fit-content;
+  cursor: default;
+}
+
+/* Drawings layer — absolutely positioned, fans out behind the card */
+.about-drawings {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.about-drawing {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  width: 260px;
+  height: auto;
+  transform-origin: bottom center;
+  transform: rotate(0deg) translate(0px, 0px);
+  opacity: 0;
+  transition: transform 420ms var(--ease-dramatic), opacity 320ms ease;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+.about-drawing--placeholder {
+  width: 180px;
+  height: 240px;
+  background: rgba(0, 29, 217, 0.06);
+  border-radius: var(--radius-sm);
+}
+
+.about-drawings-label {
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 8px;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  opacity: 0;
+  white-space: normal;
+  width: 60px;
+  text-align: center;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  transition: opacity 300ms ease 240ms;
+  pointer-events: none;
+}
+
+/* Polaroid photo card */
+.about-photo-card {
+  position: relative;
+  width: 100%;
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 8px 8px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  z-index: 10;
+}
+
+.about-photo {
+  width: 100%;
+  height: 290px;
+  object-fit: cover;
+  border-radius: calc(var(--radius-lg) - 6px);
+  display: block;
+  min-height: 0;
+}
+
+.about-photo--placeholder {
+  background: rgba(0, 29, 217, 0.06);
+  border-radius: calc(var(--radius-lg) - 6px);
+  flex: 1;
+  min-height: 0;
+}
+
+.about-photo-label {
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  color: var(--color-primary);
+  text-align: left;
+  margin-top: 10px;
+  line-height: 1;
+  padding-left: 2px;
+}
+
+/* Bio */
+.about-bio {
+  width: 100%;
+}
+
+.about-bio p {
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--color-primary);
+  margin-bottom: 20px;
+  width: 100%;
+  letter-spacing: -0.5px;
+}
+
+.about-quote {
+  font-family: 'Geist', sans-serif;
+  font-size: 14px;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--color-primary);
+  border: none;
+  padding: 0;
+  margin: 0;
+  line-height: 1.4;
+  opacity: 1;
+  width: 260px;
+  align-self: flex-start;
+}
+

@@ -9,7 +9,9 @@ import Play from './components/Play'
 import WaterCanvas from './components/WaterCanvas'
 import CustomCursor from './components/CustomCursor'
 import ComingSoon from './components/ComingSoon'
+import Resume from './components/Resume'
 import ProjectPage from './components/ProjectPage'
+import About from './components/About'
 
 function Home() {
   return (
@@ -60,8 +62,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/play" element={<Play />} />
           <Route path="/project/:slug" element={<ProjectPage />} />
-          <Route path="/about" element={<ComingSoon />} />
-          <Route path="/resume" element={<ComingSoon />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/resume" element={<Resume />} />
         </Routes>
         <Footer />
         </div>

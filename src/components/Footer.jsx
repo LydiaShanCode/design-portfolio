@@ -3,6 +3,8 @@ import Postcard from './Postcard'
 import fishOpenRaw from '../assets/fish open.svg?raw'
 import arenaIcon from '../assets/arena-icon.svg'
 
+const CONTACT_EMAIL = 'lydiashan.c@gmail.com'
+
 function Footer() {
   const [showSwimFish, setShowSwimFish] = useState(false)
   const [fishDiving, setFishDiving] = useState(false)
@@ -20,6 +22,22 @@ function Footer() {
     setShowSwimFish(isReady)
     if (!isReady) {
       setFishDiving(false)
+    }
+  }
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(CONTACT_EMAIL)
+    } catch {
+      const ta = document.createElement('textarea')
+      ta.value = CONTACT_EMAIL
+      ta.setAttribute('readonly', '')
+      ta.style.position = 'fixed'
+      ta.style.left = '-9999px'
+      document.body.appendChild(ta)
+      ta.select()
+      document.execCommand('copy')
+      document.body.removeChild(ta)
     }
   }
 
@@ -77,6 +95,18 @@ function Footer() {
             Thanks for stopping by
           </h2>
           <div className="footer-links">
+            <button
+              type="button"
+              className="footer-link"
+              data-hoverable
+              onClick={copyEmail}
+              aria-label={`Copy email address ${CONTACT_EMAIL}`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+            </button>
             {socialLinks.map((link) => (
               <a
                 key={link.name}

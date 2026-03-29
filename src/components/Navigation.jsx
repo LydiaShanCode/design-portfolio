@@ -14,7 +14,7 @@ function Navigation() {
     { name: 'Work', href: '/#work', isHash: true },
     { name: 'Play', href: '/play', isHash: false },
     { name: 'About', href: '/about', isHash: false },
-    { name: 'CV', href: '/resume', isHash: false },
+    { name: 'Resume', href: '/resume', isHash: false },
   ]
   const leftItems = menuItems.slice(0, 2)
   const rightItems = menuItems.slice(2)
