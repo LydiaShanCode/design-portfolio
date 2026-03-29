@@ -17,7 +17,7 @@ import internationalCommerceVideo from '../assets/projects/international-commerc
 import shopBalanceVideo from '../assets/projects/shop-balance/Shop Balance final video.MP4'
 import listeningRoomVideo from '../assets/projects/Listening Room/Listening Room final video.MP4'
 
-const SwipeCard = forwardRef(function SwipeCard({ children, onSwipe, onTap, onDragStart: onDragStartProp }, ref) {
+const SwipeCard = forwardRef(function SwipeCard({ children, onSwipe, onDragStart: onDragStartProp }, ref) {
   const x = useMotionValue(0)
   const rotate = useTransform(x, [-200, 200], [-15, 15])
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0])
@@ -58,7 +58,6 @@ const SwipeCard = forwardRef(function SwipeCard({ children, onSwipe, onTap, onDr
       style={{ x, rotate, opacity }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onTap={onTap}
       onClickCapture={(e) => { if (hasDraggedRef.current) e.stopPropagation() }}
     >
       {children}
@@ -293,7 +292,6 @@ function ProjectsGrid() {
                     <SwipeCard
                       ref={swipeCardRef}
                       onSwipe={cycleStack}
-                      onTap={() => handleSelect(enriched, null)}
                       onDragStart={handleUserInteraction}
                     >
                       {card}

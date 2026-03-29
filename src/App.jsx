@@ -1,17 +1,17 @@
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import Navigation from './components/Navigation'
 import Hero from './components/Hero'
 import ProjectsGrid from './components/ProjectsGrid'
 import ActivityLog from './components/ActivityLog'
 import Footer from './components/Footer'
-import Play from './components/Play'
 import WaterCanvas from './components/WaterCanvas'
 import CustomCursor from './components/CustomCursor'
-import ComingSoon from './components/ComingSoon'
-import Resume from './components/Resume'
-import ProjectPage from './components/ProjectPage'
-import About from './components/About'
+
+const Play = lazy(() => import('./components/Play'))
+const Resume = lazy(() => import('./components/Resume'))
+const ProjectPage = lazy(() => import('./components/ProjectPage'))
+const About = lazy(() => import('./components/About'))
 
 function Home() {
   return (
@@ -58,14 +58,16 @@ function App() {
         <ScrollToHash />
         <ScrollToTopOnNavigate />
         <div className="relative z-40">
-          <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/play" element={<Play />} />
-          <Route path="/project/:slug" element={<ProjectPage />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/resume" element={<Resume />} />
-        </Routes>
-        <Footer />
+          <Suspense fallback={null}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/play" element={<Play />} />
+              <Route path="/project/:slug" element={<ProjectPage />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/resume" element={<Resume />} />
+            </Routes>
+          </Suspense>
+          <Footer />
         </div>
       </div>
     </Router>

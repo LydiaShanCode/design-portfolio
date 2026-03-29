@@ -15,4 +15,15 @@ export default defineConfig(({ command }) => ({
       '@src': path.resolve(__dirname, 'src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-pdf': ['react-pdf', 'pdfjs-dist'],
+          'vendor-motion': ['framer-motion'],
+        },
+      },
+    },
+  },
 }))
