@@ -236,21 +236,7 @@ function Play() {
                     {activeItem.typeLabel && <><span className="play-modal-title-dot">·</span>{activeItem.typeLabel}</>}
                   </span>
                 </div>
-                {activeItem.href && (
-                  <a
-                    href={activeItem.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="play-modal-try-link"
-                    data-hoverable
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    Try it yourself
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" width="12" height="12" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                    </svg>
-                  </a>
-                )}
+              
               </div>
               <div className="play-modal-content">{renderModalContent(activeItem)}</div>
             </div>

@@ -284,8 +284,9 @@ function Navigation() {
                 type="button"
                 onClick={handleWorkClick}
                 className={`text-[13px] min-[400px]:text-[14px] min-[480px]:text-[15px] tracking-wide transition-colors ${
-                  isItemActive(item) ? 'font-medium text-[var(--color-primary)]' : 'text-[var(--color-primary)]/50'
+                  isItemActive(item) ? 'font-medium' : 'opacity-40'
                 }`}
+                style={{ color: 'var(--color-primary)' }}
               >
                 {item.name}
               </button>
@@ -294,8 +295,9 @@ function Navigation() {
                 key={item.name}
                 to={item.href}
                 className={`text-[13px] min-[400px]:text-[14px] min-[480px]:text-[15px] tracking-wide transition-colors ${
-                  isItemActive(item) ? 'font-medium text-[var(--color-primary)]' : 'text-[var(--color-primary)]/50'
+                  isItemActive(item) ? 'font-medium' : 'opacity-40'
                 }`}
+                style={{ color: 'var(--color-primary)' }}
               >
                 {item.name}
               </Link>
@@ -311,8 +313,9 @@ function Navigation() {
                 type="button"
                 onClick={handleWorkClick}
                 className={`text-[13px] min-[400px]:text-[14px] min-[480px]:text-[15px] tracking-wide transition-colors ${
-                  isItemActive(item) ? 'font-medium text-[var(--color-primary)]' : 'text-[var(--color-primary)]/50'
+                  isItemActive(item) ? 'font-medium' : 'opacity-40'
                 }`}
+                style={{ color: 'var(--color-primary)' }}
               >
                 {item.name}
               </button>
@@ -321,8 +324,9 @@ function Navigation() {
                 key={item.name}
                 to={item.href}
                 className={`text-[13px] min-[400px]:text-[14px] min-[480px]:text-[15px] tracking-wide transition-colors ${
-                  isItemActive(item) ? 'font-medium text-[var(--color-primary)]' : 'text-[var(--color-primary)]/50'
+                  isItemActive(item) ? 'font-medium' : 'opacity-40'
                 }`}
+                style={{ color: 'var(--color-primary)' }}
               >
                 {item.name}
               </Link>

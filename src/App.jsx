@@ -1,5 +1,7 @@
 import { useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+// import { DialRoot } from 'dialkit'
+// import 'dialkit/styles.css'
 import Navigation from './components/Navigation'
 import Hero from './components/Hero'
 import ProjectsGrid from './components/ProjectsGrid'
@@ -7,6 +9,7 @@ import ActivityLog from './components/ActivityLog'
 import Footer from './components/Footer'
 import WaterCanvas from './components/WaterCanvas'
 import CustomCursor from './components/CustomCursor'
+import { Analytics } from '@vercel/analytics/react'
 
 const Play = lazy(() => import('./components/Play'))
 const Resume = lazy(() => import('./components/Resume'))
@@ -51,6 +54,8 @@ function ScrollToTopOnNavigate() {
 function App() {
   return (
     <Router basename={import.meta.env.BASE_URL}>
+      {/* <DialRoot /> */}
+      <Analytics />
       <div className="min-h-screen bg-white">
         <CustomCursor />
         <WaterCanvas />

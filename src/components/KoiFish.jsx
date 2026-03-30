@@ -15,45 +15,25 @@ function KoiFish() {
   const [animatedFrame, setAnimatedFrame] = useState('')
   const loadingCharIndexRef = useRef(0)
 
-  // Load frames progressively - show first frame immediately
-  // Load all frames 000-197 (all consecutive)
   useEffect(() => {
-    const loadFrames = async () => {
-      const loadedFrames = []
-      let firstFrameLoaded = false
-      
-      // Load all frames 000-197
-      for (let i = 0; i <= 197; i++) {
-        const frameNumber = i.toString().padStart(3, '0')
-        try {
-          // Use dynamic import with ?raw query for Vite
-          const frameModule = await import(`../assets/koi-frames/frame-${frameNumber}.txt?raw`)
-          const frameContent = frameModule.default
-          loadedFrames.push(frameContent)
-          
-          // Show first frame immediately
-          if (!firstFrameLoaded && frameContent) {
-            setFirstFrame(frameContent)
-            setAnimatedFrame(frameContent)
-            firstFrameLoaded = true
-          }
-          
-          // Update frames array as we load
-          setFrames([...loadedFrames])
-        } catch (error) {
-          console.warn(`Error loading frame-${frameNumber}.txt:`, error)
-          loadedFrames.push('') // Empty frame as fallback
-          setFrames([...loadedFrames])
-        }
-      }
-      
-      // Add delay to show loading animation longer
-      setTimeout(() => {
-        setIsLoading(false)
-      }, 1500) // 1.5 second delay to see the transition
-    }
+    const framePromises = Array.from({ length: 198 }, (_, i) => {
+      const num = i.toString().padStart(3, '0')
+      return import(`../assets/koi-frames/frame-${num}.txt?raw`)
+        .then((m) => m.default)
+        .catch(() => '')
+    })
 
-    loadFrames()
+    framePromises[0].then((content) => {
+      if (content) {
+        setFirstFrame(content)
+        setAnimatedFrame(content)
+      }
+    })
+
+    Promise.all(framePromises).then((allFrames) => {
+      setFrames(allFrames)
+      setIsLoading(false)
+    })
   }, [])
 
   // Subtle animation on first frame while loading
@@ -138,6 +118,7 @@ function KoiFish() {
           className="koi-fish absolute top-1/2 left-1/2"
           style={{
             fontFamily: "'Courier New', monospace",
+            fontWeight: 700,
             whiteSpace: 'pre',
             fontSize: 'clamp(8px, 1.4vw, 12px)',
             lineHeight: '1',

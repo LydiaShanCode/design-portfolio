@@ -142,7 +142,7 @@ function Footer() {
           )}
         </div>
       </div>
-      <p className="footer-copyright">© 2026 — Lydia Shan</p>
+      <p className="footer-copyright">© 2026 — coded by me and Claude Code</p>
     </footer>
   )
 }

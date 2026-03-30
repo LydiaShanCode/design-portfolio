@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from 'react'
-import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
+import { useEffect, useRef, useState, useCallback } from 'react'
+import { useDialKit } from 'dialkit'
 import ProjectCard from './ProjectCard'
 import ProjectPreview from './ProjectPreview'
 import projectsFromMd from '../data/projectLoader'
@@ -17,56 +17,6 @@ import internationalCommerceVideo from '../assets/projects/international-commerc
 import shopBalanceVideo from '../assets/projects/shop-balance/Shop Balance final video.MP4'
 import listeningRoomVideo from '../assets/projects/Listening Room/Listening Room final video.MP4'
 
-const SwipeCard = forwardRef(function SwipeCard({ children, onSwipe, onDragStart: onDragStartProp }, ref) {
-  const x = useMotionValue(0)
-  const rotate = useTransform(x, [-200, 200], [-15, 15])
-  const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0])
-  const hasDraggedRef = useRef(false)
-
-  useImperativeHandle(ref, () => ({
-    triggerSwipe() {
-      return animate(x, -400, {
-        type: 'spring',
-        stiffness: 80,
-        damping: 20,
-      }).then(() => onSwipe())
-    },
-  }))
-
-  const handleDragStart = () => {
-    hasDraggedRef.current = true
-    onDragStartProp?.()
-  }
-
-  const handleDragEnd = (_, info) => {
-    const offsetThreshold = 100
-    const velocityThreshold = 500
-    if (Math.abs(info.offset.x) > offsetThreshold || Math.abs(info.velocity.x) > velocityThreshold) {
-      const exitX = info.offset.x > 0 ? 400 : -400
-      animate(x, exitX, { duration: 0.3 }).then(() => onSwipe())
-    } else {
-      animate(x, 0, { type: 'spring', stiffness: 500, damping: 30 })
-    }
-    setTimeout(() => { hasDraggedRef.current = false }, 0)
-  }
-
-  return (
-    <motion.div
-      drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.9}
-      style={{ x, rotate, opacity }}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onClickCapture={(e) => { if (hasDraggedRef.current) e.stopPropagation() }}
-    >
-      {children}
-    </motion.div>
-  )
-})
-
-const AUTO_SWIPE_INTERVAL = 10000
-
 function ProjectsGrid() {
   const [projects, setProjects] = useState([])
   const [cardOrder, setCardOrder] = useState([0, 1, 2, 3, 4])
@@ -74,10 +24,37 @@ function ProjectsGrid() {
   const [desktopHoverIndex, setDesktopHoverIndex] = useState(null)
   const [selectedProject, setSelectedProject] = useState(null)
   const [cardRect, setCardRect] = useState(null)
+  const [swipingIndex, setSwipingIndex] = useState(null)
   const stackRef = useRef(null)
-  const swipeCardRef = useRef(null)
   const autoSwipeTimerRef = useRef(null)
   const userInteractedRef = useRef(false)
+  const pausedRef = useRef(false)
+  const animatedCycleRef = useRef(null)
+
+  const dial = useDialKit('Card Stack', {
+    exit: {
+      _collapsed: true,
+      travelDistance: [-70, -300, 0],
+      rotationZ: [-8, -30, 30],
+      scaleOut: [0.95, 0.5, 1.2],
+      spring: { type: 'spring', visualDuration: 0.45, bounce: 0.25 },
+    },
+    entrance: {
+      _collapsed: true,
+      delay: [0.05, 0, 0.5],
+      spring: { type: 'spring', stiffness: 200, damping: 25, mass: 4.2 },
+    },
+    timing: {
+      _collapsed: true,
+      interval: [5, 1, 15, 0.5],
+    },
+    paused: false,
+    cycle: { type: 'action', label: 'Cycle Now' },
+  }, {
+    onAction: (action) => {
+      if (action === 'cycle') animatedCycleRef.current?.()
+    },
+  })
 
   const imageAssets = {
     designSystem: designSystemImage,
@@ -113,9 +90,12 @@ function ProjectsGrid() {
   })
 
   const handleSelect = useCallback((project, rect) => {
+    if (swipingIndex !== null) return
     setCardRect(rect)
     setSelectedProject(project)
-  }, [])
+    userInteractedRef.current = true
+    clearInterval(autoSwipeTimerRef.current)
+  }, [swipingIndex])
 
   const handleClosePreview = useCallback(() => {
     setSelectedProject(null)
@@ -220,10 +200,29 @@ function ProjectsGrid() {
     })
   }, [])
 
-  const handleUserInteraction = useCallback(() => {
-    userInteractedRef.current = true
-    clearInterval(autoSwipeTimerRef.current)
-  }, [])
+  const swipingRef = useRef(false)
+
+  const exitDurationMs = (dial.exit.spring.visualDuration || 0.4) * 1000
+
+  const animatedCycle = useCallback(() => {
+    if (swipingRef.current || dial.paused) return
+    swipingRef.current = true
+    setSwipingIndex(cardOrder[0])
+
+    setTimeout(() => {
+      cycleStack()
+      requestAnimationFrame(() => {
+        setSwipingIndex(null)
+        swipingRef.current = false
+      })
+    }, exitDurationMs + 50)
+  }, [cycleStack, cardOrder, exitDurationMs, dial.paused])
+
+  animatedCycleRef.current = animatedCycle
+
+  useEffect(() => {
+    pausedRef.current = dial.paused
+  }, [dial.paused])
 
   useEffect(() => {
     if (!isMobile) {
@@ -231,27 +230,24 @@ function ProjectsGrid() {
       return
     }
 
+    const intervalMs = dial.timing.interval * 1000
     autoSwipeTimerRef.current = setInterval(() => {
-      if (userInteractedRef.current) return
-      if (swipeCardRef.current) {
-        swipeCardRef.current.triggerSwipe()
-      } else {
-        cycleStack()
-      }
-    }, AUTO_SWIPE_INTERVAL)
+      if (userInteractedRef.current || pausedRef.current) return
+      animatedCycle()
+    }, intervalMs)
 
     return () => clearInterval(autoSwipeTimerRef.current)
-  }, [isMobile, cycleStack])
+  }, [isMobile, animatedCycle, dial.timing.interval])
 
   const getMobileStackStyle = (orderPosition) => {
     if (!isMobile) return {}
 
-    const rotations = [0, -3, 4, -2, 3]
-    const scale = 1 - orderPosition * 0.03
+    const rotations = [0, -2, 3, -1.5, 2]
+    const scale = 1 - orderPosition * 0.02
     const zIndex = 10 - orderPosition
-    const peekOffset = 12
+    const peekOffset = 8
     const translateX = orderPosition === 0 ? 0 : (orderPosition % 2 === 1 ? -1 : 1) * Math.ceil(orderPosition / 2) * peekOffset
-    const translateY = orderPosition === 0 ? 0 : Math.ceil(orderPosition / 2) * 4
+    const translateY = orderPosition === 0 ? 0 : Math.ceil(orderPosition / 2) * 3
 
     return {
       '--mobile-scale': scale,
@@ -282,23 +278,23 @@ function ProjectsGrid() {
                 />
               )
 
+              const isSwiping = originalIndex === swipingIndex
+
               return (
                 <div
                   key={project.id}
-                  className={`work-card-mobile-wrapper ${orderPosition === 0 ? 'work-card-mobile-wrapper--top' : ''}`}
-                  style={getMobileStackStyle(orderPosition)}
+                  className={`work-card-mobile-wrapper ${orderPosition === 0 ? 'work-card-mobile-wrapper--top' : ''} ${isSwiping ? 'work-card-mobile-wrapper--swiping' : ''}`}
+                  style={{
+                    ...getMobileStackStyle(orderPosition),
+                    '--swipe-x': `${dial.exit.travelDistance}vw`,
+                    '--swipe-rotate': `${dial.exit.rotationZ}deg`,
+                    '--swipe-scale': dial.exit.scaleOut,
+                    '--exit-duration': `${(dial.exit.spring.visualDuration || 0.4) * 1000}ms`,
+                    '--entrance-duration': `${(dial.entrance.spring.visualDuration || 0.35) * 1000}ms`,
+                    '--entrance-delay': `${(dial.entrance.delay || 0) * 1000}ms`,
+                  }}
                 >
-                  {orderPosition === 0 ? (
-                    <SwipeCard
-                      ref={swipeCardRef}
-                      onSwipe={cycleStack}
-                      onDragStart={handleUserInteraction}
-                    >
-                      {card}
-                    </SwipeCard>
-                  ) : (
-                    card
-                  )}
+                  {card}
                 </div>
               )
             })
