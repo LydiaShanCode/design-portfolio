@@ -108,12 +108,12 @@ function ProjectsGrid() {
   useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth <= 640
-      setIsMobile(mobile)
-      if (mobile) {
-        setCardOrder([2, 0, 1, 3, 4])
-      } else {
-        setCardOrder([0, 1, 2, 3, 4])
-      }
+      setIsMobile((prev) => {
+        if (mobile !== prev) {
+          setCardOrder(mobile ? [2, 0, 1, 3, 4] : [0, 1, 2, 3, 4])
+        }
+        return mobile
+      })
     }
     checkMobile()
     window.addEventListener('resize', checkMobile)

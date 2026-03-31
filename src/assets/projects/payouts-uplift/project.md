@@ -50,7 +50,7 @@ team:
 
 Shopify is known for its seamless online checkout, but the merchant payout experience lagged behind. With the expansion to dual payment processors (Stripe and PayPal), payout complexity was set to double, requiring a stronger foundation that clearly shows where money comes from, when it arrives, and how merchants can forecast cash flow with confidence. You can see this in the audit below.
 
-![](./payouts uplift audit video compressed.mp4)
+![](<./payouts uplift audit video compressed.mp4>)
 
 > On April 30, I got 2 payouts instead of 1. And just today, May 2, I got a payout for 2 transactions…and its causing me a lot of bookkeeping issues.
 
