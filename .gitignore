@@ -26,3 +26,6 @@ dist-ssr
 # Large video files (>100MB) — keep locally, host externally for prod
 src/assets/projects/payouts-uplift/payouts uplift audit video (1).mp4
 src/assets/projects/payouts-uplift/Screen Recording*
+# Compressed version is tracked (9.9MB)
+.vercel
+.env*.local

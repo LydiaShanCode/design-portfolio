@@ -93,7 +93,6 @@ function ProjectsGrid() {
     if (swipingIndex !== null) return
     setCardRect(rect)
     setSelectedProject(project)
-    userInteractedRef.current = true
     clearInterval(autoSwipeTimerRef.current)
   }, [swipingIndex])
 
@@ -232,7 +231,7 @@ function ProjectsGrid() {
 
     const intervalMs = dial.timing.interval * 1000
     autoSwipeTimerRef.current = setInterval(() => {
-      if (userInteractedRef.current || pausedRef.current) return
+      if (pausedRef.current) return
       animatedCycle()
     }, intervalMs)
 
