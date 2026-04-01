@@ -72,11 +72,11 @@ function Hero() {
         </p>
         <div>
           <Chip
-            href="https://www.instagram.com/p/DR2ZgRXjlw1/?img_index=1"
+            href="https://djae.vercel.app/"
             icon={<ArrowUpRightIcon />}
             className="hidden sm:inline-flex border-blue-300 px-[10px] py-1 text-[12px]"
           >
-            Sometimes making music
+            Recently: building a dj app
           </Chip>
         </div>
       </div>

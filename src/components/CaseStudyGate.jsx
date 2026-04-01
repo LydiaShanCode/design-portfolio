@@ -39,10 +39,6 @@ function CaseStudyGate({ slug, onUnlock, children }) {
   return (
     <div className="case-study-gate">
       <form className="case-study-gate-form" onSubmit={handleSubmit} noValidate>
-        <span className="case-study-gate-label">Password required</span>
-        <p className="case-study-gate-hint">
-          This case study is under NDA. Enter the password to read the full writeup.
-        </p>
         <div className={`case-study-gate-row ${shake ? 'case-study-gate-row--shake' : ''}`}>
           <input
             type="password"

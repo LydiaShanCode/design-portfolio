@@ -99,11 +99,20 @@ function ProjectPreview({ project, cardRect, onClose }) {
     siteUrl,
   } = project
 
+  const resetMobileZoom = () => {
+    const viewport = document.querySelector('meta[name="viewport"]')
+    if (!viewport) return
+    const original = viewport.getAttribute('content')
+    viewport.setAttribute('content', original + ', maximum-scale=1')
+    setTimeout(() => viewport.setAttribute('content', original), 300)
+  }
+
   const handlePasswordSubmit = (e) => {
     e.preventDefault()
     if (passwordValue === CORRECT_PASSWORD) {
       sessionStorage.setItem(sessionKey(slug), '1')
       setPasswordPhase('unlocked')
+      resetMobileZoom()
       setTimeout(() => navigate(`/project/${slug}`), 600)
     } else {
       setPasswordPhase('error')

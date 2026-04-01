@@ -121,10 +121,12 @@ function ActivityLog() {
         const data = parseCSV(csv)
     // Sort by date (newest first)
         const sorted = data.sort((a, b) => {
-          const dateA = new Date(a.Date || 0)
-          const dateB = new Date(b.Date || 0)
-          return dateB - dateA
-    })
+          const dateA = a.Date ? new Date(a.Date) : new Date(0)
+          const dateB = b.Date ? new Date(b.Date) : new Date(0)
+          const timeA = isNaN(dateA.getTime()) ? 0 : dateA.getTime()
+          const timeB = isNaN(dateB.getTime()) ? 0 : dateB.getTime()
+          return timeB - timeA
+        })
     setActivities(sorted)
         setLoading(false)
       })
