@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
+import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion'
+import Badge from './ui/Badge'
+import TextScrub from './TextScrub'
 
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTPY6pk7hcjpXCTIuNj1N98xJmSNIBnM8g0qLoQSLEnq9bPBxfrL4m1ri1QE34SckjmmY8TbhCGPykg/pub?output=csv'
 
@@ -113,13 +116,25 @@ function ActivityLog() {
   const [activities, setActivities] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [hoveredImage, setHoveredImage] = useState(null)
+  const [hoveredIndex, setHoveredIndex] = useState(null)
+  const imageCacheRef = useRef({})
+
+  const mouseX = useMotionValue(-999)
+  const mouseY = useMotionValue(-999)
+  const springX = useSpring(mouseX, { stiffness: 150, damping: 20 })
+  const springY = useSpring(mouseY, { stiffness: 150, damping: 20 })
+
+  const handleMouseMove = useCallback((e) => {
+    mouseX.set(e.clientX)
+    mouseY.set(e.clientY)
+  }, [mouseX, mouseY])
 
   useEffect(() => {
     fetch(SHEET_URL)
       .then(res => res.text())
       .then(csv => {
         const data = parseCSV(csv)
-    // Sort by date (newest first)
         const sorted = data.sort((a, b) => {
           const dateA = a.Date ? new Date(a.Date) : new Date(0)
           const dateB = b.Date ? new Date(b.Date) : new Date(0)
@@ -127,8 +142,23 @@ function ActivityLog() {
           const timeB = isNaN(dateB.getTime()) ? 0 : dateB.getTime()
           return timeB - timeA
         })
-    setActivities(sorted)
+        setActivities(sorted)
         setLoading(false)
+
+        // Prefetch OG images for all linked activities via Microlink
+        sorted.forEach(activity => {
+          const link = activity.Link?.trim()
+          if (!link || imageCacheRef.current[link] !== undefined) return
+          imageCacheRef.current[link] = null // mark as fetching
+          fetch(`https://api.microlink.io/?url=${encodeURIComponent(link)}`)
+            .then(r => r.json())
+            .then(json => {
+              imageCacheRef.current[link] = json?.data?.image?.url || null
+            })
+            .catch(() => {
+              imageCacheRef.current[link] = null
+            })
+        })
       })
       .catch(err => {
         console.error('Failed to fetch activities:', err)
@@ -160,99 +190,148 @@ function ActivityLog() {
   }
 
   return (
-    <section id="activity-log" className="pt-10 pb-4 lg:py-20 px-4 bg-white overflow-x-hidden">
-      <div className="max-w-6xl mx-auto w-full">
-        {/* Top divider - desktop only */}
-        <div className="hidden lg:block border-t border-dashed border-current opacity-20 mb-12" />
-        
-        <div className="flex flex-col lg:flex-row lg:gap-12">
-          {/* Left heading */}
-          <h2 className="hidden lg:block text-3xl font-heading font-light lg:w-64 lg:flex-shrink-0">
-            RECENT ACTIVITIES
-          </h2>
+    <>
+      {/* Cursor-following image preview — desktop only */}
+      <AnimatePresence>
+        {hoveredImage && (
+          <motion.div
+            key="hover-preview"
+            initial={{ opacity: 0, scale: 0.88 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.88 }}
+            transition={{ duration: 0.18, ease: [0.22, 0.61, 0.36, 1] }}
+            style={{
+              x: springX,
+              y: springY,
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              pointerEvents: 'none',
+              zIndex: 9999,
+              translateX: '16px',
+              translateY: '-50%',
+            }}
+            className="hidden lg:block"
+          >
+            <img
+              src={hoveredImage}
+              alt=""
+              aria-hidden="true"
+              style={{
+                width: 220,
+                height: 140,
+                objectFit: 'cover',
+                borderRadius: 10,
+                boxShadow: '0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10)',
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <section
+        id="activity-log"
+        className="pt-10 pb-4 lg:py-20 px-4 bg-white overflow-x-hidden"
+        onMouseMove={handleMouseMove}
+      >
+        <div className="max-w-6xl mx-auto w-full">
+          {/* Top divider - desktop only */}
+          <div className="hidden lg:block border-t border-dashed border-current opacity-20 mb-12" />
           
-          {/* Activity list */}
-          <div className="flex-1 rounded-2xl border border-dashed border-current/20 p-4 lg:rounded-none lg:border-0 lg:p-0">
-            <p className="lg:hidden text-xs uppercase opacity-50 mb-3" style={{ letterSpacing: '-1px' }}>
-              Recently...
-            </p>
-            {activities.map((activity, index) => {
-              const tags = activity.Tags ? activity.Tags.split(',').map(t => t.trim()).filter(Boolean) : []
-              const hasLink = activity.Link && activity.Link.trim()
-              
-              const rowContent = (
-                <div className="py-3 text-xs overflow-hidden flex flex-col gap-2 lg:grid lg:grid-cols-[minmax(0,1.7fr)_140px_220px_120px_20px] lg:items-center lg:gap-x-6">
-                  {/* Icon + Group + Event */}
-                  <div className="flex items-start lg:items-center gap-3 min-w-0">
-                    <span className="hidden lg:block flex-shrink-0 relative mt-0.5 lg:mt-0">
-                      <DocumentIcon className="group-hover:opacity-0 transition-opacity duration-200" />
-                      <DocumentTextIcon className="absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                    </span>
-                    <div className="flex min-w-0 flex-1 items-start justify-between gap-4">
-                      <span className="min-w-0 break-words">
-                        {activity['Name of group'] && <span className="font-bold">{activity['Name of group']}, </span>}
-                        {activity['Community/Event'] || activity.Event || 'Untitled'}
+          <div className="flex flex-col lg:flex-row lg:gap-12">
+            {/* Left heading */}
+            <h2 className="hidden lg:block text-3xl font-heading font-light lg:w-64 lg:flex-shrink-0">
+              RECENT ACTIVITIES
+            </h2>
+            
+            {/* Activity list */}
+            <div className="flex-1 rounded-2xl border border-dashed border-current/20 p-4 lg:rounded-none lg:border-0 lg:p-0">
+              <p className="lg:hidden text-xs uppercase opacity-50 mb-3" style={{ letterSpacing: '-1px' }}>
+                Recently...
+              </p>
+              {activities.map((activity, index) => {
+                const tags = activity.Tags ? activity.Tags.split(',').map(t => t.trim()).filter(Boolean) : []
+                const hasLink = activity.Link && activity.Link.trim()
+                
+                const rowContent = (
+                  <div className="py-3 text-xs overflow-hidden flex flex-col gap-2 lg:grid lg:grid-cols-[minmax(0,1.7fr)_140px_220px_120px_20px] lg:items-center lg:gap-x-6">
+                    {/* Icon + Group + Event */}
+                    <div className="flex items-start lg:items-center gap-3 min-w-0">
+                      <span className="hidden lg:block flex-shrink-0 relative mt-0.5 lg:mt-0">
+                        <DocumentIcon className="group-hover:opacity-0 transition-opacity duration-200" />
+                        <DocumentTextIcon className="absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                       </span>
-                      <span className="flex flex-shrink-0 items-center gap-2 text-right whitespace-nowrap lg:hidden">
-                        <span>{formatDateShort(activity.Date)}</span>
-                        {hasLink && <ArrowUpRightIcon />}
-                      </span>
+                      <div className="flex min-w-0 flex-1 items-start justify-between gap-4">
+                        <span className="min-w-0 break-words activity-log-text-scrub">
+                          <TextScrub
+                            text={`${activity['Name of group'] ? activity['Name of group'] + ', ' : ''}${activity['Community/Event'] || activity.Event || 'Untitled'}`}
+                            active={hoveredIndex === index}
+                          />
+                        </span>
+                        <span className="flex flex-shrink-0 items-center gap-2 text-right whitespace-nowrap lg:hidden">
+                          <span>{formatDateShort(activity.Date)}</span>
+                          {hasLink && <ArrowUpRightIcon />}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Role */}
+                    <div className="hidden lg:block pl-8 lg:pl-0 activity-log-text-scrub">
+                      {activity.Role ? (
+                        <TextScrub text={activity.Role} active={hoveredIndex === index} />
+                      ) : ''}
+                    </div>
+                    
+                    {/* Tags */}
+                    <div className="hidden lg:flex flex-wrap items-center gap-2 pl-8 lg:pl-0">
+                    {tags.map((tag, tagIndex) => (
+                      <Badge key={tagIndex}>
+                        <span className="activity-log-text-scrub">
+                          <TextScrub text={tag} active={hoveredIndex === index} />
+                        </span>
+                      </Badge>
+                    ))}
+                    </div>
+                    
+                    {/* Date */}
+                    <div className="hidden lg:block pl-8 lg:pl-0 lg:text-right activity-log-text-scrub">
+                      <TextScrub text={formatDate(activity.Date)} active={hoveredIndex === index} />
+                    </div>
+                    
+                    {/* Arrow */}
+                    <div className="hidden lg:flex items-center justify-center">
+                      {hasLink && <ArrowUpRightIcon />}
                     </div>
                   </div>
-                  
-                  {/* Role */}
-                  <div className="hidden lg:block pl-8 lg:pl-0">
-                    {activity.Role || ''}
-                  </div>
-                  
-                  {/* Tags */}
-                  <div className="hidden lg:flex flex-wrap items-center gap-2 pl-8 lg:pl-0">
-                    {tags.map((tag, tagIndex) => (
-                      <span
-                        key={tagIndex}
-                        className="inline-flex items-center rounded-full border border-dashed border-gray-300 px-[10px] py-1 text-[12px] font-medium whitespace-nowrap"
+                )
+                
+                return (
+                  <div key={index} data-activity-row>
+                    {hasLink ? (
+                      <a
+                        href={activity.Link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group block hover:bg-gray-50 transition-colors duration-200 -mx-4 px-4 rounded-xl"
+                        data-hoverable
+                        onMouseEnter={() => { setHoveredImage(imageCacheRef.current[activity.Link.trim()] || null); setHoveredIndex(index) }}
+                        onMouseLeave={() => { setHoveredImage(null); setHoveredIndex(null) }}
                       >
-                        {tag}
-                      </span>
-                    ))}
+                        {rowContent}
+                      </a>
+                    ) : (
+                      <div className="group -mx-4 px-4 rounded-xl">
+                        {rowContent}
+                      </div>
+                    )}
                   </div>
-                  
-                  {/* Date */}
-                  <div className="hidden lg:block pl-8 lg:pl-0 lg:text-right">
-                    {formatDate(activity.Date)}
-                  </div>
-                  
-                  {/* Arrow */}
-                  <div className="hidden lg:flex items-center justify-center">
-                    {hasLink && <ArrowUpRightIcon />}
-                  </div>
-                </div>
-              )
-              
-              return (
-                <div key={index} data-activity-row>
-                  {hasLink ? (
-                    <a
-                      href={activity.Link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group block hover:bg-gray-50 transition-colors duration-200 -mx-4 px-4 rounded-xl"
-                      data-hoverable
-                    >
-                      {rowContent}
-                    </a>
-                  ) : (
-                    <div className="group -mx-4 px-4 rounded-xl">
-                      {rowContent}
-                </div>
-              )}
+                )
+              })}
             </div>
-              )
-            })}
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   )
 }
 

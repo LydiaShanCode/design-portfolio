@@ -1,6 +1,7 @@
 import KoiFish from './KoiFish'
 import DynamicTitle from './DynamicTitle'
 import Chip from './ui/Chip'
+import shopifyIcon from '../assets/shopify-icon.svg'
 
 const ArrowUpRightIcon = () => (
   <svg
@@ -46,35 +47,28 @@ function Hero() {
             <DynamicTitle />
           </div>
         </div>
-        <p className="hero-subtext body-text text-center mb-6 text-[14px] font-light sm:text-lg sm:font-normal lg:mb-4 lg:text-base">
-          <span className="sm:hidden">
-            Currently designing at{' '}
-            <a
-              href="https://www.shopify.com/ca/editions/winter2026"
-              className="body-text text-inherit no-underline hover:underline"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Shopify
-            </a>
-          </span>
-          <span className="hidden sm:inline">
-            Currently designing at{' '}
-            <a
-              href="https://www.shopify.com/ca/editions/winter2026"
-              className="body-text text-inherit no-underline hover:underline"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Shopify
-            </a>
-          </span>
+        <p className="hero-subtext body-text mb-6 flex flex-wrap items-baseline justify-center gap-x-1.5 text-center text-[14px] font-light sm:text-lg sm:font-normal lg:mb-4 lg:text-base">
+          <span>Currently designing at</span>
+          <a
+            href="https://www.shopify.com/ca/editions/winter2026"
+            className="inline-flex items-baseline gap-x-[5px] body-text text-inherit no-underline hover:underline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img
+              src={shopifyIcon}
+              alt=""
+              aria-hidden="true"
+              className="size-[0.95em] shrink-0 translate-y-[0.12em]"
+            />
+            Shopify
+          </a>
         </p>
         <div>
           <Chip
             href="https://djae.vercel.app/"
             icon={<ArrowUpRightIcon />}
-            className="hidden sm:inline-flex border-blue-300 px-[10px] py-1 text-[12px]"
+            className="hidden sm:inline-flex"
           >
             Recently: building a dj app
           </Chip>

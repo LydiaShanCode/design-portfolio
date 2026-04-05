@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 
-const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+const CHARS = 'abcdefghijklmnopqrstuvwxyz'
 
-function TextScrub({ text = "UDesign, Designathon. Hackathon Judge. Feb 28, 2026" }) {
+function TextScrub({ text = "UDesign, Designathon. Hackathon Judge. Feb 28, 2026", active }) {
   const [displayText, setDisplayText] = useState(text)
   const [isScrambling, setIsScrambling] = useState(false)
   const rafRef = useRef(null)
   const startTimeRef = useRef(0)
-  const duration = 600 // Total animation duration in ms
+  const duration = 800
 
   const scramble = useCallback(() => {
     if (rafRef.current) {
@@ -54,18 +54,27 @@ function TextScrub({ text = "UDesign, Designathon. Hackathon Judge. Feb 28, 2026
   }, [text])
 
   useEffect(() => {
+    if (active === undefined) return
+    if (active) {
+      scramble()
+    } else {
+      reset()
+    }
+  }, [active, scramble, reset])
+
+  useEffect(() => {
     return () => {
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current)
-  }
+      }
     }
   }, [])
 
   return (
     <div
       className="text-scrub-container"
-      onMouseEnter={scramble}
-      onMouseLeave={reset}
+      onMouseEnter={active === undefined ? scramble : undefined}
+      onMouseLeave={active === undefined ? reset : undefined}
     >
       <div className="text-scrub-wrapper">
         <span className={isScrambling ? 'scrambling' : ''}>

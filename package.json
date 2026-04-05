@@ -16,6 +16,7 @@
     "@fontsource/geist-mono": "latest",
     "@gsap/react": "^2.1.2",
     "@vercel/analytics": "^2.0.1",
+    "agentation": "^3.0.2",
     "dialkit": "^1.1.0",
     "framer-motion": "^12.34.3",
     "gray-matter": "^4.0.3",

@@ -17,7 +17,8 @@ const projects = Object.values(modules)
   .map((mod) => {
     const raw = typeof mod === 'string' ? mod : mod.default
     const { data, content } = parseFrontmatter(raw)
-    return { ...data, content: content.trim() }
+    const stripped = content.replace(/<!--[\s\S]*?-->/g, '')
+    return { ...data, content: stripped.trim() }
   })
   .sort((a, b) => a.id - b.id)
 

@@ -1,5 +1,6 @@
-import { useMemo, useState, Children, isValidElement } from 'react'
+import { useMemo, useState, useEffect, useCallback, Children, isValidElement } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import Markdown from 'react-markdown'
 import projectsFromMd from '../data/projectLoader'
 import IterationsViewer from './IterationsViewer'
@@ -73,7 +74,46 @@ const MODE_ICONS = {
   ),
 }
 
-function buildMarkdownComponents(slug, project) {
+function Lightbox({ src, onClose }) {
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  return (
+    <motion.div
+      className="lightbox-backdrop"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.15, ease: 'easeOut' }}
+      onClick={onClose}
+    >
+      <motion.img
+        src={src}
+        className="lightbox-img"
+        initial={{ opacity: 0, scale: 0.96 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.96 }}
+        transition={{ duration: 0.25, ease: [0.22, 0.61, 0.36, 1] }}
+        onClick={(e) => e.stopPropagation()}
+        draggable={false}
+      />
+      <button
+        className="lightbox-close"
+        onClick={onClose}
+        aria-label="Close image"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" width="18" height="18">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </motion.div>
+  )
+}
+
+function buildMarkdownComponents(slug, project, setLightboxSrc) {
   return {
     ul({ children }) {
       const arr = Children.toArray(children)
@@ -101,7 +141,7 @@ function buildMarkdownComponents(slug, project) {
           const rest = arr.slice(1).map((c) => (typeof c === 'string' ? c.replace(/^\s*—\s*/, '') : c))
           return (
             <div className="project-page-mode-row">
-              <span className="project-page-mode-chip btn-hover">
+              <span className="project-page-mode-chip">
                 {icon}
                 {label}
               </span>
@@ -112,7 +152,7 @@ function buildMarkdownComponents(slug, project) {
         const rest = arr.slice(1).map((c) => (typeof c === 'string' ? c.replace(/^\s*—\s*/, '') : c))
         return (
           <div className="project-page-issue">
-            <span className="project-page-issue-chip btn-hover">{label}</span>
+            <span className="project-page-issue-chip">{label}</span>
             <span className="project-page-issue-description">{rest}</span>
           </div>
         )
@@ -132,16 +172,8 @@ function buildMarkdownComponents(slug, project) {
       const resolved = resolveProjectAsset(src, slug)
       const isVideo = VIDEO_EXTENSIONS.test(src)
       const decodedSrc = decodeURIComponent(src || '')
-      const capSmallFigure =
-        !isVideo && /was it a success/i.test(decodedSrc)
       return (
-        <figure
-          className={
-            capSmallFigure
-              ? 'project-page-figure project-page-figure--cap-small'
-              : 'project-page-figure'
-          }
-        >
+        <figure className="project-page-figure">
           {isVideo ? (
             <video
               src={resolved}
@@ -152,7 +184,13 @@ function buildMarkdownComponents(slug, project) {
               className="project-page-figure-img"
             />
           ) : (
-            <img src={resolved} alt={alt || ''} className="project-page-figure-img" />
+            <img
+              src={resolved}
+              alt={alt || ''}
+              className="project-page-figure-img project-page-figure-img--zoomable"
+              onClick={() => setLightboxSrc(resolved)}
+              data-hoverable
+            />
           )}
           {alt ? <figcaption className="project-page-figcaption">{alt}</figcaption> : null}
         </figure>
@@ -246,6 +284,8 @@ function renderProjectContent(content, components) {
 function ProjectPage() {
   const { slug } = useParams()
   const [unlocked, setUnlocked] = useState(false)
+  const [lightboxSrc, setLightboxSrc] = useState(null)
+  const closeLightbox = useCallback(() => setLightboxSrc(null), [])
 
   const project = useMemo(() => {
     const raw = projectsFromMd.find((p) => p.slug === slug)
@@ -258,7 +298,7 @@ function ProjectPage() {
     }
   }, [slug])
 
-  const mdComponents = useMemo(() => buildMarkdownComponents(slug, project), [slug, project])
+  const mdComponents = useMemo(() => buildMarkdownComponents(slug, project, setLightboxSrc), [slug, project])
 
   const nextProject = useMemo(() => {
     const ready = projectsFromMd.filter((p) => p.caseStudyReady && p.slug !== slug)
@@ -281,6 +321,10 @@ function ProjectPage() {
   const hasContent = !!project.content
 
   return (
+    <>
+    <AnimatePresence>
+      {lightboxSrc && <Lightbox src={lightboxSrc} onClose={closeLightbox} />}
+    </AnimatePresence>
     <main className="project-page">
       <div className="project-page-inner">
         <div className="project-page-hero">
@@ -383,6 +427,7 @@ function ProjectPage() {
         )}
       </div>
     </main>
+    </>
   )
 }
 

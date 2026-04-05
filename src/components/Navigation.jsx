@@ -153,7 +153,7 @@ function Navigation() {
         style={{ pointerEvents: isVisible ? 'auto' : 'none' }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center h-16">
+          <div className="nav-bar-row scrollbar-hide flex w-full min-w-0 items-center overflow-x-auto h-16">
             {/* Tablet Logo (hidden on mobile, shown md to lg) */}
             <div className="hidden flex-shrink-0 md:block lg:hidden">
               <Link to="/" data-hoverable onClick={handleLogoClick}>

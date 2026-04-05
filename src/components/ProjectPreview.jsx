@@ -50,10 +50,11 @@ function ProjectPreview({ project, cardRect, onClose }) {
     }
   }, [handleClose, passwordPhase])
 
-  // Auto-focus the input when entering input phase
+  // Fallback focus in case autoFocus is suppressed (e.g. inside a modal/overlay).
   useEffect(() => {
-    if (passwordPhase === 'input' && inputRef.current) {
-      inputRef.current.focus()
+    if (passwordPhase === 'input') {
+      const id = setTimeout(() => inputRef.current?.focus(), 50)
+      return () => clearTimeout(id)
     }
   }, [passwordPhase])
 
@@ -176,7 +177,7 @@ function ProjectPreview({ project, cardRect, onClose }) {
           {lockIcon}
           <input
             ref={inputRef}
-            type="password"
+            type="text"
             className="project-preview-password-input"
             value={passwordValue}
             onChange={(e) => setPasswordValue(e.target.value)}
@@ -351,12 +352,13 @@ function ProjectPreview({ project, cardRect, onClose }) {
                       </svg>
                       <input
                         ref={inputRef}
-                        type="password"
+                        type="text"
                         className="project-preview-password-input"
                         value={passwordValue}
                         onChange={(e) => setPasswordValue(e.target.value)}
                         autoComplete="current-password"
                         aria-label="Case study password"
+                        autoFocus
                         disabled={passwordPhase === 'unlocked'}
                       />
                       <button

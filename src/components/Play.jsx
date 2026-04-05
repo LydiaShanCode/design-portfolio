@@ -11,9 +11,18 @@ function Play() {
         title: 'Listening Room',
         year: '2026',
         type: 'iframe',
-        size: 'large',
+        size: 'full',
         typeLabel: 'Three.js Experiment',
         href: 'https://chute-tint-71818613.figma.site/',
+      },
+      {
+        id: 'dj-simulator',
+        title: 'DJ Simulator',
+        year: '2026',
+        type: 'iframe',
+        size: 'large',
+        typeLabel: 'Interactive',
+        href: 'https://djae.vercel.app/',
       },
       {
         id: 'shader-experiment',
@@ -47,6 +56,22 @@ function Play() {
     []
   )
   const [activeItem, setActiveItem] = useState(null)
+
+  const openHrefInNewTab = (url) => {
+    const a = document.createElement('a')
+    a.href = url
+    a.target = '_blank'
+    a.rel = 'noopener noreferrer'
+    a.click()
+  }
+
+  const handleCardClick = (item) => {
+    if (item.type === 'iframe' && item.href) {
+      openHrefInNewTab(item.href)
+      return
+    }
+    setActiveItem(item)
+  }
 
   useEffect(() => {
     if (!activeItem) {
@@ -205,13 +230,19 @@ function Play() {
               key={item.id}
               type="button"
               className={`play-card play-card--${item.size}`}
-              onClick={() => setActiveItem(item)}
+              onClick={() => handleCardClick(item)}
+              aria-label={
+                item.type === 'iframe' && item.href
+                  ? `${item.title}, opens in a new tab`
+                  : undefined
+              }
+              data-cursor-link-out={item.type === 'iframe' && item.href ? '' : undefined}
             >
+              <div className="play-card-preview">{renderPreview(item)}</div>
               <div className="play-card-hover-badge">
                 {item.year && <span className="play-card-hover-badge-year">{item.year}</span>}
                 <span className="play-card-hover-badge-title">{item.title}</span>
               </div>
-              <div className="play-card-preview">{renderPreview(item)}</div>
             </button>
           ))}
         </div>
@@ -227,7 +258,7 @@ function Play() {
             >
               ✕
             </button>
-            <div className="play-modal-body">
+            <div className="play-modal-body scrollbar-hide">
               <div className="play-modal-header">
                 <div className="play-modal-title">
                   {activeItem.year && <span className="play-modal-title-year">{activeItem.year}</span>}

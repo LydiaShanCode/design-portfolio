@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion'
 
 function IterationsViewer({ tabs = [], groups = [], resolveAsset }) {
   const [activeByGroup, setActiveByGroup] = useState(() => {
@@ -31,83 +31,139 @@ function IterationsViewer({ tabs = [], groups = [], resolveAsset }) {
   )
 }
 
-function IterationGroup({ group, groupIdx, tabs, activeIdx, onTabChange, resolveAsset }) {
-  const activeImage = group.images?.[activeIdx]
-  const resolved = activeImage && resolveAsset ? resolveAsset(activeImage) : activeImage
-  const wrapRef = useRef(null)
-  const [height, setHeight] = useState('auto')
+const SPRING = { type: 'spring', stiffness: 200, damping: 30, mass: 1.6 }
 
-  const measureHeight = useCallback(() => {
-    const img = wrapRef.current?.querySelector('img')
-    if (img && img.complete && img.naturalHeight > 0) {
-      setHeight(img.offsetHeight)
-    }
+const CROSSFADE = { duration: 0.4, ease: 'easeInOut' }
+
+function resolveImageEntry(entry) {
+  if (!entry) return { src: null, annotations: null }
+  if (typeof entry === 'string') return { src: entry, annotations: null }
+  return { src: entry.src ?? null, annotations: entry.annotations ?? null }
+}
+
+function IterationGroup({ group, groupIdx, tabs, activeIdx, onTabChange, resolveAsset }) {
+  const activeEntry = group.images?.[activeIdx]
+  const { src: activeImageSrc, annotations } = resolveImageEntry(activeEntry)
+  const resolved = activeImageSrc && resolveAsset ? resolveAsset(activeImageSrc) : activeImageSrc
+  const activeImage = activeImageSrc
+  const wrapRef = useRef(null)
+  const [height, setHeight] = useState(0)
+  const [imageLoaded, setImageLoaded] = useState(false)
+  // Cache natural dimensions per src so resize can recompute height without a load event
+  const naturalDims = useRef({})
+
+  const computeHeight = useCallback((src) => {
+    const dims = naturalDims.current[src]
+    if (!dims || !wrapRef.current) return
+    setHeight(Math.round(wrapRef.current.offsetWidth * dims.h / dims.w))
   }, [])
 
   useEffect(() => {
-    measureHeight()
-  }, [activeIdx, measureHeight])
+    setImageLoaded(false)
+    computeHeight(activeImageSrc)
+  }, [activeIdx, activeImageSrc, computeHeight])
 
   useEffect(() => {
-    window.addEventListener('resize', measureHeight)
-    return () => window.removeEventListener('resize', measureHeight)
-  }, [measureHeight])
+    const onResize = () => computeHeight(activeImageSrc)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [activeImageSrc, computeHeight])
 
-  const handleImageLoad = useCallback((e) => {
-    setHeight(e.target.offsetHeight)
+  const handleImageLoad = useCallback((e, src) => {
+    naturalDims.current[src] = { w: e.target.naturalWidth, h: e.target.naturalHeight }
+    if (wrapRef.current) {
+      setHeight(Math.round(wrapRef.current.offsetWidth * e.target.naturalHeight / e.target.naturalWidth))
+    }
+    setImageLoaded(true)
   }, [])
 
   return (
     <div className="iterations-group">
       <div className="iterations-header">
-        <div className="iterations-tabs">
-          {tabs.map((label, tabIdx) => (
-            <button
-              key={label}
-              type="button"
-              className={`iterations-tab btn-hover ${tabIdx === activeIdx ? 'iterations-tab--active btn-hover--solid' : ''}`}
-              onClick={() => onTabChange(groupIdx, tabIdx)}
-              data-hoverable
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        <LayoutGroup id={`tabs-${groupIdx}`}>
+          <div className="iterations-tabs">
+            {tabs.map((label, tabIdx) => (
+              <button
+                key={label}
+                type="button"
+                className={`iterations-tab${tabIdx === activeIdx ? ' iterations-tab--active' : ''}`}
+                onClick={() => onTabChange(groupIdx, tabIdx)}
+                data-hoverable
+              >
+                {tabIdx === activeIdx && (
+                  <motion.span
+                    layoutId="tab-pill"
+                    className="iterations-tab-pill"
+                    transition={SPRING}
+                  />
+                )}
+                <span className="iterations-tab-label">{label}</span>
+              </button>
+            ))}
+          </div>
+        </LayoutGroup>
         <span className="iterations-group-label">{group.group}</span>
       </div>
-      <motion.div
-        ref={wrapRef}
-        className="iterations-image-wrap"
-        animate={{ height }}
-        transition={{ duration: 0.3, ease: [0.22, 0.61, 0.36, 1] }}
-        style={{ overflow: 'hidden' }}
-      >
-        <AnimatePresence mode="wait">
-          {resolved ? (
-            <motion.img
-              key={activeImage}
-              src={resolved}
-              alt={`${group.group} — ${tabs[activeIdx]}`}
-              className="iterations-image"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
-              onLoad={handleImageLoad}
-            />
-          ) : (
+      <div className="iterations-card-outer">
+        <motion.div
+          ref={wrapRef}
+          className="iterations-image-wrap"
+          animate={{ height }}
+          transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }}
+        >
+          <AnimatePresence>
+            {resolved ? (
+              <motion.img
+                key={activeImage}
+                src={resolved}
+                alt={`${group.group} — ${tabs[activeIdx]}`}
+                className="iterations-image"
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 'auto' }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={CROSSFADE}
+                onLoad={(e) => handleImageLoad(e, activeImage)}
+              />
+            ) : (
+              <motion.div
+                key="placeholder"
+                className="iterations-placeholder"
+                style={{ position: 'absolute', inset: 0 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={CROSSFADE}
+              >
+                No image available
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        <AnimatePresence>
+          {annotations?.length > 0 && imageLoaded && (
             <motion.div
-              key="placeholder"
-              className="iterations-placeholder"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              key={activeImage}
+              className="iterations-annotation-strip"
+              initial={{ opacity: 0, y: -24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{
+                opacity: { duration: 0.28, ease: [0.22, 0.61, 0.36, 1] },
+                y: { type: 'spring', stiffness: 320, damping: 32, mass: 1 },
+              }}
             >
-              No image available
+              {annotations.map((a, i) => (
+                <div key={i} className="iterations-annotation-item">
+                  <span className="iterations-annotation-title">{a.title}</span>
+                  <p className="iterations-annotation-text">{a.text}</p>
+                </div>
+              ))}
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
     </div>
   )
 }

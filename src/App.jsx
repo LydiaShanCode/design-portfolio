@@ -10,6 +10,7 @@ import Footer from './components/Footer'
 import WaterCanvas from './components/WaterCanvas'
 import CustomCursor from './components/CustomCursor'
 import { Analytics } from '@vercel/analytics/react'
+import { Agentation } from 'agentation'
 
 const Play = lazy(() => import('./components/Play'))
 const Resume = lazy(() => import('./components/Resume'))
@@ -55,6 +56,14 @@ function App() {
   return (
     <Router basename={import.meta.env.BASE_URL}>
       {/* <DialRoot /> */}
+      {import.meta.env.DEV && (
+        <Agentation
+          endpoint="http://localhost:4747"
+          onSessionCreated={(sessionId) => {
+            console.log('Session started:', sessionId)
+          }}
+        />
+      )}
       <Analytics />
       <div className="min-h-screen bg-white">
         <CustomCursor />

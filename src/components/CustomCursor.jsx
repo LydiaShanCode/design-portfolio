@@ -12,86 +12,74 @@ function CustomCursor() {
     let isHovering = false
 
     const updateCursor = () => {
-      // Smooth elastic motion - cursor trails behind actual position
       cursorDotRef.current.x = cursorPositionRef.current.x
       cursorDotRef.current.y = cursorPositionRef.current.y
-
       cursor.style.left = `${cursorDotRef.current.x}px`
       cursor.style.top = `${cursorDotRef.current.y}px`
-
       requestAnimationFrame(updateCursor)
     }
 
-    const handleMouseMove = (e) => {
+    const handleMouseMoveWithHover = (e) => {
       cursorPositionRef.current.x = e.clientX
       cursorPositionRef.current.y = e.clientY
-    }
 
-    const handleMouseEnter = (e) => {
-      const target = e.target
-      if (
-        target instanceof Element &&
-        (target.tagName === 'A' ||
-          target.tagName === 'BUTTON' ||
-          target.closest('a') ||
-          target.closest('button') ||
-          target.closest('[data-hoverable]'))
-      ) {
-        isHovering = true
-        cursor.classList.add('hover')
-      }
-    }
-
-    const handleMouseLeave = (e) => {
-      isHovering = false
-      cursor.classList.remove('hover')
-    }
-
-    // Check hover state on mouse move
-    const handleMouseMoveWithHover = (e) => {
-      handleMouseMove(e)
       const target = document.elementFromPoint(e.clientX, e.clientY)
-      const shouldHide = target instanceof Element && target.closest('[data-hide-cursor]')
-      if (shouldHide) {
-        if (!cursor.classList.contains('hidden')) cursor.classList.add('hidden')
-      } else {
-        cursor.classList.remove('hidden')
-      }
+      if (!(target instanceof Element)) return
 
-      if (
-        target instanceof Element &&
-        (target.tagName === 'A' ||
-          target.tagName === 'BUTTON' ||
-          target.closest('a') ||
-          target.closest('button') ||
-          target.closest('[data-hoverable]'))
-      ) {
-        if (!isHovering) {
-          isHovering = true
-          cursor.classList.add('hover')
-        }
-      } else {
+      // Hidden state
+      const shouldHide = !!target.closest('[data-hide-cursor]')
+      cursor.classList.toggle('hidden', shouldHide)
+
+      // Link-out state — glassmorphic arrow cursor for new-tab links
+      const isLinkOut = !!target.closest('[data-cursor-link-out]')
+      cursor.classList.toggle('link-out', isLinkOut)
+
+      if (isLinkOut) {
+        // link-out takes precedence over generic hover
         if (isHovering) {
           isHovering = false
           cursor.classList.remove('hover')
         }
+        return
+      }
+
+      // Generic hover state
+      const shouldHover = !!(
+        target.tagName === 'A' ||
+        target.tagName === 'BUTTON' ||
+        target.closest('a') ||
+        target.closest('button') ||
+        target.closest('[data-hoverable]')
+      )
+      if (shouldHover !== isHovering) {
+        isHovering = shouldHover
+        cursor.classList.toggle('hover', shouldHover)
       }
     }
 
     window.addEventListener('mousemove', handleMouseMoveWithHover)
-    document.addEventListener('mouseenter', handleMouseEnter, true)
-    document.addEventListener('mouseleave', handleMouseLeave, true)
-
     updateCursor()
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMoveWithHover)
-      document.removeEventListener('mouseenter', handleMouseEnter, true)
-      document.removeEventListener('mouseleave', handleMouseLeave, true)
     }
   }, [])
 
-  return <div ref={cursorRef} className="custom-cursor" />
+  return (
+    <div ref={cursorRef} className="custom-cursor">
+      <svg
+        className="custom-cursor-link-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={2.5}
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25" />
+      </svg>
+    </div>
+  )
 }
 
 export default CustomCursor
