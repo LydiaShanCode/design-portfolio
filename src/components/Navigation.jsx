@@ -156,8 +156,8 @@ function Navigation() {
           <div className="nav-bar-row scrollbar-hide flex w-full min-w-0 items-center overflow-x-auto h-16">
             {/* Tablet Logo (hidden on mobile, shown md to lg) */}
             <div className="hidden flex-shrink-0 md:block lg:hidden">
-              <Link to="/" data-hoverable onClick={handleLogoClick}>
-                <img src={logo} alt="Lydia" className="h-6 w-6" />
+              <Link to="/" data-hoverable onClick={handleLogoClick} className="nav-logo-link">
+                <img src={logo} alt="Lydia" className="nav-logo h-6 w-6" />
               </Link>
             </div>
 
@@ -215,8 +215,8 @@ function Navigation() {
               </div>
 
               <div className="flex-shrink-0 justify-self-center">
-                <Link to="/" data-hoverable onClick={handleLogoClick}>
-                  <img src={logo} alt="Lydia" className="h-6 w-6" />
+                <Link to="/" data-hoverable onClick={handleLogoClick} className="nav-logo-link">
+                  <img src={logo} alt="Lydia" className="nav-logo h-6 w-6" />
                 </Link>
               </div>
 
@@ -303,8 +303,12 @@ function Navigation() {
               </Link>
             )
           )}
-          <Link to="/" onClick={handleLogoClick} className="flex-shrink-0">
-            <img src={logo} alt="Home" className="block h-3.5 w-3.5 min-[480px]:h-4 min-[480px]:w-4" />
+          <Link to="/" onClick={handleLogoClick} className="nav-logo-link flex-shrink-0">
+            <img
+              src={logo}
+              alt="Home"
+              className="nav-logo block h-3.5 w-3.5 min-[480px]:h-4 min-[480px]:w-4"
+            />
           </Link>
           {rightItems.map((item) =>
             item.isHash ? (

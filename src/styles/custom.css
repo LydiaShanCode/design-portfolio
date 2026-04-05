@@ -141,6 +141,76 @@
 .glass-btn--md  svg { width: 13px; height: 13px; }
 .glass-btn--lg  svg { width: 16px; height: 16px; }
 
+/* ── Site Intro ── */
+
+/* White background — fades out on its own, does not affect logo opacity */
+.site-intro-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: var(--color-bg);
+  pointer-events: none;
+}
+
+/* Logo — sits above the bg so parent fade never cascades onto it */
+.site-intro-logo {
+  position: fixed;
+  /* Mobile default: matches h-3.5 w-3.5 (14px) in bottom nav */
+  top: calc(50% - 7px);
+  left: calc(50% - 7px);
+  z-index: 9999;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  user-select: none;
+  will-change: transform, opacity;
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  /* Matches min-[480px]:h-4 min-[480px]:w-4 (16px) */
+  .site-intro-logo {
+    width: 16px;
+    height: 16px;
+    top: calc(50% - 8px);
+    left: calc(50% - 8px);
+  }
+}
+
+@media (min-width: 768px) {
+  /* Matches h-6 w-6 (24px) in desktop nav */
+  .site-intro-logo {
+    width: 24px;
+    height: 24px;
+    top: calc(50% - 12px);
+    left: calc(50% - 12px);
+  }
+}
+
+@keyframes nav-logo-spin-once {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.nav-logo-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-logo-link:hover .nav-logo {
+  animation: nav-logo-spin-once 0.75s var(--ease-dramatic) 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-logo-link:hover .nav-logo {
+    animation: none;
+  }
+}
+
 /* Nav blur — seamless fade */
 .nav-blur {
   background: transparent;

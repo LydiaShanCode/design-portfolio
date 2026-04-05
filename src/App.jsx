@@ -9,6 +9,7 @@ import ActivityLog from './components/ActivityLog'
 import Footer from './components/Footer'
 import WaterCanvas from './components/WaterCanvas'
 import CustomCursor from './components/CustomCursor'
+import SiteIntro from './components/SiteIntro'
 import { Analytics } from '@vercel/analytics/react'
 import { Agentation } from 'agentation'
 
@@ -65,6 +66,7 @@ function App() {
         />
       )}
       <Analytics />
+      <SiteIntro />
       <div className="min-h-screen bg-white">
         <CustomCursor />
         <WaterCanvas />
