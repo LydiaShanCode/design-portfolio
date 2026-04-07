@@ -57,6 +57,7 @@ function App() {
   return (
     <Router basename={import.meta.env.BASE_URL}>
       {/* <DialRoot /> */}
+      {/* Agentation UI hidden
       {import.meta.env.DEV && (
         <Agentation
           endpoint="http://localhost:4747"
@@ -64,7 +65,7 @@ function App() {
             console.log('Session started:', sessionId)
           }}
         />
-      )}
+      )} */}
       <Analytics />
       <SiteIntro />
       <div className="min-h-screen bg-white">

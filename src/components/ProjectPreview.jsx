@@ -150,12 +150,14 @@ function ProjectPreview({ project, cardRect, onClose }) {
         </svg>
       )
 
-      if (passwordPhase === 'idle') {
-        return (
+      const isIdle = passwordPhase === 'idle'
+      return (
+        <div className="project-preview-mobile-password">
           <button
             type="button"
-            className={`project-preview-cta btn-hover${mobileClass}`}
+            className={`project-preview-cta project-preview-cta--password btn-hover${mobileClass}${!isIdle ? ' project-preview-mobile-password__item--out' : ''}`}
             data-hoverable
+            tabIndex={isIdle ? undefined : -1}
             onClick={(e) => {
               e.stopPropagation()
               setPasswordPhase('input')
@@ -164,39 +166,38 @@ function ProjectPreview({ project, cardRect, onClose }) {
             {lockIcon}
             Enter password
           </button>
-        )
-      }
-
-      return (
-        <form
-          className={`project-preview-password-form project-preview-password-form--mobile${passwordPhase === 'error' ? ' project-preview-password-form--shake' : ''}${passwordPhase === 'unlocked' ? ' project-preview-password-form--unlocked' : ''}`}
-          onSubmit={handlePasswordSubmit}
-          noValidate
-          onClick={(e) => e.stopPropagation()}
-        >
-          {lockIcon}
-          <input
-            ref={inputRef}
-            type="text"
-            className="project-preview-password-input"
-            value={passwordValue}
-            onChange={(e) => setPasswordValue(e.target.value)}
-            autoComplete="current-password"
-            aria-label="Case study password"
-            disabled={passwordPhase === 'unlocked'}
-          />
-          <button
-            type="submit"
-            className="project-preview-password-submit"
-            data-hoverable
-            aria-label="Submit password"
-            disabled={passwordPhase === 'unlocked'}
+          <form
+            className={`project-preview-password-form project-preview-password-form--mobile${isIdle ? ' project-preview-mobile-password__item--out' : ''}${passwordPhase === 'error' ? ' project-preview-password-form--shake' : ''}${passwordPhase === 'unlocked' ? ' project-preview-password-form--unlocked' : ''}`}
+            onSubmit={handlePasswordSubmit}
+            noValidate
+            onClick={(e) => e.stopPropagation()}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" width="14" height="14" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-            </svg>
-          </button>
-        </form>
+            {lockIcon}
+            <input
+              ref={inputRef}
+              type="text"
+              className="project-preview-password-input"
+              value={passwordValue}
+              onChange={(e) => setPasswordValue(e.target.value)}
+              autoComplete="current-password"
+              aria-label="Case study password"
+              tabIndex={isIdle ? -1 : undefined}
+              disabled={passwordPhase === 'unlocked'}
+            />
+            <button
+              type="submit"
+              className="project-preview-password-submit"
+              data-hoverable
+              aria-label="Submit password"
+              tabIndex={isIdle ? -1 : undefined}
+              disabled={passwordPhase === 'unlocked'}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" width="14" height="14" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+              </svg>
+            </button>
+          </form>
+        </div>
       )
     }
 

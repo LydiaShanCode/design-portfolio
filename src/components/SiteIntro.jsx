@@ -86,7 +86,7 @@ function SiteIntro() {
           stage === 'enter'
             ? { rotate: 720, opacity: 1 }
             : isFly
-              ? { x: flyTarget.x, y: flyTarget.y, opacity: 1 }
+              ? { x: flyTarget.x, y: flyTarget.y, opacity: 1, rotate: 720 }
               : { rotate: 720, opacity: 1 }
         }
         transition={

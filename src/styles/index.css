@@ -32,6 +32,7 @@
     /* Text */
     --color-text-main: #1C1C1C;
     --color-text-subdued: #6F6F6F;
+    --color-text-light: #A0A0A0;
     --color-text: var(--color-text-main);
     --color-text-muted: #8b9bc4;
     --color-text-placeholder: #c1c9ff;

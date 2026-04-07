@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
 import { useDialKit } from 'dialkit'
 import ProjectCard from './ProjectCard'
 import ProjectPreview from './ProjectPreview'
@@ -6,16 +7,65 @@ import projectsFromMd from '../data/projectLoader'
 import designSystemImage from '../assets/projects/design-system/ design system - work card image.png'
 import flowOfFundsImage from '../assets/projects/payouts-uplift/payouts uplift - work card image.png'
 import shopBalanceImage from '../assets/projects/shop-balance/shop balance - work card image.png'
-import internationalCommerceImage from '../assets/projects/international-commerce/international commerce - work card image.png'
+import internationalCommerceImage from '../assets/projects/smart-markets/international commerce - work card image.png'
 import listeningRoomImage from '../assets/projects/Listening Room/listening room - work card image.png'
 import currentRibbon from '../assets/current ribbon.svg'
 import shopifyIcon from '../assets/shopify-icon.svg'
 import searchEyeIcon from '../assets/searcheye icon.svg'
 import flowOfFundsVideo from '../assets/projects/payouts-uplift/payouts uplift final video.MP4'
 import designSystemVideo from '../assets/projects/design-system/Design System Final Video.MP4'
-import internationalCommerceVideo from '../assets/projects/international-commerce/International Commerce Final video.MP4'
+import internationalCommerceVideo from '../assets/projects/smart-markets/International Commerce Final video.MP4'
 import shopBalanceVideo from '../assets/projects/shop-balance/Shop Balance final video.MP4'
 import listeningRoomVideo from '../assets/projects/Listening Room/Listening Room final video.MP4'
+
+function SwipeableCard({ children, onSwipe, onTap, style, isSwiping }) {
+  const x = useMotionValue(0)
+  const rotate = useTransform(x, [-200, 0, 200], [-15, 0, 15])
+  const cardOpacity = useTransform(x, [-200, -100, 0, 100, 200], [0.5, 1, 1, 1, 0.5])
+  const swipingRef = useRef(false)
+  const didDragRef = useRef(false)
+
+  useEffect(() => {
+    if (!isSwiping || swipingRef.current) return
+    swipingRef.current = true
+    animate(x, -300, { duration: 0.45, ease: [0.12, 0.8, 0.2, 1] }).then(() => {
+      x.set(0)
+      swipingRef.current = false
+      onSwipe()
+    })
+  }, [isSwiping, x, onSwipe])
+
+  const handleDragEnd = useCallback((e, info) => {
+    if (Math.abs(info.offset.x) > 80 || Math.abs(info.velocity.x) > 400) {
+      const dir = info.offset.x > 0 ? 300 : -300
+      animate(x, dir, { duration: 0.3, ease: [0.22, 0.61, 0.36, 1] }).then(() => {
+        x.set(0)
+        onSwipe()
+      })
+    }
+    requestAnimationFrame(() => { didDragRef.current = false })
+  }, [x, onSwipe])
+
+  const handleTap = useCallback(() => {
+    if (didDragRef.current) return
+    onTap?.()
+  }, [onTap])
+
+  return (
+    <motion.div
+      style={{ x, rotate, opacity: cardOpacity, touchAction: 'pan-y', ...style }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.9}
+      onDragStart={() => { didDragRef.current = true }}
+      onTap={handleTap}
+      onDragEnd={handleDragEnd}
+      whileTap={{ scale: 0.98 }}
+    >
+      {children}
+    </motion.div>
+  )
+}
 
 function ProjectsGrid() {
   const [projects, setProjects] = useState([])
@@ -110,7 +160,7 @@ function ProjectsGrid() {
       const mobile = window.innerWidth <= 640
       setIsMobile((prev) => {
         if (mobile !== prev) {
-          setCardOrder(mobile ? [2, 0, 1, 3, 4] : [0, 1, 2, 3, 4])
+          setCardOrder(mobile ? [2, 1, 3, 4, 0] : [0, 1, 2, 3, 4])
         }
         return mobile
       })
@@ -201,21 +251,27 @@ function ProjectsGrid() {
 
   const swipingRef = useRef(false)
 
-  const exitDurationMs = (dial.exit.spring.visualDuration || 0.4) * 1000
+  const handleSwipeComplete = useCallback(() => {
+    cycleStack()
+    setSwipingIndex(null)
+    swipingRef.current = false
+    // Reset auto-swipe timer so it waits a full interval from now
+    clearInterval(autoSwipeTimerRef.current)
+    if (isMobile && !pausedRef.current) {
+      const intervalMs = dial.timing.interval * 1000
+      autoSwipeTimerRef.current = setInterval(() => {
+        if (pausedRef.current) return
+        animatedCycleRef.current?.()
+      }, intervalMs)
+    }
+  }, [cycleStack, isMobile, dial.timing.interval])
 
   const animatedCycle = useCallback(() => {
     if (swipingRef.current || dial.paused) return
     swipingRef.current = true
+    // Set swipingIndex to trigger SwipeableCard's programmatic exit
     setSwipingIndex(cardOrder[0])
-
-    setTimeout(() => {
-      cycleStack()
-      requestAnimationFrame(() => {
-        setSwipingIndex(null)
-        swipingRef.current = false
-      })
-    }, exitDurationMs + 50)
-  }, [cycleStack, cardOrder, exitDurationMs, dial.paused])
+  }, [cardOrder, dial.paused])
 
   animatedCycleRef.current = animatedCycle
 
@@ -267,30 +323,66 @@ function ProjectsGrid() {
               if (!project) return null
 
               const enriched = enrichProject(project)
+              const isTop = orderPosition === 0
+              const isCardSwiping = originalIndex === swipingIndex
+
               const card = (
                 <ProjectCard
                   project={enriched}
                   stackIndex={originalIndex}
                   isMobileStack={true}
                   shouldAutoplay={false}
-                  onSelect={orderPosition === 0 ? handleSelect : undefined}
                 />
               )
 
-              const isSwiping = originalIndex === swipingIndex
+              const wrapperStyle = getMobileStackStyle(orderPosition)
+
+              if (isTop) {
+                return (
+                  <SwipeableCard
+                    key={project.id}
+                    onSwipe={handleSwipeComplete}
+                    onTap={() => {
+                      if (swipingIndex !== null) return
+                      const el = stackRef.current?.querySelector(`[data-stack-index="${originalIndex}"]`)
+                      const rect = el?.getBoundingClientRect()
+                      handleSelect(enriched, rect)
+                    }}
+                    style={{
+                      position: 'absolute',
+                      left: '50%',
+                      top: 0,
+                      width: 'min(85vw, 320px)',
+                      zIndex: wrapperStyle['--mobile-z-index'] || 10,
+                      marginLeft: 'calc(min(85vw, 320px) / -2)',
+                      pointerEvents: 'auto',
+                    }}
+                    isSwiping={isCardSwiping}
+                  >
+                    <div
+                      className="work-card-mobile-wrapper work-card-mobile-wrapper--top"
+                      style={{
+                        position: 'relative',
+                        left: 'auto',
+                        top: 'auto',
+                        width: '100%',
+                        transform: 'none',
+                        zIndex: 'auto',
+                      }}
+                    >
+                      {card}
+                    </div>
+                  </SwipeableCard>
+                )
+              }
 
               return (
                 <div
                   key={project.id}
-                  className={`work-card-mobile-wrapper ${orderPosition === 0 ? 'work-card-mobile-wrapper--top' : ''} ${isSwiping ? 'work-card-mobile-wrapper--swiping' : ''}`}
+                  className="work-card-mobile-wrapper"
                   style={{
-                    ...getMobileStackStyle(orderPosition),
-                    '--swipe-x': `${dial.exit.travelDistance}vw`,
-                    '--swipe-rotate': `${dial.exit.rotationZ}deg`,
-                    '--swipe-scale': dial.exit.scaleOut,
-                    '--exit-duration': `${(dial.exit.spring.visualDuration || 0.4) * 1000}ms`,
-                    '--entrance-duration': `${(dial.entrance.spring.visualDuration || 0.35) * 1000}ms`,
-                    '--entrance-delay': `${(dial.entrance.delay || 0) * 1000}ms`,
+                    ...wrapperStyle,
+                    pointerEvents: 'none',
                   }}
                 >
                   {card}

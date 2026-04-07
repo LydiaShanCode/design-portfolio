@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback, Children, isValidElement } from 'react'
+import { useMemo, useState, useEffect, useCallback, useRef, Children, isValidElement } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Markdown from 'react-markdown'
@@ -8,13 +8,13 @@ import CaseStudyGate from './CaseStudyGate'
 import designSystemImage from '../assets/projects/design-system/ design system - work card image.png'
 import flowOfFundsImage from '../assets/projects/payouts-uplift/payouts uplift - work card image.png'
 import shopBalanceImage from '../assets/projects/shop-balance/shop balance - work card image.png'
-import internationalCommerceImage from '../assets/projects/international-commerce/international commerce - work card image.png'
+import internationalCommerceImage from '../assets/projects/smart-markets/international commerce - work card image.png'
 import listeningRoomImage from '../assets/projects/Listening Room/listening room - work card image.png'
 import shopifyIcon from '../assets/shopify-icon.svg'
 import searchEyeIcon from '../assets/searcheye icon.svg'
 import flowOfFundsVideo from '../assets/projects/payouts-uplift/payouts uplift final video.MP4'
 import designSystemVideo from '../assets/projects/design-system/Design System Final Video.MP4'
-import internationalCommerceVideo from '../assets/projects/international-commerce/International Commerce Final video.MP4'
+import internationalCommerceVideo from '../assets/projects/smart-markets/International Commerce Final video.MP4'
 import shopBalanceVideo from '../assets/projects/shop-balance/Shop Balance final video.MP4'
 import listeningRoomVideo from '../assets/projects/Listening Room/Listening Room final video.MP4'
 import ticketImage from '../assets/project ticket.png'
@@ -41,7 +41,7 @@ const iconAssets = {
 }
 
 const projectAssetModules = import.meta.glob(
-  '../assets/projects/**/*.{PNG,png,jpg,jpeg,svg,gif,MP4,mp4,webm,mov}',
+  '../assets/projects/**/*.{PNG,png,jpg,jpeg,svg,gif,MP4,mp4,webm,mov,MOV}',
   { eager: true }
 )
 
@@ -49,9 +49,9 @@ const VIDEO_EXTENSIONS = /\.(mp4|MP4|webm|mov|MOV)$/i
 
 function resolveProjectAsset(src, slug) {
   if (!src || !src.startsWith('./')) return src
-  const filename = decodeURIComponent(src.slice(2))
+  const filename = decodeURIComponent(src.slice(2)).toLowerCase()
   const key = Object.keys(projectAssetModules).find(
-    (k) => k.includes(`/${slug}/`) && k.endsWith(`/${filename}`)
+    (k) => k.includes(`/${slug}/`) && k.toLowerCase().endsWith(`/${filename}`)
   )
   return key ? projectAssetModules[key].default : src
 }
@@ -72,6 +72,133 @@ const MODE_ICONS = {
       <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.049.58.025 1.193-.14 1.743" />
     </svg>
   ),
+}
+
+function toHeadingId(text) {
+  return String(text)
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+}
+
+const HIDDEN_PREFIX = '[hidden] '
+
+function parseHeadings(content) {
+  if (!content) return []
+  return [...content.matchAll(/^## (.+)$/gm)].map(([, raw]) => {
+    const label = raw.trim().startsWith(HIDDEN_PREFIX)
+      ? raw.trim().slice(HIDDEN_PREFIX.length)
+      : raw.trim()
+    return { id: toHeadingId(raw.trim()), label }
+  })
+}
+
+function childrenToText(children) {
+  if (typeof children === 'string') return children
+  if (Array.isArray(children)) return children.map(childrenToText).join('')
+  if (children?.props?.children) return childrenToText(children.props.children)
+  return ''
+}
+
+const SPRING = { type: 'spring', stiffness: 380, damping: 28, mass: 1.1 }
+const BAR_SPRING = { type: 'spring', stiffness: 160, damping: 26, mass: 1 }
+const ACTIVE_WIDTH = 48
+const DECAY = 0.62
+const MIN_WIDTH = 6
+const COLOR_ACTIVE = '#001dd9'
+const COLOR_REST = '#1C1C1C'
+
+function barWidth(distance) {
+  return Math.max(MIN_WIDTH, Math.round(ACTIVE_WIDTH * Math.pow(DECAY, distance)))
+}
+
+function barOpacity(distance) {
+  return Math.max(0.12, 0.32 * Math.pow(0.78, distance - 1))
+}
+
+const NON_NOUN_WORDS = new Set([
+  'a', 'an', 'the',
+  'was', 'is', 'are', 'were', 'be', 'been', 'being',
+  'has', 'have', 'had', 'did', 'do', 'does',
+  'can', 'could', 'will', 'would', 'should', 'may', 'might',
+  'it', 'its', 'they', 'we', 'you', 'i', 'he', 'she',
+  'this', 'that', 'these', 'those',
+  'and', 'or', 'but', 'nor', 'so',
+  'of', 'in', 'at', 'by', 'for', 'with', 'about', 'into', 'onto',
+  'never', 'always',
+])
+const ADJECTIVE_PREFIXES = ['mid-', 'pre-', 'post-', 'non-', 'anti-', 'cross-', 'inter-']
+
+function getFirstNoun(label) {
+  const words = label.split(/[\s:–—]+/).filter(Boolean)
+  for (const word of words) {
+    const clean = word.replace(/[^a-zA-Z-]/g, '')
+    const lower = clean.toLowerCase()
+    if (!lower) continue
+    if (NON_NOUN_WORDS.has(lower)) continue
+    if (ADJECTIVE_PREFIXES.some((p) => lower.startsWith(p))) continue
+    // skip superlative adjectives (e.g. "Biggest", "Largest") — length guard avoids "best", "rest"
+    if (lower.endsWith('est') && lower.length > 5) continue
+    return clean
+  }
+  return words[0]?.replace(/[^a-zA-Z]/g, '') || ''
+}
+
+function ProjectSideNav({ headings, visible }) {
+  const [activeId, setActiveId] = useState(headings[0]?.id || '')
+
+  useEffect(() => {
+    if (!headings.length) return
+    const els = headings.map(({ id }) => document.getElementById(id)).filter(Boolean)
+    if (!els.length) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const hit = entries.find((e) => e.isIntersecting)
+        if (hit) setActiveId(hit.target.id)
+      },
+      { rootMargin: '0px 0px -72% 0px', threshold: 0 }
+    )
+    els.forEach((el) => observer.observe(el))
+    return () => observer.disconnect()
+  }, [headings])
+
+  const activeIndex = headings.findIndex(({ id }) => id === activeId)
+
+  return (
+    <aside className={`project-page-sidenav${visible ? ' is-visible' : ''}`} aria-label="Page sections">
+      {headings.map(({ id, label }, i) => {
+        const isActive = id === activeId
+        const distance = Math.abs(i - activeIndex)
+        const firstWord = getFirstNoun(label)
+        return (
+          <button
+            key={id}
+            className={`project-page-sidenav-item${isActive ? ' is-active' : ''}`}
+            onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+            aria-label={label}
+            data-hoverable
+          >
+            <div className="project-page-sidenav-bar-row">
+              <motion.div
+                className="project-page-sidenav-bar"
+                animate={{
+                  width: isActive ? ACTIVE_WIDTH : barWidth(distance),
+                  opacity: isActive ? 1 : barOpacity(distance),
+                  backgroundColor: isActive ? COLOR_ACTIVE : COLOR_REST,
+                }}
+                transition={{
+                  width: BAR_SPRING,
+                  opacity: { duration: 0.35, ease: [0.22, 0.61, 0.36, 1] },
+                  backgroundColor: { duration: 0.3, ease: [0.22, 0.61, 0.36, 1] },
+                }}
+              />
+            </div>
+          </button>
+        )
+      })}
+    </aside>
+  )
 }
 
 function Lightbox({ src, onClose }) {
@@ -126,7 +253,8 @@ function buildMarkdownComponents(slug, project, setLightboxSrc) {
           if (MODE_ICONS[label]) {
             return <ul className="project-page-mode-list">{children}</ul>
           }
-          return <div className="project-page-issue-grid">{children}</div>
+          const cols = arr.length <= 2 ? 1 : 3
+          return <div className="project-page-issue-grid" style={cols < 3 ? { gridTemplateColumns: `repeat(${cols}, 1fr)` } : undefined}>{children}</div>
         }
       }
       return <ul>{children}</ul>
@@ -171,7 +299,6 @@ function buildMarkdownComponents(slug, project, setLightboxSrc) {
       }
       const resolved = resolveProjectAsset(src, slug)
       const isVideo = VIDEO_EXTENSIONS.test(src)
-      const decodedSrc = decodeURIComponent(src || '')
       return (
         <figure className="project-page-figure">
           {isVideo ? (
@@ -200,16 +327,48 @@ function buildMarkdownComponents(slug, project, setLightboxSrc) {
       return <blockquote className="project-page-quote">{children}</blockquote>
     },
     h2({ children }) {
-      return <h2 className="project-page-section-heading">{children}</h2>
+      const raw = childrenToText(children)
+      const isHidden = raw.startsWith(HIDDEN_PREFIX)
+      const id = toHeadingId(raw)
+      return (
+        <h2
+          id={id}
+          className={`project-page-section-heading${isHidden ? ' project-page-section-heading--hidden' : ''}`}
+          aria-hidden={isHidden ? 'true' : undefined}
+        >
+          {isHidden ? null : children}
+        </h2>
+      )
     },
     p({ children }) {
       const arr = Children.toArray(children)
+      const nonEmpty = arr.filter((c) => !(typeof c === 'string' && !c.trim()))
+      if (nonEmpty.length === 0) return null
+      const figures = nonEmpty.filter((c) => isValidElement(c) && c.props?.className?.includes('project-page-figure'))
+      const caption = nonEmpty.find((c) => isValidElement(c) && c.props?.className === 'project-page-annotation')
+      const otherContent = nonEmpty.filter((c) =>
+        !(isValidElement(c) && c.props?.className?.includes('project-page-figure')) &&
+        !(isValidElement(c) && c.props?.className === 'project-page-annotation')
+      )
+      if (figures.length >= 1 && otherContent.length === 0) {
+        const layoutMod = figures.length >= 3 ? '--grid' : figures.length === 2 ? '--duo' : '--single'
+        return (
+          <div className={`project-page-image-group project-page-image-group${layoutMod}`}>
+            {figures}
+            {caption && <span className="project-page-figcaption">{caption.props.children}</span>}
+          </div>
+        )
+      }
       if (
         arr.length === 1 &&
         isValidElement(arr[0]) &&
         arr[0].props?.className === 'project-page-annotation'
       ) {
         return <>{children}</>
+      }
+      if (process.env.NODE_ENV === 'development') {
+        const hasFigures = nonEmpty.some((c) => isValidElement(c) && c.props?.className?.includes('project-page-figure'))
+        if (hasFigures) console.warn('[p renderer] figure leaked into paragraph fallback', { nonEmpty, figures, otherContent })
       }
       return <p className="project-page-paragraph">{children}</p>
     },
@@ -219,8 +378,15 @@ function buildMarkdownComponents(slug, project, setLightboxSrc) {
   }
 }
 
+function encodeMarkdownImageUrls(markdown) {
+  // Encode spaces in image/link URLs so the Markdown parser recognises them
+  return markdown.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) =>
+    `![${alt}](${url.replace(/ /g, '%20')})`
+  )
+}
+
 function renderProjectContent(content, components) {
-  const lines = content.split('\n')
+  const lines = encodeMarkdownImageUrls(content).split('\n')
   const parts = []
   let i = 0
 
@@ -299,6 +465,7 @@ function ProjectPage() {
   }, [slug])
 
   const mdComponents = useMemo(() => buildMarkdownComponents(slug, project, setLightboxSrc), [slug, project])
+  const headings = useMemo(() => parseHeadings(project?.content), [project?.content])
 
   const nextProject = useMemo(() => {
     const ready = projectsFromMd.filter((p) => p.caseStudyReady && p.slug !== slug)
@@ -307,6 +474,38 @@ function ProjectPage() {
     const after = ready.find((p) => projectsFromMd.indexOf(p) > currentIdx)
     return after || ready[0]
   }, [slug])
+
+  const [sidenavVisible, setSidenavVisible] = useState(false)
+  const layoutRef = useRef(null)
+
+  useEffect(() => {
+    const firstHeadingId = headings[0]?.id
+    if (!firstHeadingId) return
+
+    let target
+    let rafId
+
+    const check = () => {
+      if (!target) target = document.getElementById(firstHeadingId)
+      if (!target) return
+      const { top } = target.getBoundingClientRect()
+      setSidenavVisible(top <= window.innerHeight / 2)
+    }
+
+    const onScroll = () => {
+      cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(check)
+    }
+
+    // initial check after paint
+    rafId = requestAnimationFrame(check)
+    window.addEventListener('scroll', onScroll, { passive: true })
+
+    return () => {
+      cancelAnimationFrame(rafId)
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [headings])
 
   if (!project) {
     return (
@@ -380,6 +579,13 @@ function ProjectPage() {
               </a>
             ) : null}
           </div>
+          {project.highlights && project.highlights.length > 0 ? (
+            <div className="project-page-meta-col">
+              {project.highlights.map((h) => (
+                <span key={h} className="project-page-meta-highlight">{h}</span>
+              ))}
+            </div>
+          ) : null}
           {project.team && project.team.length > 0 ? (
             <div className="project-page-meta-col">
               {project.team.map((member) => (
@@ -390,7 +596,7 @@ function ProjectPage() {
             </div>
           ) : null}
           <div className="project-page-meta-col">
-            {project.duration ? <span className="project-page-meta-label">{project.duration}</span> : null}
+            {project.date ? <span className="project-page-meta-label">{project.date.split(' · ')[0]}</span> : null}
             {project.timeline ? <span className="project-page-meta-label">{project.timeline}</span> : null}
           </div>
         </div>
@@ -405,26 +611,17 @@ function ProjectPage() {
         ) : project.protected && !unlocked ? (
           <CaseStudyGate slug={slug} onUnlock={() => setUnlocked(true)} />
         ) : (
-          <div className="project-page-content">
-            {renderProjectContent(project.content, mdComponents)}
+          <div ref={layoutRef} className="project-page-layout">
+            {headings.length > 0 && <ProjectSideNav headings={headings} visible={sidenavVisible} />}
+            <div className="project-page-body">
+              <div className="project-page-content">
+                {renderProjectContent(project.content, mdComponents)}
+              </div>
+            </div>
           </div>
         )}
 
-        {nextProject && (
-          <Link
-            to={`/project/${nextProject.slug}`}
-            className="project-page-next-up"
-            data-hoverable
-          >
-            <span className="project-page-next-up-label">
-              <em>Your ticket to the next case study...</em>
-            </span>
-            <div className="project-page-next-up-ticket">
-              <img src={ticketImage} alt="" aria-hidden="true" className="project-page-next-up-img" />
-              <span className="project-page-next-up-title">{nextProject.title}</span>
-            </div>
-          </Link>
-        )}
+{/* next-up hidden */}
       </div>
     </main>
     </>
