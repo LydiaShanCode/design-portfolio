@@ -48,12 +48,14 @@ function Hero() {
           </div>
         </div>
         <p className="hero-subtext body-text mb-6 flex flex-wrap items-baseline justify-center gap-x-1.5 text-center text-[14px] font-light sm:text-lg sm:font-normal lg:mb-4 lg:text-base">
-          <span>Currently designing at</span>
+          <span>Designing and tinkering. Previously at</span>
           <a
-            href="https://www.shopify.com/ca/editions/winter2026"
-            className="inline-flex items-baseline gap-x-[5px] body-text text-inherit no-underline hover:underline"
+            href="https://www.shopify.com/"
+            className="inline-flex items-baseline text-inherit no-underline"
             target="_blank"
             rel="noreferrer"
+            aria-label="Shopify website"
+            data-hoverable
           >
             <img
               src={shopifyIcon}
@@ -61,7 +63,6 @@ function Hero() {
               aria-hidden="true"
               className="size-[0.95em] shrink-0 translate-y-[0.12em]"
             />
-            Shopify
           </a>
         </p>
         <div>
