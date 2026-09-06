@@ -48,9 +48,9 @@ function Hero() {
           </div>
         </div>
         <p className="hero-subtext body-text mb-6 flex flex-wrap items-baseline justify-center gap-x-1.5 text-center text-[14px] font-light sm:text-lg sm:font-normal lg:mb-4 lg:text-base">
-          <span>Currently designing at</span>
+          <span>Designing and tinkering... prev. at</span>
           <a
-            href="https://www.shopify.com/ca/editions/winter2026"
+            href="https://www.shopify.com/editions/winter2026#marketing"
             className="inline-flex items-baseline gap-x-[5px] body-text text-inherit no-underline hover:underline"
             target="_blank"
             rel="noreferrer"

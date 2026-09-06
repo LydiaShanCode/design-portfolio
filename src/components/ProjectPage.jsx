@@ -1,8 +1,8 @@
+'use client'
+
 import { useMemo, useState, useEffect, useCallback, useRef, Children, isValidElement } from 'react'
-import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Markdown from 'react-markdown'
-import projectsFromMd from '../data/projectLoader'
 import IterationsViewer from './IterationsViewer'
 import CaseStudyGate from './CaseStudyGate'
 import designSystemImage from '../assets/projects/design-system/ design system - work card image.png'
@@ -40,10 +40,11 @@ const iconAssets = {
   searchEye: searchEyeIcon,
 }
 
-const projectAssetModules = import.meta.glob(
-  '../assets/projects/**/*.{PNG,png,jpg,jpeg,svg,gif,MP4,mp4,webm,mov,MOV}',
-  { eager: true }
-)
+const req = require.context('../assets/projects', true, /\.(PNG|png|jpg|jpeg|svg|gif|MP4|mp4|webm|mov|MOV)$/)
+const projectAssetModules = {}
+req.keys().forEach((key) => {
+  projectAssetModules[`../assets/projects${key.slice(1)}`] = req(key)
+})
 
 const VIDEO_EXTENSIONS = /\.(mp4|MP4|webm|mov|MOV)$/i
 
@@ -53,7 +54,7 @@ function resolveProjectAsset(src, slug) {
   const key = Object.keys(projectAssetModules).find(
     (k) => k.includes(`/${slug}/`) && k.toLowerCase().endsWith(`/${filename}`)
   )
-  return key ? projectAssetModules[key].default : src
+  return key ? projectAssetModules[key] : src
 }
 
 const MODE_ICONS = {
@@ -385,13 +386,16 @@ function encodeMarkdownImageUrls(markdown) {
   )
 }
 
-function renderProjectContent(content, components) {
+function renderProjectContent(content, components, iterationsElement) {
   const lines = encodeMarkdownImageUrls(content).split('\n')
   const parts = []
   let i = 0
 
   while (i < lines.length) {
-    if (lines[i].startsWith('> ')) {
+    if (lines[i].trim() === '{{iterations}}') {
+      parts.push({ type: 'iterations' })
+      i++
+    } else if (lines[i].startsWith('> ')) {
       const quotes = []
       let current = [lines[i]]
       i++
@@ -415,12 +419,15 @@ function renderProjectContent(content, components) {
       parts.push({ type: 'quotes', quotes })
     } else {
       const start = i
-      while (i < lines.length && !lines[i].startsWith('> ')) i++
+      while (i < lines.length && !lines[i].startsWith('> ') && lines[i].trim() !== '{{iterations}}') i++
       parts.push({ type: 'prose', text: lines.slice(start, i).join('\n') })
     }
   }
 
   return parts.map((part, idx) => {
+    if (part.type === 'iterations') {
+      return iterationsElement ? <div key={idx}>{iterationsElement}</div> : null
+    }
     if (part.type === 'quotes') {
       if (part.quotes.length >= 2) {
         return (
@@ -447,33 +454,32 @@ function renderProjectContent(content, components) {
   })
 }
 
-function ProjectPage() {
-  const { slug } = useParams()
+function ProjectPage({ project: projectData, allProjects = [] }) {
+  const slug = projectData?.slug
   const [unlocked, setUnlocked] = useState(false)
   const [lightboxSrc, setLightboxSrc] = useState(null)
   const closeLightbox = useCallback(() => setLightboxSrc(null), [])
 
   const project = useMemo(() => {
-    const raw = projectsFromMd.find((p) => p.slug === slug)
-    if (!raw) return null
+    if (!projectData) return null
     return {
-      ...raw,
-      image: imageAssets[raw.imageKey],
-      icon: iconAssets[raw.iconKey],
-      video: videoAssets[raw.videoKey] || null,
+      ...projectData,
+      image: imageAssets[projectData.imageKey],
+      icon: iconAssets[projectData.iconKey],
+      video: videoAssets[projectData.videoKey] || null,
     }
-  }, [slug])
+  }, [projectData])
 
   const mdComponents = useMemo(() => buildMarkdownComponents(slug, project, setLightboxSrc), [slug, project])
   const headings = useMemo(() => parseHeadings(project?.content), [project?.content])
 
   const nextProject = useMemo(() => {
-    const ready = projectsFromMd.filter((p) => p.caseStudyReady && p.slug !== slug)
+    const ready = allProjects.filter((p) => p.caseStudyReady && p.slug !== slug)
     if (!ready.length) return null
-    const currentIdx = projectsFromMd.findIndex((p) => p.slug === slug)
-    const after = ready.find((p) => projectsFromMd.indexOf(p) > currentIdx)
+    const currentIdx = allProjects.findIndex((p) => p.slug === slug)
+    const after = ready.find((p) => allProjects.indexOf(p) > currentIdx)
     return after || ready[0]
-  }, [slug])
+  }, [slug, allProjects])
 
   const [sidenavVisible, setSidenavVisible] = useState(false)
   const layoutRef = useRef(null)
@@ -615,7 +621,15 @@ function ProjectPage() {
             {headings.length > 0 && <ProjectSideNav headings={headings} visible={sidenavVisible} />}
             <div className="project-page-body">
               <div className="project-page-content">
-                {renderProjectContent(project.content, mdComponents)}
+                {renderProjectContent(project.content, mdComponents,
+                  (project.iterations?.length > 0) ? (
+                    <IterationsViewer
+                      tabs={project.iterationTabs || []}
+                      groups={project.iterations}
+                      resolveAsset={(s) => resolveProjectAsset(s, slug)}
+                    />
+                  ) : null
+                )}
               </div>
             </div>
           </div>

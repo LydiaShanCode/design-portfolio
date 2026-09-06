@@ -1354,6 +1354,63 @@ body {
   font-size: clamp(28px, 5vw, 56px);
 }
 
+/* Brand Book Slideshow */
+.play-modal-brand-book {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-modal-slide {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  object-fit: contain;
+  max-height: 68vh;
+  display: block;
+}
+
+.play-modal-slide-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-full);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.6);
+  transition: opacity 200ms var(--ease-smooth), background 200ms var(--ease-smooth);
+  z-index: 2;
+}
+
+.play-modal-slide-btn--prev { left: 12px; }
+.play-modal-slide-btn--next { right: 12px; }
+
+.play-modal-slide-btn:disabled {
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.play-modal-slide-btn:hover {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.play-modal-slide-counter {
+  font-family: var(--font-mono, 'Geist Mono', monospace);
+  font-size: 12px;
+  color: var(--color-text-faint, rgba(0, 0, 0, 0.4));
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
 .text-scrub-char {
   display: inline-block;
   color: transparent;
@@ -3881,4 +3938,169 @@ button.work-card {
   letter-spacing: inherit;
   text-align: left;
   color: inherit;
+}
+
+/* ── Iterations Viewer ── */
+.iterations-viewer {
+  width: 100%;
+  margin: 48px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.iterations-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.iterations-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.iterations-group-label {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+}
+
+.iterations-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.iterations-tab {
+  position: relative;
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: color 150ms var(--ease-smooth), border-color 150ms var(--ease-smooth);
+}
+
+.iterations-tab:hover {
+  border-color: var(--color-badge-border);
+}
+
+.iterations-tab--active {
+  color: #fff;
+  border-color: transparent;
+}
+
+.iterations-tab-pill {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  z-index: -1;
+}
+
+.iterations-tab-label {
+  position: relative;
+  z-index: 1;
+}
+
+.iterations-card-outer {
+  position: relative;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.iterations-image-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+}
+
+.iterations-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-xl);
+  object-fit: contain;
+}
+
+.iterations-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-text-muted);
+}
+
+.iterations-annotation-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+  padding: 24px 28px;
+  border-top: 1px solid var(--color-badge-border);
+}
+
+.iterations-annotation-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.iterations-annotation-title {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+}
+
+.iterations-annotation-text {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .iterations-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .iterations-tabs {
+    flex-wrap: wrap;
+  }
+
+  .iterations-tab {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .iterations-viewer {
+    gap: 40px;
+    margin: 32px 0;
+  }
+
+  .iterations-annotation-strip {
+    grid-template-columns: 1fr;
+    padding: 16px 20px;
+  }
 }
