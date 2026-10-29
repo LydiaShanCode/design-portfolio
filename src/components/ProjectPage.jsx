@@ -1,8 +1,10 @@
 'use client'
 
 import { useMemo, useState, useEffect, useCallback, useRef, Children, isValidElement } from 'react'
+import { useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Markdown from 'react-markdown'
+import projectsFromMd from '../data/projectLoader'
 import IterationsViewer from './IterationsViewer'
 import CaseStudyGate from './CaseStudyGate'
 import designSystemImage from '../assets/projects/design-system/ design system - work card image.png'
@@ -40,11 +42,10 @@ const iconAssets = {
   searchEye: searchEyeIcon,
 }
 
-const req = require.context('../assets/projects', true, /\.(PNG|png|jpg|jpeg|svg|gif|MP4|mp4|webm|mov|MOV)$/)
-const projectAssetModules = {}
-req.keys().forEach((key) => {
-  projectAssetModules[`../assets/projects${key.slice(1)}`] = req(key)
-})
+const projectAssetModules = import.meta.glob(
+  '../assets/projects/**/*.{PNG,png,jpg,jpeg,svg,gif,MP4,mp4,webm,mov,MOV}',
+  { eager: true, import: 'default' }
+)
 
 const VIDEO_EXTENSIONS = /\.(mp4|MP4|webm|mov|MOV)$/i
 
@@ -454,32 +455,33 @@ function renderProjectContent(content, components, iterationsElement) {
   })
 }
 
-function ProjectPage({ project: projectData, allProjects = [] }) {
-  const slug = projectData?.slug
+function ProjectPage() {
+  const { slug } = useParams()
   const [unlocked, setUnlocked] = useState(false)
   const [lightboxSrc, setLightboxSrc] = useState(null)
   const closeLightbox = useCallback(() => setLightboxSrc(null), [])
 
   const project = useMemo(() => {
-    if (!projectData) return null
+    const raw = projectsFromMd.find((item) => item.slug === slug)
+    if (!raw) return null
     return {
-      ...projectData,
-      image: imageAssets[projectData.imageKey],
-      icon: iconAssets[projectData.iconKey],
-      video: videoAssets[projectData.videoKey] || null,
+      ...raw,
+      image: imageAssets[raw.imageKey],
+      icon: iconAssets[raw.iconKey],
+      video: videoAssets[raw.videoKey] || null,
     }
-  }, [projectData])
+  }, [slug])
 
   const mdComponents = useMemo(() => buildMarkdownComponents(slug, project, setLightboxSrc), [slug, project])
   const headings = useMemo(() => parseHeadings(project?.content), [project?.content])
 
   const nextProject = useMemo(() => {
-    const ready = allProjects.filter((p) => p.caseStudyReady && p.slug !== slug)
+    const ready = projectsFromMd.filter((item) => item.caseStudyReady && item.slug !== slug)
     if (!ready.length) return null
-    const currentIdx = allProjects.findIndex((p) => p.slug === slug)
-    const after = ready.find((p) => allProjects.indexOf(p) > currentIdx)
+    const currentIdx = projectsFromMd.findIndex((item) => item.slug === slug)
+    const after = ready.find((item) => projectsFromMd.indexOf(item) > currentIdx)
     return after || ready[0]
-  }, [slug, allProjects])
+  }, [slug])
 
   const [sidenavVisible, setSidenavVisible] = useState(false)
   const layoutRef = useRef(null)
