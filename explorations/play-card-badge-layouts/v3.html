@@ -1,0 +1,80 @@
+<!--
+  v3 — Editorial scrim caption.
+  Idea: replace the pill with a full-width caption band: a soft gradient rises from the
+  card's bottom edge, with the title set large in Cormorant italic on the left and
+  TYPE · YEAR in small spaced caps on the right — like a gallery placard.
+  Trade-off: the most expressive and the most legible over busy embeds, but the scrim
+  darkens the bottom of light previews, which changes their character on hover.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v3 — Editorial scrim</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .scrim {
+      position: absolute;
+      inset: auto 0 0 0;
+      z-index: 2;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 56px 22px 18px;
+      background: linear-gradient(to top, rgba(8, 12, 40, 0.62), rgba(8, 12, 40, 0.28) 55%, rgba(8, 12, 40, 0));
+      color: #fff;
+      opacity: 0;
+      transition: opacity 250ms var(--ease-smooth);
+    }
+
+    .scrim-title {
+      font-family: var(--font-serif);
+      font-size: 26px;
+      font-style: italic;
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: -0.3px;
+      transform: translateY(6px);
+      transition: transform 300ms var(--ease-smooth);
+    }
+
+    .scrim-meta {
+      flex-shrink: 0;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.78);
+      white-space: nowrap;
+    }
+
+    .play-card:hover .scrim,
+    .play-card:focus-visible .scrim,
+    .force-hover .scrim { opacity: 1; }
+
+    .play-card:hover .scrim-title,
+    .play-card:focus-visible .scrim-title,
+    .force-hover .scrim-title { transform: translateY(0); }
+
+    @media (hover: none) {
+      .scrim { opacity: 1; }
+      .scrim-title { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="play-grid"></div>
+  <script src="cards.js"></script>
+  <script>
+    renderGrid({
+      renderLabel: (item) => `
+        <span class="scrim">
+          <span class="scrim-title">${item.title}</span>
+          <span class="scrim-meta">${[item.type, item.year].filter(Boolean).join(' · ')}</span>
+        </span>`,
+    })
+  </script>
+</body>
+</html>

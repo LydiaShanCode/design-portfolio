@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import Picture from './Picture'
+import Video from './Video'
 
 const CORRECT_PASSWORD = 'design is awesome'
 
@@ -271,16 +273,15 @@ function ProjectPreview({ project, cardRect, onClose }) {
             {...((isProtected && passwordPhase === 'idle') || !isProtected ? { 'data-hide-cursor': true } : {})}
           >
             {video ? (
-              <video
-                src={video}
-                autoPlay
-                loop
-                muted
-                playsInline
+              <Video media={video} preload="auto" className="project-preview-video" />
+            ) : image ? (
+              <Picture
+                image={image}
+                sizes="(min-width: 1100px) 1100px, 100vw"
+                priority
+                alt={`${title} preview`}
                 className="project-preview-video"
               />
-            ) : image ? (
-              <img src={image} alt={`${title} preview`} className="project-preview-video" />
             ) : (
               <div className="project-preview-placeholder">
                 <span>Preview coming soon</span>

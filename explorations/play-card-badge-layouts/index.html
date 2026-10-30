@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Play card label — layout exploration</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    body { padding: 32px; background: var(--color-surface); }
+
+    header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 32px;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+    }
+
+    label { font-size: 13px; color: var(--color-text-subdued); cursor: pointer; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(620px, 1fr));
+      gap: 28px;
+    }
+
+    figure { margin: 0; }
+
+    figcaption {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    figcaption b { font-weight: 600; }
+    figcaption span { color: var(--color-text-subdued); }
+    figcaption a { margin-left: auto; color: var(--color-primary); text-decoration: none; }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 900px;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: #fff;
+      box-shadow: 0 0 0 1px rgba(15, 20, 50, 0.06);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Play card label</h1>
+    <label><input type="checkbox" id="hover" checked /> Show hover state on all cards</label>
+  </header>
+  <div class="grid">
+    <figure><figcaption><b>Current</b><span>Dark year capsule in grey glass</span><a href="current.html" target="_blank">Open ↗</a></figcaption><iframe data-src="current.html"></iframe></figure>
+    <figure><figcaption><b>v1</b><span>Caption outside the frame</span><a href="v1.html" target="_blank">Open ↗</a></figcaption><iframe data-src="v1.html"></iframe></figure>
+    <figure><figcaption><b>v2</b><span>One light glass chip</span><a href="v2.html" target="_blank">Open ↗</a></figcaption><iframe data-src="v2.html"></iframe></figure>
+    <figure><figcaption><b>v3</b><span>Editorial scrim caption</span><a href="v3.html" target="_blank">Open ↗</a></figcaption><iframe data-src="v3.html"></iframe></figure>
+    <figure><figcaption><b>v4</b><span>Notched corner tab</span><a href="v4.html" target="_blank">Open ↗</a></figcaption><iframe data-src="v4.html"></iframe></figure>
+  </div>
+  <script>
+    const toggle = document.getElementById('hover')
+    const frames = [...document.querySelectorAll('iframe')]
+    const load = () => frames.forEach((f) => { f.src = `${f.dataset.src}${toggle.checked ? '?hover=1' : ''}` })
+    toggle.addEventListener('change', load)
+    load()
+  </script>
+</body>
+</html>

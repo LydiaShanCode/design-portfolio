@@ -1,5 +1,3 @@
-'use client'
-
 import { useMemo, useState, useEffect, useCallback, useRef, Children, isValidElement } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -7,55 +5,15 @@ import Markdown from 'react-markdown'
 import projectsFromMd from '../data/projectLoader'
 import IterationsViewer from './IterationsViewer'
 import CaseStudyGate from './CaseStudyGate'
-import designSystemImage from '../assets/projects/design-system/ design system - work card image.png'
-import flowOfFundsImage from '../assets/projects/payouts-uplift/payouts uplift - work card image.png'
-import shopBalanceImage from '../assets/projects/shop-balance/shop balance - work card image.png'
-import internationalCommerceImage from '../assets/projects/smart-markets/international commerce - work card image.png'
-import listeningRoomImage from '../assets/projects/Listening Room/listening room - work card image.png'
-import shopifyIcon from '../assets/shopify-icon.svg'
-import searchEyeIcon from '../assets/searcheye icon.svg'
-import flowOfFundsVideo from '../assets/projects/payouts-uplift/payouts uplift final video.MP4'
-import designSystemVideo from '../assets/projects/design-system/Design System Final Video.MP4'
-import internationalCommerceVideo from '../assets/projects/smart-markets/International Commerce Final video.MP4'
-import shopBalanceVideo from '../assets/projects/shop-balance/Shop Balance final video.MP4'
-import listeningRoomVideo from '../assets/projects/Listening Room/Listening Room final video.MP4'
-import ticketImage from '../assets/project ticket.png'
+import Picture from './Picture'
+import Video from './Video'
+import { withProjectAssets, resolveProjectAsset, largestUrl } from '../data/projectAssets'
 
-const imageAssets = {
-  designSystem: designSystemImage,
-  flowOfFunds: flowOfFundsImage,
-  shopBalance: shopBalanceImage,
-  internationalCommerce: internationalCommerceImage,
-  listeningRoom: listeningRoomImage,
-}
+const FIGURE_SIZES = '(min-width: 1024px) 900px, 100vw'
 
-const videoAssets = {
-  designSystem: designSystemVideo,
-  flowOfFunds: flowOfFundsVideo,
-  internationalCommerce: internationalCommerceVideo,
-  shopBalance: shopBalanceVideo,
-  listeningRoom: listeningRoomVideo,
-}
-
-const iconAssets = {
-  shopify: shopifyIcon,
-  searchEye: searchEyeIcon,
-}
-
-const projectAssetModules = import.meta.glob(
-  '../assets/projects/**/*.{PNG,png,jpg,jpeg,svg,gif,MP4,mp4,webm,mov,MOV}',
-  { eager: true, import: 'default' }
-)
-
-const VIDEO_EXTENSIONS = /\.(mp4|MP4|webm|mov|MOV)$/i
-
-function resolveProjectAsset(src, slug) {
-  if (!src || !src.startsWith('./')) return src
-  const filename = decodeURIComponent(src.slice(2)).toLowerCase()
-  const key = Object.keys(projectAssetModules).find(
-    (k) => k.includes(`/${slug}/`) && k.toLowerCase().endsWith(`/${filename}`)
-  )
-  return key ? projectAssetModules[key] : src
+const resolveProjectUrl = (src, slug) => {
+  const resolved = resolveProjectAsset(src, slug)
+  return largestUrl(resolved.image) || resolved.src
 }
 
 const MODE_ICONS = {
@@ -295,29 +253,24 @@ function buildMarkdownComponents(slug, project, setLightboxSrc) {
           <IterationsViewer
             tabs={project.iterationTabs || []}
             groups={project.iterations || []}
-            resolveAsset={(s) => resolveProjectAsset(s, slug)}
+            resolveAsset={(s) => resolveProjectUrl(s, slug)}
           />
         )
       }
       const resolved = resolveProjectAsset(src, slug)
-      const isVideo = VIDEO_EXTENSIONS.test(src)
+      const lightboxSrc = largestUrl(resolved.image) || resolved.src
       return (
         <figure className="project-page-figure">
-          {isVideo ? (
-            <video
-              src={resolved}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="project-page-figure-img"
-            />
+          {resolved.video ? (
+            <Video media={resolved.video} preload="none" className="project-page-figure-img" />
           ) : (
-            <img
-              src={resolved}
+            <Picture
+              image={resolved.image || resolved.src}
+              placeholder={resolved.placeholder}
+              sizes={FIGURE_SIZES}
               alt={alt || ''}
               className="project-page-figure-img project-page-figure-img--zoomable"
-              onClick={() => setLightboxSrc(resolved)}
+              onClick={() => setLightboxSrc(lightboxSrc)}
               data-hoverable
             />
           )}
@@ -463,13 +416,7 @@ function ProjectPage() {
 
   const project = useMemo(() => {
     const raw = projectsFromMd.find((item) => item.slug === slug)
-    if (!raw) return null
-    return {
-      ...raw,
-      image: imageAssets[raw.imageKey],
-      icon: iconAssets[raw.iconKey],
-      video: videoAssets[raw.videoKey] || null,
-    }
+    return raw ? withProjectAssets(raw) : null
   }, [slug])
 
   const mdComponents = useMemo(() => buildMarkdownComponents(slug, project, setLightboxSrc), [slug, project])
@@ -536,16 +483,16 @@ function ProjectPage() {
       <div className="project-page-inner">
         <div className="project-page-hero">
           {project.video ? (
-            <video
-              src={project.video}
-              autoPlay
-              loop
-              muted
-              playsInline
+            <Video media={project.video} preload="auto" className="project-page-video" />
+          ) : project.image ? (
+            <Picture
+              image={project.image}
+              placeholder={project.imagePlaceholder}
+              sizes="(min-width: 1200px) 1200px, 100vw"
+              priority
+              alt={`${project.title} preview`}
               className="project-page-video"
             />
-          ) : project.image ? (
-            <img src={project.image} alt={`${project.title} preview`} className="project-page-video" />
           ) : null}
         </div>
 
@@ -628,7 +575,7 @@ function ProjectPage() {
                     <IterationsViewer
                       tabs={project.iterationTabs || []}
                       groups={project.iterations}
-                      resolveAsset={(s) => resolveProjectAsset(s, slug)}
+                      resolveAsset={(s) => resolveProjectUrl(s, slug)}
                     />
                   ) : null
                 )}

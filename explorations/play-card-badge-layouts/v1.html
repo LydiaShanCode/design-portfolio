@@ -1,0 +1,83 @@
+<!--
+  v1 — Caption outside the frame.
+  Idea: take the label off the preview entirely and set it as a quiet gallery caption
+  under each card (title · type left, year in mono right). The embeds stay clean.
+  Trade-off: adds ~36px per row and makes the grid feel more like an index than a
+  wall of live experiments; but it's always visible, so it just works on touch.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v1 — Caption outside</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .play-item { display: flex; flex-direction: column; gap: 12px; height: auto; }
+    .play-item.span-12 .play-card { height: 300px; }
+    .play-item.span-8 .play-card,
+    .play-item.span-4 .play-card { height: 260px; }
+    .play-item.span-6 .play-card { height: 220px; }
+
+    .caption {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 0 4px;
+      font-size: 13px;
+      line-height: 1.3;
+    }
+
+    .caption-title {
+      font-weight: 500;
+      color: var(--color-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color 200ms var(--ease-smooth);
+    }
+
+    .caption-type {
+      color: var(--color-text-subdued);
+      white-space: nowrap;
+    }
+
+    .caption-arrow {
+      display: inline-block;
+      color: var(--color-primary);
+      opacity: 0;
+      transform: translate(-4px, 2px);
+      transition: opacity 200ms var(--ease-smooth), transform 200ms var(--ease-smooth);
+    }
+
+    .caption-year {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--color-text-muted);
+    }
+
+    .play-item:hover .caption-title,
+    .force-hover .caption-title { color: var(--color-primary); }
+
+    .play-item:hover .caption-arrow,
+    .force-hover .caption-arrow { opacity: 1; transform: translate(0, 0); }
+  </style>
+</head>
+<body>
+  <div class="play-grid"></div>
+  <script src="cards.js"></script>
+  <script>
+    renderGrid({
+      renderAfter: (item) => `
+        <div class="caption">
+          <span class="caption-title">${item.title}</span>
+          <span class="caption-arrow" aria-hidden="true">↗</span>
+          <span class="caption-type">${item.type}</span>
+          ${item.year ? `<span class="caption-year">${item.year}</span>` : ''}
+        </div>`,
+    })
+  </script>
+</body>
+</html>

@@ -1,7 +1,58 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import KoiFish from './KoiFish'
 import TextScrub from './TextScrub'
-import shaderVideo from '../assets/Playground-page/shader-experiment-one/Shader-experiment-one.mov'
+import Video from './Video'
+import { getVideo } from '../data/media'
+import { afterLoadIdle } from '../lib/afterLoad'
+
+const SHADER_SOURCE = 'Playground-page/shader-experiment-one/Shader-experiment-one.mov'
+
+// Embedded apps fall apart at phone widths (and iOS sizes iframes inconsistently),
+// so narrow cards render the iframe at this width and scale it down as a thumbnail.
+const IFRAME_MIN_WIDTH = 720
+
+function IframePreview({ src, title }) {
+  const wrapRef = useRef(null)
+  const [frame, setFrame] = useState(null)
+  // Third-party apps (audio, WebGL runtimes) would otherwise compete with the page's own first paint
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => afterLoadIdle(() => setMounted(true)), [])
+
+  useEffect(() => {
+    const el = wrapRef.current
+    if (!el) return
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect
+      if (!width || width >= IFRAME_MIN_WIDTH) {
+        setFrame(null)
+        return
+      }
+      const scale = width / IFRAME_MIN_WIDTH
+      setFrame({ scale, height: height / scale })
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div ref={wrapRef} className="play-card-iframe">
+      {mounted && (
+        <iframe
+          src={src}
+          title={title}
+          loading="lazy"
+          sandbox="allow-scripts allow-same-origin"
+          style={frame ? {
+            width: IFRAME_MIN_WIDTH,
+            height: frame.height,
+            transform: `scale(${frame.scale})`,
+          } : undefined}
+        />
+      )}
+    </div>
+  )
+}
 
 function Play() {
   const playItems = useMemo(
@@ -32,7 +83,8 @@ function Play() {
         size: 'small',
         typeLabel: 'Shader',
         href: 'https://shush-manage-12467479.figma.site/',
-        videoSrc: shaderVideo,
+        video: getVideo(SHADER_SOURCE, 'card'),
+        modalVideo: getVideo(SHADER_SOURCE, 'hero'),
       },
       {
         id: 'text-scrub',
@@ -111,13 +163,7 @@ function Play() {
       case 'shader-experiment':
         return (
           <div className="play-card-video">
-            <video
-              src={item.videoSrc}
-              autoPlay
-              loop
-              muted
-              playsInline
-            />
+            <Video media={item.video} />
           </div>
         )
       case 'image':
@@ -135,16 +181,7 @@ function Play() {
           </pre>
         )
       case 'iframe':
-        return (
-          <div className="play-card-iframe">
-            <iframe
-              src={item.href}
-              title={item.title}
-              loading="lazy"
-              sandbox="allow-scripts allow-same-origin"
-            />
-          </div>
-        )
+        return <IframePreview src={item.href} title={item.title} />
       case 'link':
         return (
           <div className="play-link-preview">
@@ -173,14 +210,7 @@ function Play() {
       case 'shader-experiment':
         return (
           <div className="play-modal-shader">
-            <video
-              src={item.videoSrc}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="play-modal-video"
-            />
+            <Video media={item.modalVideo} preload="auto" className="play-modal-video" />
           </div>
         )
       case 'image':
@@ -240,8 +270,8 @@ function Play() {
             >
               <div className="play-card-preview">{renderPreview(item)}</div>
               <div className="play-card-hover-badge">
-                {item.year && <span className="play-card-hover-badge-year">{item.year}</span>}
                 <span className="play-card-hover-badge-title">{item.title}</span>
+                {item.year && <span className="play-card-hover-badge-year">{item.year}</span>}
               </div>
             </button>
           ))}

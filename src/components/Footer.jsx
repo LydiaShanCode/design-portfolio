@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Postcard from './Postcard'
-import fishOpenRaw from '../assets/fish open.svg?raw'
-import arenaIcon from '../assets/arena-icon.svg'
+import { afterLoadIdle } from '../lib/afterLoad'
+import arenaIcon from '../assets/arena-icon.webp'
 
 const CONTACT_EMAIL = 'lydiashan.c@gmail.com'
+
+// Inlined as markup (the postcard snaps to #fish-mouth-anchor), so keep it out of the entry bundle
+const loadFishSvg = () => import('../assets/fish open.web.svg?raw').then((module) => module.default)
 
 function Footer() {
   const [showSwimFish, setShowSwimFish] = useState(false)
@@ -11,12 +14,30 @@ function Footer() {
   const fishRef = useRef(null)
   const mouthAnchorRef = useRef(null)
 
+  const [fishSvg, setFishSvg] = useState(null)
+
+  useEffect(() => {
+    if (fishSvg) return
+    let cancelled = false
+    const load = () => loadFishSvg().then((svg) => { if (!cancelled) setFishSvg(svg) })
+    if (showSwimFish) {
+      load()
+      return () => { cancelled = true }
+    }
+    const cancelIdle = afterLoadIdle(load)
+    return () => {
+      cancelled = true
+      cancelIdle()
+    }
+  }, [fishSvg, showSwimFish])
+
   const fishSvgWithAnchor = useMemo(() => {
+    if (!fishSvg) return ''
     // Anchor point tuned in SVG coordinate space (viewBox 0 0 1024 493)
     // so Postcard snap can target fish mouth precisely.
     const anchor = '<circle id="fish-mouth-anchor" cx="188" cy="184" r="10" fill="rgba(0,0,0,0)" />'
-    return fishOpenRaw.replace('</svg>', `${anchor}</svg>`)
-  }, [])
+    return fishSvg.replace('</svg>', `${anchor}</svg>`)
+  }, [fishSvg])
 
   const handleReadyChange = (isReady) => {
     setShowSwimFish(isReady)
@@ -131,7 +152,7 @@ function Footer() {
               onFishCatch={() => setFishDiving(true)}
             />
           </div>
-          {showSwimFish && (
+          {showSwimFish && fishSvgWithAnchor && (
             <div
               ref={fishRef}
               role="img"

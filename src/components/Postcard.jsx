@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import postcardBg from '../assets/postcard.png'
+import Picture from './Picture'
+import postcardBg from '../assets/postcard.png?responsive&w=480;960;1824'
 
 const CONTACT_EMAIL = 'lydiashan.c@gmail.com'
 
@@ -199,7 +200,7 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
       }}
       onMouseDown={handleMouseDown}
     >
-      <img src={postcardBg} alt="" className="postcard-bg" />
+      <Picture image={postcardBg} sizes="(min-width: 560px) 520px, 100vw" loading="eager" className="postcard-bg" />
       <div className="postcard-content">
         <div className="postcard-left">
           <div className="postcard-message-area">

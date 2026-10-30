@@ -1,7 +1,5 @@
 @import '@fontsource/geist';
 @import '@fontsource/geist-mono';
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -39,6 +37,11 @@
     --color-text-faint: #d0d5e8;
     --color-badge-border: #7B8DFF;
 
+    /* Typography */
+    --font-sans: 'Geist', system-ui, sans-serif;
+    --font-serif: 'Cormorant Garamond', serif;
+    --font-mono: 'Geist Mono', monospace;
+
     /* Footer gradient */
     --color-gradient-mid: #d8dff5;
     --color-gradient-end: #c5cee8;
@@ -50,6 +53,9 @@
     --glass-blur: blur(16px);
     --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.16), 0 1px 4px rgba(0, 0, 0, 0.08);
     --glass-shadow-hover: 0 6px 24px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.10);
+    --glass-bg-chip: rgba(255, 255, 255, 0.72);
+    --shadow-chip: 0 0 0 0.5px rgba(15, 20, 50, 0.08), 0 4px 16px rgba(15, 20, 50, 0.08);
+    --color-hairline: rgba(15, 20, 50, 0.12);
 
     /* Shadows */
     --shadow-card: 0 10px 30px rgba(44, 47, 67, 0.15);

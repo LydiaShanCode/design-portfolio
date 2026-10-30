@@ -1,0 +1,65 @@
+<!--
+  Current — the live .play-card-hover-badge, copied from src/styles/custom.css for reference.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Current</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .badge {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      z-index: 5;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px 6px 6px;
+      border-radius: var(--radius-full);
+      background: rgba(200, 200, 200, 0.35);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 200ms ease, transform 200ms ease;
+    }
+
+    .badge-year {
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      background: #22262b;
+      font-size: 12px;
+      font-weight: 500;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .badge-title {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.5);
+      white-space: nowrap;
+    }
+
+    .play-card:hover .badge,
+    .force-hover .badge { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="play-grid"></div>
+  <script src="cards.js"></script>
+  <script>
+    renderGrid({
+      renderLabel: (item) => `
+        <span class="badge">
+          ${item.year ? `<span class="badge-year">${item.year}</span>` : ''}
+          <span class="badge-title">${item.title}</span>
+        </span>`,
+    })
+  </script>
+</body>
+</html>

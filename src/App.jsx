@@ -11,7 +11,6 @@ import WaterCanvas from './components/WaterCanvas'
 import CustomCursor from './components/CustomCursor'
 import SiteIntro from './components/SiteIntro'
 import { Analytics } from '@vercel/analytics/react'
-import { Agentation } from 'agentation'
 
 const Play = lazy(() => import('./components/Play'))
 const Resume = lazy(() => import('./components/Resume'))
@@ -75,7 +74,7 @@ function App() {
         <ScrollToHash />
         <ScrollToTopOnNavigate />
         <div className="relative z-40">
-          <Suspense fallback={null}>
+          <Suspense fallback={<div className="route-fallback" aria-hidden="true" />}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/play" element={<Play />} />

@@ -1,110 +1,100 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import firstFrameRaw from '../assets/koi-frames/frame-000.txt?raw'
 
-// Total frames: 000-197 (198 frames) - all frames are consecutive
-const TOTAL_FRAMES = 198
+const FRAME_MS = 50
+const SHIMMER_MS = 150
+const SHIMMER_RATIO = 0.02
 // Characters to cycle through for loading animation
 const LOADING_CHARS = ['|', '/', '-', '\\']
+
+const firstFrameChars = firstFrameRaw.split('')
+const shimmerCandidates = firstFrameChars.reduce((indices, char, i) => {
+  if (char !== ' ' && char !== '\n') indices.push(i)
+  return indices
+}, [])
+const shimmerCount = Math.min(Math.floor(firstFrameChars.length * SHIMMER_RATIO), shimmerCandidates.length)
+
+function shimmerFrame(loadingChar) {
+  const chars = [...firstFrameChars]
+  const positions = new Set()
+  while (positions.size < shimmerCount) {
+    positions.add(shimmerCandidates[Math.floor(Math.random() * shimmerCandidates.length)])
+  }
+  positions.forEach((pos) => { chars[pos] = loadingChar })
+  return chars.join('')
+}
 
 function KoiFish() {
   const containerRef = useRef(null)
   const fishRef = useRef(null)
-  const [frames, setFrames] = useState([])
-  const [currentFrameIndex, setCurrentFrameIndex] = useState(0)
+  const framesRef = useRef(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [firstFrame, setFirstFrame] = useState('')
-  const [animatedFrame, setAnimatedFrame] = useState('')
-  const loadingCharIndexRef = useRef(0)
-
-  useEffect(() => {
-    const framePromises = Array.from({ length: 198 }, (_, i) => {
-      const num = i.toString().padStart(3, '0')
-      return import(`../assets/koi-frames/frame-${num}.txt?raw`)
-        .then((m) => m.default)
-        .catch(() => '')
-    })
-
-    framePromises[0].then((content) => {
-      if (content) {
-        setFirstFrame(content)
-        setAnimatedFrame(content)
-      }
-    })
-
-    Promise.all(framePromises).then((allFrames) => {
-      setFrames(allFrames)
-      setIsLoading(false)
-    })
-  }, [])
-
-  // Subtle animation on first frame while loading
-  useEffect(() => {
-    if (!isLoading || !firstFrame) return
-
-    const animateFirstFrame = () => {
-      // Cycle through loading characters, replacing a few characters randomly
-      const chars = firstFrame.split('')
-      const charCount = chars.length
-      
-      // Replace a small percentage of characters with cycling loading chars
-      const numToReplace = Math.floor(charCount * 0.02) // 2% of characters
-      const loadingChar = LOADING_CHARS[loadingCharIndexRef.current % LOADING_CHARS.length]
-      
-      // Get random positions to replace (but avoid already replaced positions)
-      const positions = new Set()
-      while (positions.size < numToReplace) {
-        const pos = Math.floor(Math.random() * charCount)
-        // Only replace non-whitespace characters
-        if (chars[pos] && chars[pos] !== ' ' && chars[pos] !== '\n') {
-          positions.add(pos)
-        }
-      }
-      
-      const animated = [...chars]
-      positions.forEach(pos => {
-        animated[pos] = loadingChar
-      })
-      
-      setAnimatedFrame(animated.join(''))
-      loadingCharIndexRef.current++
-    }
-
-    const interval = setInterval(animateFirstFrame, 150) // Slower animation for subtlety
-    return () => clearInterval(interval)
-  }, [isLoading, firstFrame])
-
-  // Animate frames cycling (normal animation when all loaded)
-  useEffect(() => {
-    if (isLoading || frames.length === 0) return
-
-    const frameInterval = setInterval(() => {
-      setCurrentFrameIndex((prev) => (prev + 1) % frames.length)
-    }, 50) // Change frame every 50ms (20 FPS for smooth animation)
-
-    return () => clearInterval(frameInterval)
-  }, [frames, isLoading])
-
-  // Determine which frame to show
-  const displayFrame = isLoading ? animatedFrame : (frames[currentFrameIndex] || '')
-
   const [fishScale, setFishScale] = useState(1)
 
   useEffect(() => {
-    if (!containerRef.current || !fishRef.current) return
+    let cancelled = false
+    import('../data/koiFrames').then(({ default: allFrames }) => {
+      if (cancelled || allFrames.length === 0) return
+      framesRef.current = allFrames
+      setIsLoading(false)
+    })
+    return () => { cancelled = true }
+  }, [])
+
+  // Frames are ~170k characters of pre-formatted text; writing textContent directly skips
+  // React reconciliation, and measuring only on resize avoids a forced layout every frame.
+  useEffect(() => {
+    const fish = fishRef.current
+    const container = containerRef.current
+    if (!fish || !container) return
+
+    let rafId = 0
+    let last = 0
+    let tick = 0
+    let inView = true
+
+    const step = (now) => {
+      rafId = requestAnimationFrame(step)
+      if (!inView) return
+      const frames = framesRef.current
+      const interval = frames ? FRAME_MS : SHIMMER_MS
+      const elapsed = now - last
+      if (elapsed < interval) return
+      last = elapsed > interval * 4 ? now : now - (elapsed % interval)
+      fish.textContent = frames
+        ? frames[tick % frames.length]
+        : shimmerFrame(LOADING_CHARS[tick % LOADING_CHARS.length])
+      tick++
+    }
+
+    const observer = new IntersectionObserver(([entry]) => { inView = entry.isIntersecting })
+    observer.observe(container)
+    rafId = requestAnimationFrame(step)
+
+    return () => {
+      cancelAnimationFrame(rafId)
+      observer.disconnect()
+    }
+  }, [isLoading])
+
+  useLayoutEffect(() => {
+    const container = containerRef.current
+    const fish = fishRef.current
+    if (!container || !fish) return
 
     const updateScale = () => {
-      const cW = containerRef.current.clientWidth
-      const cH = containerRef.current.clientHeight
-      const fW = fishRef.current.scrollWidth
-      const fH = fishRef.current.scrollHeight
+      const fW = fish.scrollWidth
+      const fH = fish.scrollHeight
       if (fW > 0 && fH > 0) {
-        setFishScale(Math.min(cW / fW, cH / fH, 1))
+        setFishScale(Math.min(container.clientWidth / fW, container.clientHeight / fH, 1))
       }
     }
 
     updateScale()
-    window.addEventListener('resize', updateScale)
-    return () => window.removeEventListener('resize', updateScale)
-  }, [displayFrame])
+    const observer = new ResizeObserver(updateScale)
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [isLoading])
 
   return (
     <div
@@ -112,26 +102,24 @@ function KoiFish() {
       className="koi-container relative inline-block"
       style={{ width: 'min(550px, 100vw)', height: 'min(420px, 87vw)' }}
     >
-      {displayFrame && (
-        <div
-          ref={fishRef}
-          className="koi-fish absolute top-1/2 left-1/2"
-          style={{
-            fontFamily: "'Courier New', monospace",
-            fontWeight: 700,
-            whiteSpace: 'pre',
-            fontSize: 'clamp(8px, 1.4vw, 12px)',
-            lineHeight: '1',
-            color: 'var(--color-primary)',
-            transformOrigin: 'center',
-            opacity: isLoading ? 0.7 : 0.9,
-            transform: `translate(-50%, -50%) scale(${fishScale})`,
-            transition: isLoading ? 'none' : 'opacity 0.3s ease-in',
-          }}
-        >
-          {displayFrame}
-        </div>
-      )}
+      <div
+        ref={fishRef}
+        className="koi-fish absolute top-1/2 left-1/2"
+        style={{
+          fontFamily: "'Courier New', monospace",
+          fontWeight: 700,
+          whiteSpace: 'pre',
+          fontSize: 'clamp(8px, 1.4vw, 12px)',
+          lineHeight: '1',
+          color: 'var(--color-primary)',
+          transformOrigin: 'center',
+          opacity: isLoading ? 0.7 : 0.9,
+          transform: `translate(-50%, -50%) scale(${fishScale})`,
+          transition: isLoading ? 'none' : 'opacity 0.3s ease-in',
+        }}
+      >
+        {firstFrameRaw}
+      </div>
     </div>
   )
 }

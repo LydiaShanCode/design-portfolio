@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
-import photo from '../assets/about page/lydia.png'
-import drawing1 from '../assets/about page/Untitled.png'
-import drawing2 from '../assets/about page/Untitled (1).png'
-import drawing3 from '../assets/about page/Untitled (2).png'
-import drawing4 from '../assets/about page/Untitled (3).png'
-import drawing5 from '../assets/about page/Untitled (4).png'
-import drawing6 from '../assets/about page/Untitled (6).png'
+import Picture from './Picture'
+import photo from '../assets/about page/lydia.png?responsive&w=480;960'
+import drawing1 from '../assets/about page/Untitled.png?responsive&w=480;960'
+import drawing2 from '../assets/about page/Untitled (1).png?responsive&w=480;960'
+import drawing3 from '../assets/about page/Untitled (2).png?responsive&w=480;960'
+import drawing4 from '../assets/about page/Untitled (3).png?responsive&w=480;960'
+import drawing5 from '../assets/about page/Untitled (4).png?responsive&w=480;960'
+import drawing6 from '../assets/about page/Untitled (6).png?responsive&w=480;960'
 
 const drawings = [drawing3, drawing4, drawing2, drawing1, drawing5, drawing6]
 
@@ -55,9 +56,11 @@ function About() {
             {drawings.map((src, i) => {
               const pos = FAN_POSITIONS[i]
               return (
-                <img
+                <Picture
                   key={i}
-                  src={src}
+                  image={src}
+                  sizes="260px"
+                  loading="eager"
                   alt=""
                   className="about-drawing"
                   style={{
@@ -85,7 +88,7 @@ function About() {
 
           {/* Polaroid photo card */}
           <div className="about-photo-card">
-            <img src={photo} alt="Lydia" className="about-photo" />
+            <Picture image={photo} sizes="320px" priority alt="Lydia" className="about-photo" />
             <p className="about-photo-label">Hi, I'm Lydia</p>
           </div>
         </div>

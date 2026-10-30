@@ -1,405 +1,386 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
-import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
-import { useDialKit } from 'dialkit'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
+import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'framer-motion'
 import ProjectCard from './ProjectCard'
 import ProjectPreview from './ProjectPreview'
 import projectsFromMd from '../data/projectLoader'
-import designSystemImage from '../assets/projects/design-system/ design system - work card image.png'
-import flowOfFundsImage from '../assets/projects/payouts-uplift/payouts uplift - work card image.png'
-import shopBalanceImage from '../assets/projects/shop-balance/shop balance - work card image.png'
-import internationalCommerceImage from '../assets/projects/smart-markets/international commerce - work card image.png'
-import listeningRoomImage from '../assets/projects/Listening Room/listening room - work card image.png'
-import currentRibbon from '../assets/current ribbon.svg'
-import shopifyIcon from '../assets/shopify-icon.svg'
-import searchEyeIcon from '../assets/searcheye icon.svg'
-import flowOfFundsVideo from '../assets/projects/payouts-uplift/payouts uplift final video.MP4'
-import designSystemVideo from '../assets/projects/design-system/Design System Final Video.MP4'
-import internationalCommerceVideo from '../assets/projects/smart-markets/International Commerce Final video.MP4'
-import shopBalanceVideo from '../assets/projects/shop-balance/Shop Balance final video.MP4'
-import listeningRoomVideo from '../assets/projects/Listening Room/Listening Room final video.MP4'
+import { withProjectAssets } from '../data/projectAssets'
 
-function SwipeableCard({ children, onSwipe, onTap, style, isSwiping }) {
+const SPRING = { type: 'spring', stiffness: 380, damping: 28, mass: 1.1 }
+const INSTANT = { duration: 0 }
+const FADE = { duration: 0.15, ease: [0.22, 0.61, 0.36, 1] }
+const AUTO_CYCLE_MS = 5000
+const MOBILE_BREAKPOINT = 640
+const MOBILE_INITIAL_ORDER = [2, 1, 3, 4, 0]
+const DESKTOP_ORDER = [0, 1, 2, 3, 4]
+
+// Desktop fan: one entry per stack slot
+const FAN_OFFSET = [-2, -1, 0, 1, 2]
+const FAN_TILT = [-8, -4, 0, 4, 8]
+const FAN_EDGE_PUSH = [0, 1, 1, 1, 0]
+const FAN_Z = [1, 2, 3, 2, 1]
+const FAN_CARD_WIDTH = 340
+const FAN_MIN_OVERLAP = 24
+const FAN_MIN_SPREAD = 120
+const FAN_TIGHTEN = 0.82
+const FAN_HOVER_PUSH = 36
+const FAN_HOVER_LIFT = -22
+
+// Mobile stack: one entry per depth
+const STACK_ROTATIONS = [0, -2, 3, -1.5, 2]
+const STACK_PEEK = 8
+const SWIPE_DISTANCE = 80
+const SWIPE_VELOCITY = 400
+
+function fanPose(slot, hoverIndex, spreadBase) {
+  const hovered = hoverIndex !== null
+  const spread = hovered ? spreadBase : spreadBase * FAN_TIGHTEN
+  const push = hovered ? FAN_HOVER_PUSH * FAN_EDGE_PUSH[slot] * (slot - hoverIndex) : 0
+  const lift = slot === hoverIndex ? FAN_HOVER_LIFT : 0
+  // The lift travels along the card's own (rotated) axis
+  const tilt = (FAN_TILT[slot] * Math.PI) / 180
+  return {
+    x: spread * FAN_OFFSET[slot] + push - lift * Math.sin(tilt),
+    y: lift * Math.cos(tilt),
+    rotate: FAN_TILT[slot],
+  }
+}
+
+function stackPose(depth) {
+  const scale = 1 - depth * 0.02
+  const side = depth % 2 === 1 ? -1 : 1
+  const peekX = depth === 0 ? 0 : side * Math.ceil(depth / 2) * STACK_PEEK
+  const peekY = depth === 0 ? 0 : Math.ceil(depth / 2) * 3
+  // Offsets are expressed in the card's scaled space, matching the original CSS transform order
+  return { x: peekX * scale, y: peekY * scale, scale, rotate: STACK_ROTATIONS[depth] || 0 }
+}
+
+const StackCard = forwardRef(function StackCard({
+  project,
+  stackIndex,
+  depth,
+  isExiting,
+  canDrag,
+  reduceMotion,
+  onSwipe,
+  onDragStart,
+  onDragCancel,
+  onTap,
+}, ref) {
   const x = useMotionValue(0)
+  const fade = useMotionValue(1)
   const rotate = useTransform(x, [-200, 0, 200], [-15, 0, 15])
-  const cardOpacity = useTransform(x, [-200, -100, 0, 100, 200], [0.5, 1, 1, 1, 0.5])
-  const swipingRef = useRef(false)
+  const dragOpacity = useTransform(x, [-200, -100, 0, 100, 200], [0.5, 1, 1, 1, 0.5])
+  const opacity = useTransform(() => fade.get() * dragOpacity.get())
+  const wrapperRef = useRef(null)
   const didDragRef = useRef(false)
+  const isTop = depth === 0
 
-  useEffect(() => {
-    if (!isSwiping || swipingRef.current) return
-    swipingRef.current = true
-    animate(x, -300, { duration: 0.45, ease: [0.12, 0.8, 0.2, 1] }).then(() => {
-      x.set(0)
-      swipingRef.current = false
-      onSwipe()
-    })
-  }, [isSwiping, x, onSwipe])
-
-  const handleDragEnd = useCallback((e, info) => {
-    if (Math.abs(info.offset.x) > 80 || Math.abs(info.velocity.x) > 400) {
-      const dir = info.offset.x > 0 ? 300 : -300
-      animate(x, dir, { duration: 0.3, ease: [0.22, 0.61, 0.36, 1] }).then(() => {
-        x.set(0)
-        onSwipe()
+  useImperativeHandle(ref, () => ({
+    // Fly off-screen carrying `velocity`; calls onCleared once the card no longer covers the stack
+    fly(direction, velocity, onCleared) {
+      const width = wrapperRef.current?.offsetWidth || 320
+      const offscreen = direction * (window.innerWidth / 2 + width)
+      let cleared = false
+      return new Promise((resolve) => {
+        const controls = animate(x, offscreen, { ...SPRING, velocity })
+        const unsubscribe = x.on('change', (value) => {
+          if (!cleared && Math.abs(value) > width * 0.6) {
+            cleared = true
+            onCleared()
+          }
+          // Settling past the edge is invisible, so hand off as soon as it's out of view
+          if (Math.abs(value) >= Math.abs(offscreen) * 0.97) {
+            controls.stop()
+            unsubscribe()
+            resolve()
+          }
+        })
+        controls.then(() => {
+          unsubscribe()
+          if (!cleared) onCleared()
+          resolve()
+        })
       })
-    }
-    requestAnimationFrame(() => { didDragRef.current = false })
-  }, [x, onSwipe])
+    },
+    returnHome() {
+      return animate(x, 0, SPRING)
+    },
+    fadeTo(value) {
+      return animate(fade, value, FADE)
+    },
+    reset() {
+      x.set(0)
+    },
+  }), [x, fade])
 
-  const handleTap = useCallback(() => {
-    if (didDragRef.current) return
-    onTap?.()
-  }, [onTap])
+  const handleDragEnd = (event, info) => {
+    requestAnimationFrame(() => { didDragRef.current = false })
+    const passed = Math.abs(info.offset.x) > SWIPE_DISTANCE || Math.abs(info.velocity.x) > SWIPE_VELOCITY
+    if (!passed) {
+      onDragCancel()
+      return
+    }
+    const direction = (Math.abs(info.velocity.x) > SWIPE_VELOCITY ? info.velocity.x : info.offset.x) > 0 ? 1 : -1
+    onSwipe(direction, info.velocity.x)
+  }
+
+  const pose = stackPose(depth)
 
   return (
     <motion.div
-      style={{ x, rotate, opacity: cardOpacity, touchAction: 'pan-y', ...style }}
-      drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.9}
-      onDragStart={() => { didDragRef.current = true }}
-      onTap={handleTap}
-      onDragEnd={handleDragEnd}
-      whileTap={{ scale: 0.98 }}
+      ref={wrapperRef}
+      className={`work-card-mobile-wrapper${isTop ? ' work-card-mobile-wrapper--top' : ''}`}
+      initial={false}
+      animate={pose}
+      transition={reduceMotion ? INSTANT : SPRING}
+      style={{ zIndex: isExiting ? 20 : 10 - depth, opacity }}
     >
-      {children}
+      <motion.div
+        className="work-card-mobile-drag"
+        style={{ x, rotate }}
+        drag={canDrag ? 'x' : false}
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.9}
+        dragTransition={{ bounceStiffness: SPRING.stiffness, bounceDamping: SPRING.damping }}
+        onDragStart={() => {
+          didDragRef.current = true
+          onDragStart()
+        }}
+        onDragEnd={handleDragEnd}
+        onTap={() => {
+          if (didDragRef.current || !isTop) return
+          onTap(wrapperRef.current)
+        }}
+        whileTap={canDrag ? { scale: 0.98 } : undefined}
+      >
+        <ProjectCard project={project} stackIndex={stackIndex} isMobileStack />
+      </motion.div>
     </motion.div>
   )
-}
+})
 
 function ProjectsGrid() {
-  const [projects, setProjects] = useState([])
-  const [cardOrder, setCardOrder] = useState([0, 1, 2, 3, 4])
-  const [isMobile, setIsMobile] = useState(false)
-  const [desktopHoverIndex, setDesktopHoverIndex] = useState(null)
+  const projects = useMemo(() => projectsFromMd.slice(0, 5).map(withProjectAssets), [])
+  const reduceMotion = useReducedMotion()
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth <= MOBILE_BREAKPOINT,
+  )
+  const [order, setOrder] = useState(() => (isMobile ? MOBILE_INITIAL_ORDER : DESKTOP_ORDER))
+  const [exitingId, setExitingId] = useState(null)
+  const [isBusy, setIsBusy] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const [hoverIndex, setHoverIndex] = useState(null)
+  const [settlingIndex, setSettlingIndex] = useState(null)
+  const [spreadBase, setSpreadBase] = useState(200)
+  const [videosWarm, setVideosWarm] = useState(false)
   const [selectedProject, setSelectedProject] = useState(null)
   const [cardRect, setCardRect] = useState(null)
-  const [swipingIndex, setSwipingIndex] = useState(null)
+  const [inView, setInView] = useState(true)
+  const [pageVisible, setPageVisible] = useState(
+    () => typeof document === 'undefined' || !document.hidden,
+  )
+
   const stackRef = useRef(null)
-  const autoSwipeTimerRef = useRef(null)
-  const userInteractedRef = useRef(false)
-  const pausedRef = useRef(false)
-  const animatedCycleRef = useRef(null)
+  const cardRefs = useRef(new Map())
+  const orderRef = useRef(order)
+  const busyRef = useRef(false)
+  const timerRef = useRef(null)
+  orderRef.current = order
 
-  const dial = useDialKit('Card Stack', {
-    exit: {
-      _collapsed: true,
-      travelDistance: [-70, -300, 0],
-      rotationZ: [-8, -30, 30],
-      scaleOut: [0.95, 0.5, 1.2],
-      spring: { type: 'spring', visualDuration: 0.45, bounce: 0.25 },
-    },
-    entrance: {
-      _collapsed: true,
-      delay: [0.05, 0, 0.5],
-      spring: { type: 'spring', stiffness: 200, damping: 25, mass: 4.2 },
-    },
-    timing: {
-      _collapsed: true,
-      interval: [5, 1, 15, 0.5],
-    },
-    paused: false,
-    cycle: { type: 'action', label: 'Cycle Now' },
-  }, {
-    onAction: (action) => {
-      if (action === 'cycle') animatedCycleRef.current?.()
-    },
-  })
+  useEffect(() => {
+    const onResize = () => {
+      const mobile = window.innerWidth <= MOBILE_BREAKPOINT
+      setIsMobile((prev) => {
+        if (mobile !== prev) setOrder(mobile ? MOBILE_INITIAL_ORDER : DESKTOP_ORDER)
+        return mobile
+      })
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
-  const imageAssets = {
-    designSystem: designSystemImage,
-    flowOfFunds: flowOfFundsImage,
-    shopBalance: shopBalanceImage,
-    internationalCommerce: internationalCommerceImage,
-    listeningRoom: listeningRoomImage,
+  useEffect(() => {
+    const stack = stackRef.current
+    if (!stack || isMobile) return
+    const count = projects.length
+    const update = () => {
+      const width = stack.clientWidth
+      if (!width) return
+      const desired = (width - FAN_CARD_WIDTH) / Math.max(count - 1, 1)
+      setSpreadBase(Math.min(FAN_CARD_WIDTH - FAN_MIN_OVERLAP, Math.max(FAN_MIN_SPREAD, desired)))
+    }
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(stack)
+    return () => observer.disconnect()
+  }, [isMobile, projects.length])
+
+  useEffect(() => {
+    const stack = stackRef.current
+    if (!stack) return
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting))
+    observer.observe(stack)
+    const onVisibility = () => setPageVisible(!document.hidden)
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      observer.disconnect()
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
+  }, [])
+
+  const setAnimating = (active) => {
+    stackRef.current?.classList.toggle('work-stack--animating', active)
   }
 
-  const videoAssets = {
-    designSystem: designSystemVideo,
-    flowOfFunds: flowOfFundsVideo,
-    internationalCommerce: internationalCommerceVideo,
-    shopBalance: shopBalanceVideo,
-    listeningRoom: listeningRoomVideo,
+  const setBusy = (busy) => {
+    busyRef.current = busy
+    setIsBusy(busy)
   }
 
-  const ribbonAssets = {
-    current: currentRibbon,
-  }
+  const clearAutoCycle = () => clearTimeout(timerRef.current)
 
-  const iconAssets = {
-    shopify: shopifyIcon,
-    searchEye: searchEyeIcon,
-  }
+  const cycle = useCallback(async (direction = -1, velocity = 0) => {
+    if (busyRef.current) return
+    const topId = projects[orderRef.current[0]]?.id
+    const card = cardRefs.current.get(topId)
+    if (!card) return
 
-  const enrichProject = (project) => ({
-    ...project,
-    image: imageAssets[project.imageKey],
-    ribbon: ribbonAssets[project.ribbonKey],
-    icon: iconAssets[project.iconKey],
-    video: videoAssets[project.videoKey] || null,
-  })
+    clearAutoCycle()
+    setBusy(true)
+    setAnimating(true)
+    const sendToBack = () => setOrder((prev) => [...prev.slice(1), prev[0]])
+
+    if (reduceMotion) {
+      await card.fadeTo(0)
+      flushSync(sendToBack)
+      card.reset()
+      await card.fadeTo(1)
+      setAnimating(false)
+      setBusy(false)
+      return
+    }
+
+    setExitingId(topId)
+    await card.fly(direction, velocity, sendToBack)
+    // Drop below the stack before travelling back so it tucks in behind
+    flushSync(() => setExitingId(null))
+    // The new top card is already in place, so it can be swiped while this one returns
+    setBusy(false)
+    await card.returnHome()
+    if (!busyRef.current) setAnimating(false)
+  }, [projects, reduceMotion])
+
+  const autoCycleEnabled = isMobile && !reduceMotion && inView && pageVisible && !selectedProject
+
+  // Re-armed whenever the stack goes idle, so a manual swipe restarts the full interval
+  useEffect(() => {
+    if (!autoCycleEnabled || isBusy || isDragging) return
+    timerRef.current = setTimeout(() => cycle(-1, 0), AUTO_CYCLE_MS)
+    return clearAutoCycle
+  }, [autoCycleEnabled, isBusy, isDragging, cycle])
 
   const handleSelect = useCallback((project, rect) => {
-    if (swipingIndex !== null) return
+    if (busyRef.current) return
     setCardRect(rect)
     setSelectedProject(project)
-    clearInterval(autoSwipeTimerRef.current)
-  }, [swipingIndex])
+  }, [])
 
   const handleClosePreview = useCallback(() => {
     setSelectedProject(null)
     setCardRect(null)
   }, [])
 
-  useEffect(() => {
-    setProjects(projectsFromMd)
+  // Dragging blocks auto-cycle via busyRef but must not flip `canDrag` mid-gesture
+  const handleDragStart = useCallback(() => {
+    clearAutoCycle()
+    busyRef.current = true
+    setIsDragging(true)
+    setAnimating(true)
   }, [])
 
-  useEffect(() => {
-    const checkMobile = () => {
-      const mobile = window.innerWidth <= 640
-      setIsMobile((prev) => {
-        if (mobile !== prev) {
-          setCardOrder(mobile ? [2, 1, 3, 4, 0] : [0, 1, 2, 3, 4])
-        }
-        return mobile
-      })
-    }
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+  const handleDragCancel = useCallback(() => {
+    busyRef.current = false
+    setIsDragging(false)
+    setAnimating(false)
   }, [])
 
-  useEffect(() => {
-    const stack = stackRef.current
-    if (!stack) return
+  const handleSwipe = useCallback((direction, velocity) => {
+    busyRef.current = false
+    setIsDragging(false)
+    cycle(direction, velocity)
+  }, [cycle])
 
-    const cardCount = Math.min(5, projects.length || 5)
-    const cardWidth = 340
-    const minOverlap = 24
-    const minSpread = 120
-
-    const updateSpread = () => {
-      const containerWidth = stack.clientWidth
-      if (!containerWidth) return
-      const desired = (containerWidth - cardWidth) / Math.max(cardCount - 1, 1)
-      const maxSpread = cardWidth - minOverlap
-      const spread = Math.min(maxSpread, Math.max(minSpread, desired))
-      stack.style.setProperty('--card-spread-base', `${spread}px`)
-    }
-
-    updateSpread()
-    const resizeObserver = new ResizeObserver(updateSpread)
-    resizeObserver.observe(stack)
-
-    return () => resizeObserver.disconnect()
-  }, [projects.length])
-
-  useEffect(() => {
-    const stack = stackRef.current
-    if (!stack) return
-
-    const cards = Array.from(stack.querySelectorAll('.work-card'))
-    if (!cards.length) return
-
-    const setHoverIndex = (index) => {
-      stack.style.setProperty('--hover-index', String(index))
-      stack.dataset.cardHover = 'true'
-      if (!isMobile) setDesktopHoverIndex(index)
-    }
-
-    const clearHoverIndex = () => {
-      stack.style.removeProperty('--hover-index')
-      delete stack.dataset.cardHover
-      if (!isMobile) setDesktopHoverIndex(null)
-    }
-
-    const handlers = cards.map((card) => {
-      const index = Number(card.dataset.stackIndex ?? 0)
-      const onEnter = () => setHoverIndex(index)
-      const onLeave = (event) => {
-        const nextCard = event.relatedTarget?.closest?.('.work-card')
-        if (nextCard) return
-        clearHoverIndex()
-      }
-
-      card.addEventListener('pointerenter', onEnter)
-      card.addEventListener('pointerleave', onLeave)
-      card.addEventListener('focus', onEnter)
-      card.addEventListener('blur', onLeave)
-
-      return { card, onEnter, onLeave }
-    })
-
-    return () => {
-      handlers.forEach(({ card, onEnter, onLeave }) => {
-        card.removeEventListener('pointerenter', onEnter)
-        card.removeEventListener('pointerleave', onLeave)
-        card.removeEventListener('focus', onEnter)
-        card.removeEventListener('blur', onLeave)
-      })
-    }
-  }, [projects.length, isMobile])
-
-  const cycleStack = useCallback(() => {
-    setCardOrder((prev) => {
-      const next = [...prev]
-      next.push(next.shift())
-      return next
-    })
-  }, [])
-
-  const swipingRef = useRef(false)
-
-  const handleSwipeComplete = useCallback(() => {
-    cycleStack()
-    setSwipingIndex(null)
-    swipingRef.current = false
-    // Reset auto-swipe timer so it waits a full interval from now
-    clearInterval(autoSwipeTimerRef.current)
-    if (isMobile && !pausedRef.current) {
-      const intervalMs = dial.timing.interval * 1000
-      autoSwipeTimerRef.current = setInterval(() => {
-        if (pausedRef.current) return
-        animatedCycleRef.current?.()
-      }, intervalMs)
-    }
-  }, [cycleStack, isMobile, dial.timing.interval])
-
-  const animatedCycle = useCallback(() => {
-    if (swipingRef.current || dial.paused) return
-    swipingRef.current = true
-    // Set swipingIndex to trigger SwipeableCard's programmatic exit
-    setSwipingIndex(cardOrder[0])
-  }, [cardOrder, dial.paused])
-
-  animatedCycleRef.current = animatedCycle
-
-  useEffect(() => {
-    pausedRef.current = dial.paused
-  }, [dial.paused])
-
-  useEffect(() => {
-    if (!isMobile) {
-      clearInterval(autoSwipeTimerRef.current)
-      return
-    }
-
-    const intervalMs = dial.timing.interval * 1000
-    autoSwipeTimerRef.current = setInterval(() => {
-      if (pausedRef.current) return
-      animatedCycle()
-    }, intervalMs)
-
-    return () => clearInterval(autoSwipeTimerRef.current)
-  }, [isMobile, animatedCycle, dial.timing.interval])
-
-  const getMobileStackStyle = (orderPosition) => {
-    if (!isMobile) return {}
-
-    const rotations = [0, -2, 3, -1.5, 2]
-    const scale = 1 - orderPosition * 0.02
-    const zIndex = 10 - orderPosition
-    const peekOffset = 8
-    const translateX = orderPosition === 0 ? 0 : (orderPosition % 2 === 1 ? -1 : 1) * Math.ceil(orderPosition / 2) * peekOffset
-    const translateY = orderPosition === 0 ? 0 : Math.ceil(orderPosition / 2) * 3
-
-    return {
-      '--mobile-scale': scale,
-      '--mobile-translate-x': `${translateX}px`,
-      '--mobile-translate-y': `${translateY}px`,
-      '--mobile-rotate': `${rotations[orderPosition] || 0}deg`,
-      '--mobile-z-index': zIndex,
-    }
+  const hoverCard = (index) => {
+    if (hoverIndex !== null && hoverIndex !== index) setSettlingIndex(hoverIndex)
+    setHoverIndex(index)
   }
+
+  const leaveCard = (event) => {
+    if (event.relatedTarget?.closest?.('.work-card')) return
+    if (hoverIndex !== null) setSettlingIndex(hoverIndex)
+    setHoverIndex(null)
+  }
+
+  const fanTransition = reduceMotion ? INSTANT : SPRING
 
   return (
     <section id="work" className="pt-0 pb-0 px-4 mt-0">
       <div className="max-w-7xl mx-auto">
-        <div className={`work-stack ${isMobile ? 'work-stack--mobile' : ''}`} ref={stackRef}>
-          {isMobile ? (
-            cardOrder.map((originalIndex, orderPosition) => {
-              const project = projects[originalIndex]
-              if (!project) return null
-
-              const enriched = enrichProject(project)
-              const isTop = orderPosition === 0
-              const isCardSwiping = originalIndex === swipingIndex
-
-              const card = (
-                <ProjectCard
-                  project={enriched}
-                  stackIndex={originalIndex}
-                  isMobileStack={true}
-                  shouldAutoplay={false}
-                />
-              )
-
-              const wrapperStyle = getMobileStackStyle(orderPosition)
-
-              if (isTop) {
+        <div
+          className={`work-stack ${isMobile ? 'work-stack--mobile' : ''}`}
+          ref={stackRef}
+          onPointerEnter={isMobile ? undefined : () => setVideosWarm(true)}
+        >
+          {isMobile
+            ? projects.map((project, index) => {
+                const depth = order.indexOf(index)
+                if (depth === -1) return null
                 return (
-                  <SwipeableCard
+                  <StackCard
                     key={project.id}
-                    onSwipe={handleSwipeComplete}
-                    onTap={() => {
-                      if (swipingIndex !== null) return
-                      const el = stackRef.current?.querySelector(`[data-stack-index="${originalIndex}"]`)
-                      const rect = el?.getBoundingClientRect()
-                      handleSelect(enriched, rect)
+                    ref={(node) => {
+                      if (node) cardRefs.current.set(project.id, node)
+                      else cardRefs.current.delete(project.id)
                     }}
-                    style={{
-                      position: 'absolute',
-                      left: '50%',
-                      top: 0,
-                      width: 'min(85vw, 320px)',
-                      zIndex: wrapperStyle['--mobile-z-index'] || 10,
-                      marginLeft: 'calc(min(85vw, 320px) / -2)',
-                      pointerEvents: 'auto',
-                    }}
-                    isSwiping={isCardSwiping}
-                  >
-                    <div
-                      className="work-card-mobile-wrapper work-card-mobile-wrapper--top"
-                      style={{
-                        position: 'relative',
-                        left: 'auto',
-                        top: 'auto',
-                        width: '100%',
-                        transform: 'none',
-                        zIndex: 'auto',
-                      }}
-                    >
-                      {card}
-                    </div>
-                  </SwipeableCard>
+                    project={project}
+                    stackIndex={index}
+                    depth={depth}
+                    isExiting={exitingId === project.id}
+                    canDrag={depth === 0 && !isBusy}
+                    reduceMotion={reduceMotion}
+                    onSwipe={handleSwipe}
+                    onDragStart={handleDragStart}
+                    onDragCancel={handleDragCancel}
+                    onTap={(node) => handleSelect(project, node?.getBoundingClientRect())}
+                  />
                 )
-              }
-
-              return (
-                <div
+              })
+            : projects.map((project, index) => (
+                <ProjectCard
                   key={project.id}
-                  className="work-card-mobile-wrapper"
-                  style={{
-                    ...wrapperStyle,
-                    pointerEvents: 'none',
+                  project={project}
+                  stackIndex={index}
+                  shouldAutoplay={index === hoverIndex}
+                  warmVideo={videosWarm}
+                  onSelect={handleSelect}
+                  motionProps={{
+                    initial: false,
+                    animate: fanPose(index, hoverIndex, spreadBase),
+                    transition: fanTransition,
+                    style: {
+                      zIndex: index === hoverIndex ? 10 : index === settlingIndex ? 9 : FAN_Z[index],
+                    },
+                    onAnimationComplete: () => {
+                      if (index === settlingIndex) setSettlingIndex(null)
+                    },
+                    onPointerEnter: () => hoverCard(index),
+                    onPointerLeave: leaveCard,
+                    onFocus: () => hoverCard(index),
+                    onBlur: leaveCard,
                   }}
-                >
-                  {card}
-                </div>
-              )
-            })
-          ) : (
-            projects.slice(0, 5).map((project, index) => (
-              <ProjectCard
-                key={project.id}
-                project={enrichProject(project)}
-                stackIndex={index}
-                shouldAutoplay={index === desktopHoverIndex}
-                onSelect={handleSelect}
-              />
-            ))
-          )}
+                />
+              ))}
         </div>
       </div>
 

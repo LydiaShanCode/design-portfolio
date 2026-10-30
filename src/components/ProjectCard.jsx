@@ -1,6 +1,11 @@
-import { useRef } from 'react'
-import cardboardTexture from '../assets/cardboard texture blue.svg'
-import videoOverlay from '../assets/projects/work card overlay 3 .png'
+import { useMemo, useRef } from 'react'
+import { motion } from 'framer-motion'
+import Picture from './Picture'
+import Video from './Video'
+import cardboardTexture from '../assets/cardboard texture blue.webp'
+import videoOverlay from '../assets/projects/work card overlay 3 .png?responsive&w=480;960'
+
+const HIDDEN = { display: 'none' }
 
 function ProjectCard({
   project,
@@ -8,7 +13,9 @@ function ProjectCard({
   stackClassName = '',
   isMobileStack = false,
   shouldAutoplay = false,
+  warmVideo = false,
   onSelect,
+  motionProps,
 }) {
   const cardRef = useRef(null)
   const {
@@ -17,10 +24,18 @@ function ProjectCard({
     date,
     highlights = [],
     image,
+    imagePlaceholder,
     icon,
-    ribbon,
-    video,
+    cardVideo,
   } = project
+
+  // Desktop keeps the video mounted (hidden) so hover reveals an already-buffered clip
+  const hasVideo = Boolean(cardVideo) && !isMobileStack
+  const showVideo = hasVideo && shouldAutoplay
+  const videoMedia = useMemo(
+    () => (cardVideo && !(warmVideo || shouldAutoplay) ? { ...cardVideo, poster: null } : cardVideo),
+    [cardVideo, warmVideo, shouldAutoplay],
+  )
 
   const handleClick = (e) => {
     if (!onSelect) return
@@ -30,13 +45,14 @@ function ProjectCard({
   }
 
   return (
-    <button
+    <motion.button
       ref={cardRef}
       type="button"
-      className={`work-card ${isMobileStack ? 'work-card--mobile' : `work-card-${stackIndex}`} group relative block overflow-hidden transition-all duration-300 ${stackClassName}`}
+      className={`work-card ${isMobileStack ? 'work-card--mobile' : ''} group relative block overflow-hidden ${stackClassName}`}
+      {...motionProps}
       style={{
         backgroundImage: `url(${cardboardTexture})`,
-        '--card-index': stackIndex,
+        ...motionProps?.style,
       }}
       data-hoverable
       data-stack-index={stackIndex}
@@ -49,25 +65,32 @@ function ProjectCard({
             <img className="work-card-icon" src={icon} alt="" aria-hidden="true" />
           ) : null}
         </div>
-        {video && shouldAutoplay ? (
-          <div className="work-card-image work-card-image--video">
-            <video
-              src={video}
-              autoPlay
-              loop
-              muted
-              playsInline
+        {image || hasVideo ? (
+          <div className={`work-card-image ${showVideo ? 'work-card-image--video' : ''}`}>
+            {hasVideo ? (
+              <>
+                <Video
+                  media={videoMedia}
+                  playing={showVideo}
+                  preload={warmVideo || showVideo ? 'auto' : 'none'}
+                  style={showVideo ? undefined : HIDDEN}
+                />
+                <Picture
+                  image={videoOverlay}
+                  sizes="316px"
+                  aria-hidden="true"
+                  className="work-card-video-overlay"
+                  style={showVideo ? undefined : HIDDEN}
+                />
+              </>
+            ) : null}
+            <Picture
+              image={image}
+              placeholder={imagePlaceholder}
+              sizes="316px"
+              alt={`${title} preview`}
+              style={showVideo ? HIDDEN : undefined}
             />
-            <img
-              src={videoOverlay}
-              alt=""
-              aria-hidden="true"
-              className="work-card-video-overlay"
-            />
-          </div>
-        ) : image ? (
-          <div className="work-card-image">
-            <img src={image} alt={`${title} preview`} />
           </div>
         ) : null}
         <div className="work-card-meta">
@@ -80,7 +103,7 @@ function ProjectCard({
           ))}
         </ul>
       </div>
-    </button>
+    </motion.button>
   )
 }
 

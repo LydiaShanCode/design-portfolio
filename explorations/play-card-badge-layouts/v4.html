@@ -1,0 +1,98 @@
+<!--
+  v4 — Notched corner tab.
+  Idea: cut a tab out of the card's top-left corner in the page colour, with inverted
+  radii so it reads as part of the card's silhouette. Title + year live in the notch;
+  on hover the tab extends to reveal the type and an arrow.
+  Trade-off: a distinctive, very current shape that's always visible (no hover
+  dependence), but it permanently covers one corner of every preview and relies on the
+  page background behind the grid staying white.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v4 — Notched corner tab</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    :root { --notch-r: 16px; }
+
+    .tab {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 10px;
+      max-width: calc(100% - 40px);
+      padding: 12px 16px 10px 18px;
+      background: var(--color-bg);
+      border-bottom-right-radius: var(--notch-r);
+    }
+
+    /* Inverted corners where the tab meets the card's top and left edges */
+    .tab::before,
+    .tab::after {
+      content: '';
+      position: absolute;
+      width: var(--notch-r);
+      height: var(--notch-r);
+      background: radial-gradient(circle at 100% 100%, transparent calc(var(--notch-r) - 0.5px), var(--color-bg) var(--notch-r));
+    }
+
+    .tab::before { top: 0; left: 100%; }
+    .tab::after { top: 100%; left: 0; }
+
+    .tab-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tab-year {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--color-text-muted);
+    }
+
+    .tab-extra {
+      display: inline-flex;
+      gap: 6px;
+      max-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      font-size: 13px;
+      color: var(--color-text-subdued);
+      opacity: 0;
+      transition: max-width 300ms var(--ease-smooth), opacity 200ms var(--ease-smooth);
+    }
+
+    .tab-extra span:last-child { color: var(--color-primary); }
+
+    .play-card:hover .tab-extra,
+    .play-card:focus-visible .tab-extra,
+    .force-hover .tab-extra { max-width: 200px; opacity: 1; }
+
+    /* The card's lift would expose the notch's white against the hover shadow */
+    .play-card:hover { transform: none; }
+  </style>
+</head>
+<body>
+  <div class="play-grid"></div>
+  <script src="cards.js"></script>
+  <script>
+    renderGrid({
+      renderLabel: (item) => `
+        <span class="tab">
+          <span class="tab-title">${item.title}</span>
+          ${item.year ? `<span class="tab-year">${item.year}</span>` : ''}
+          <span class="tab-extra"><span>${item.type}</span><span aria-hidden="true">↗</span></span>
+        </span>`,
+    })
+  </script>
+</body>
+</html>

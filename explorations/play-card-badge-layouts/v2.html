@@ -1,0 +1,76 @@
+<!--
+  v2 — One light glass chip.
+  Idea: keep the overlay, but collapse the two-tone badge into a single bright, frosted
+  chip — title in ink, a hairline divider, year in muted mono. No dark capsule, so it
+  reads as part of the same airy surface as the previews.
+  Trade-off: closest to today (least disruptive), but it still sits on top of the embed
+  and still depends on hover (shown permanently on touch).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v2 — Light glass chip</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .chip {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      max-width: calc(100% - 28px);
+      padding: 7px 12px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      box-shadow: 0 0 0 0.5px rgba(15, 20, 50, 0.08), 0 4px 16px rgba(15, 20, 50, 0.08);
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 200ms var(--ease-smooth), transform 200ms var(--ease-smooth);
+    }
+
+    .chip-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chip-year {
+      padding-left: 10px;
+      border-left: 1px solid rgba(15, 20, 50, 0.12);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--color-text-subdued);
+    }
+
+    .play-card:hover .chip,
+    .play-card:focus-visible .chip,
+    .force-hover .chip { opacity: 1; transform: translateY(0); }
+
+    @media (hover: none) {
+      .chip { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="play-grid"></div>
+  <script src="cards.js"></script>
+  <script>
+    renderGrid({
+      renderLabel: (item) => `
+        <span class="chip">
+          <span class="chip-title">${item.title}</span>
+          ${item.year ? `<span class="chip-year">${item.year}</span>` : ''}
+        </span>`,
+    })
+  </script>
+</body>
+</html>

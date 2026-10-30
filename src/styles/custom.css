@@ -451,23 +451,18 @@ body {
   }
 }
 
-/* Work stack layout */
+/* Holds the footer below the fold while a lazy route chunk loads, so it doesn't jump (CLS) */
+.route-fallback {
+  min-height: 100vh;
+}
+
+/* Work stack layout — card transforms are driven by Framer Motion in ProjectsGrid */
 .work-stack {
   position: relative;
   height: 520px;
   display: flex;
   align-items: center;
   justify-content: center;
-  --card-spread-base: 200px;
-  --card-spread-tight: calc(var(--card-spread-base) * 0.82);
-  --card-spread: var(--card-spread-tight);
-  --hover-index: 0;
-  --hover-push: 0px;
-}
-
-.work-stack[data-card-hover='true'] {
-  --card-spread: var(--card-spread-base);
-  --hover-push: 36px;
 }
 
 .work-card {
@@ -481,23 +476,9 @@ body {
   background-size: 320px auto;
   box-shadow: var(--shadow-card);
   color: inherit;
-  --card-lift: 0px;
-  --card-index: 0;
-  --card-offset: 0;
-  --card-tilt: 0deg;
-  --edge-push: 1;
-  transition: transform 280ms var(--ease-smooth),
-    box-shadow 280ms var(--ease-smooth),
+  transition: box-shadow 280ms var(--ease-smooth),
     filter 280ms var(--ease-smooth);
   will-change: transform;
-  transform: translateX(
-      calc(
-        var(--card-spread) * var(--card-offset) +
-          calc(var(--hover-push) * var(--edge-push)) *
-          (var(--card-index) - var(--hover-index, var(--card-index)))
-      )
-    )
-    rotate(var(--card-tilt)) translateY(var(--card-lift));
 }
 
 .work-card::after {
@@ -516,45 +497,8 @@ body {
   pointer-events: none;
 }
 
-.work-card:hover {
-  --card-lift: -22px;
-  z-index: 10;
-}
-
 .work-card:hover::after {
   opacity: 1;
-}
-
-.work-card-0 {
-  --card-offset: -2;
-  --card-tilt: -8deg;
-  --edge-push: 0;
-  z-index: 1;
-}
-
-.work-card-1 {
-  --card-offset: -1;
-  --card-tilt: -4deg;
-  z-index: 2;
-}
-
-.work-card-2 {
-  --card-offset: 0;
-  --card-tilt: 0deg;
-  z-index: 3;
-}
-
-.work-card-3 {
-  --card-offset: 1;
-  --card-tilt: 4deg;
-  z-index: 2;
-}
-
-.work-card-4 {
-  --card-offset: 2;
-  --card-tilt: 8deg;
-  --edge-push: 0;
-  z-index: 1;
 }
 
 .work-card-inner {
@@ -599,6 +543,13 @@ body {
   object-fit: cover;
 }
 
+/* WebKit's native image drag swallows pointerup and strands the card mid-gesture */
+.work-card img {
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
 .work-card-image--video {
   position: relative;
 }
@@ -641,66 +592,14 @@ body {
 }
 
 @media (max-width: 1024px) {
-  .work-stack {
-    height: 520px;
-  }
-
   .work-card {
     width: 300px;
-  }
-
-  .work-card-0 {
-    --card-offset: -2;
-    --card-tilt: -8deg;
-    --edge-push: 0;
-  }
-
-  .work-card-1 {
-    --card-offset: -1;
-    --card-tilt: -4deg;
-  }
-
-  .work-card-3 {
-    --card-offset: 1;
-    --card-tilt: 4deg;
-  }
-
-  .work-card-4 {
-    --card-offset: 2;
-    --card-tilt: 8deg;
-    --edge-push: 0;
   }
 }
 
 @media (max-width: 768px) {
-  .work-stack {
-    height: 520px;
-  }
-
   .work-card {
     width: 250px;
-  }
-
-  .work-card-0 {
-    --card-offset: -2;
-    --card-tilt: -8deg;
-    --edge-push: 0;
-  }
-
-  .work-card-1 {
-    --card-offset: -1;
-    --card-tilt: -4deg;
-  }
-
-  .work-card-3 {
-    --card-offset: 1;
-    --card-tilt: 4deg;
-  }
-
-  .work-card-4 {
-    --card-offset: 2;
-    --card-tilt: 8deg;
-    --edge-push: 0;
   }
 }
 
@@ -718,21 +617,24 @@ body {
     position: absolute;
     left: 50%;
     top: 0;
-    width: 85vw;
-    max-width: 320px;
-    z-index: var(--mobile-z-index, 1);
-    transform: translateX(-50%)
-      scale(var(--mobile-scale, 1))
-      translateX(var(--mobile-translate-x, 0))
-      translateY(var(--mobile-translate-y, 0))
-      rotate(var(--mobile-rotate, 0deg));
-    transition: transform 300ms var(--ease-smooth),
-                opacity 300ms ease;
+    width: min(85vw, 320px);
+    margin-left: calc(min(85vw, 320px) / -2);
     transform-origin: center center;
+    pointer-events: none;
+  }
+
+  .work-card-mobile-drag {
+    touch-action: pan-y;
+  }
+
+  .work-stack--animating .work-card-mobile-wrapper,
+  .work-stack--animating .work-card-mobile-drag {
+    will-change: transform;
   }
 
   .work-card-mobile-wrapper--top {
     cursor: pointer;
+    pointer-events: auto;
   }
 
   .work-card-mobile-wrapper--top .work-card--mobile {
@@ -744,10 +646,6 @@ body {
     width: 100%;
     height: 480px;
     transform: none;
-    pointer-events: none;
-  }
-
-  .work-stack--mobile .work-card-mobile-wrapper:nth-child(n+4) {
     pointer-events: none;
   }
 }
@@ -860,47 +758,58 @@ body {
 
 .play-card-hover-badge {
   position: absolute;
-  bottom: 16px;
-  left: 16px;
+  bottom: 14px;
+  left: 14px;
   z-index: 5;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 14px 6px 6px;
+  gap: 10px;
+  max-width: calc(100% - 28px);
+  padding: 7px 12px;
   border-radius: var(--radius-full);
-  background: rgba(200, 200, 200, 0.35);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  background: var(--glass-bg-chip);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow: var(--shadow-chip);
   opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 200ms ease, transform 200ms ease;
+  transform: translateY(6px);
+  transition: opacity 200ms var(--ease-smooth), transform 200ms var(--ease-smooth);
   pointer-events: none;
 }
 
-.play-card:hover .play-card-hover-badge {
+.play-card:hover .play-card-hover-badge,
+.play-card:focus-visible .play-card-hover-badge,
+.play-card:focus-within .play-card-hover-badge {
   opacity: 1;
   transform: translateY(0);
 }
 
-.play-card-hover-badge-year {
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  background: #22262b;
-  font-family: 'Geist', system-ui, sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  color: #ffffff;
-  line-height: 1;
+@media (hover: none) {
+  .play-card-hover-badge {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .play-card-hover-badge-title {
-  font-family: 'Geist', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
-  font-weight: 400;
-  color: rgba(0, 0, 0, 0.5);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--color-text);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.play-card-hover-badge-year {
+  flex-shrink: 0;
+  padding-left: 10px;
+  border-left: 1px solid var(--color-hairline);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--color-text-subdued);
 }
 
 .play-card-preview img {
@@ -1261,6 +1170,7 @@ body {
 
 /* Iframe preview (card) */
 .play-card-iframe {
+  position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -1277,6 +1187,9 @@ body {
 }
 
 .play-card-iframe iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   border: none;
@@ -1551,10 +1464,13 @@ button.footer-link {
 }
 
 /* Interactive Postcard */
+/* Height is locked to the background image's aspect ratio, so everything inside
+   sizes in cqi (postcard width) to scale with it instead of overflowing. */
 .postcard {
   position: relative;
   max-width: var(--max-w-postcard);
   width: 100%;
+  container-type: inline-size;
   user-select: none;
   box-shadow: var(--shadow-postcard);
   transition: box-shadow 0.2s ease;
@@ -1597,13 +1513,7 @@ button.footer-link {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding-top: 18%;
-}
-
-.postcard-right-top {
-  height: fit-content;
-  padding-top: 16px;
-  padding-bottom: 16px;
+  padding-top: 14cqi;
 }
 
 .postcard-message-area {
@@ -1638,7 +1548,6 @@ button.footer-link {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: auto;
 }
 
 .postcard-from-label {
@@ -1662,7 +1571,6 @@ button.footer-link {
 }
 
 .postcard-to {
-  margin-bottom: 12px;
   text-align: left;
 }
 
@@ -1744,7 +1652,9 @@ button.footer-link {
     justify-content: center;
   }
 
+  /* Column flex shrink-wraps this, and the size-contained postcard has no intrinsic width */
   .footer-right {
+    width: 100%;
     justify-content: center;
   }
 
@@ -1769,11 +1679,6 @@ button.footer-link {
   .postcard-to-label,
   .postcard-to-email {
     text-align: left;
-  }
-
-  .postcard-to-email,
-  .postcard-to-email-tap {
-    font-size: 18px;
   }
 
   .footer-copyright {
@@ -1851,20 +1756,6 @@ button.footer-link {
   .footer-swim-fish {
     width: min(72vw, 360px);
   }
-
-  .postcard-lines {
-    gap: 4px;
-    margin-top: 4px;
-    margin-bottom: 4px;
-  }
-
-  .postcard-from {
-    margin-top: 2px;
-  }
-
-  .postcard-right {
-    padding-top: 12%;
-  }
 }
 
 .postcard-content {
@@ -1881,16 +1772,34 @@ button.footer-link {
 .postcard-to-label,
 .postcard-from-input,
 .postcard-to-email {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(14px, 2vw, 20px);
+  font-family: var(--font-serif);
+  font-size: clamp(12px, 3.85cqi, 20px);
+  line-height: 1.2;
 }
 
-@media (min-width: 640px) {
-  .postcard-from-label,
-  .postcard-to-label,
-  .postcard-from-input,
+.postcard-from-input {
+  min-width: 0;
+  width: 100%;
+}
+
+.postcard-to-label:empty {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .postcard-left,
+  .postcard-right {
+    flex: 1;
+    max-width: none;
+  }
+
+  /* iOS zooms the page when focusing an input under 16px */
+  .postcard-from-input {
+    font-size: max(16px, min(4.2cqi, 20px));
+  }
+
   .postcard-to-email {
-    font-size: 20px;
+    font-size: clamp(12px, 4.2cqi, 20px);
   }
 }
 
@@ -1899,7 +1808,6 @@ button.footer-link {
   align-items: center;
   gap: 6px;
   min-width: 0;
-  margin-top: 16px;
 }
 
 .postcard-to-email {
@@ -1943,8 +1851,7 @@ button.footer-link {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 16px;
-  margin-bottom: 8px;
+  margin: 2.5cqi 0;
   width: 100%;
 }
 
@@ -1956,7 +1863,7 @@ button.footer-link {
   background: var(--color-primary);
   border: 1px solid transparent;
   font-family: 'Geist', system-ui, sans-serif;
-  font-size: clamp(10px, 1.2vw, 12px);
+  font-size: clamp(11px, 2.4cqi, 14px);
   font-weight: 500;
   color: #fff;
   border-radius: var(--radius-full);
@@ -1965,15 +1872,27 @@ button.footer-link {
   padding: 8px 12px;
   line-height: 1;
   align-self: flex-end;
-  margin-top: 40px;
+  margin-top: auto;
   cursor: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  animation: fadeIn 0.3s ease;
+  transition: transform 0.2s var(--ease-smooth), box-shadow 0.2s var(--ease-smooth);
+  animation: fadeIn 0.3s var(--ease-smooth);
+}
+
+/* Visual pill stays small; hit area reaches 44px for touch */
+.postcard-send::after {
+  content: '';
+  position: absolute;
+  inset: -10px -8px;
 }
 
 .postcard-send:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-send-hover);
+}
+
+.postcard-send:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: none;
 }
 
 .postcard-send-icon {
@@ -3390,64 +3309,6 @@ button.footer-link {
   }
 }
 
-.iterations-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.iterations-tab {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3px 8px;
-  border-radius: var(--radius-full);
-  border: 1px solid transparent;
-  background: transparent;
-  font-family: 'Geist', system-ui, sans-serif;
-  font-size: 11px;
-  font-weight: 500;
-  color: rgba(0, 29, 217, 0.4);
-  white-space: nowrap;
-  cursor: pointer;
-  transition: color 180ms ease;
-}
-
-.iterations-tab:hover {
-  color: var(--color-primary);
-}
-
-@media (min-width: 640px) {
-  .iterations-tab {
-    padding: 4px 10px;
-    font-size: 12px;
-  }
-}
-
-.iterations-tab--active {
-  color: var(--color-primary);
-  font-weight: 600;
-}
-
-.iterations-tab-pill {
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-full);
-  background: rgba(0, 29, 217, 0.07);
-  z-index: 0;
-}
-
-.iterations-tab--active .iterations-tab-pill {
-  background: transparent;
-  border: 1px dotted var(--color-badge-border);
-}
-
-.iterations-tab-label {
-  position: relative;
-  z-index: 1;
-}
-
 .iterations-card-outer {
   position: relative;
 }
@@ -3980,6 +3841,8 @@ button.work-card {
 
 .iterations-tab {
   position: relative;
+  /* Keeps the z-index: -1 pill above ancestor backgrounds */
+  isolation: isolate;
   padding: 6px 14px;
   border: 1px solid transparent;
   border-radius: var(--radius-full);
@@ -3988,15 +3851,26 @@ button.work-card {
   font-size: 12px;
   font-weight: 500;
   color: var(--color-text);
+  white-space: nowrap;
   cursor: pointer;
-  transition: color 150ms var(--ease-smooth), border-color 150ms var(--ease-smooth);
+  transition: color 150ms var(--ease-smooth), border-color 150ms var(--ease-smooth), transform 150ms var(--ease-smooth);
 }
 
 .iterations-tab:hover {
   border-color: var(--color-badge-border);
 }
 
-.iterations-tab--active {
+.iterations-tab:active {
+  transform: scale(0.97);
+}
+
+.iterations-tab:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.iterations-tab--active,
+.iterations-tab--active:hover {
   color: #fff;
   border-color: transparent;
 }

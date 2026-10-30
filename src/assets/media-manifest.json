@@ -1,0 +1,147 @@
+{
+  "projects/payouts-uplift/payouts uplift final video.MP4": {
+    "source": {
+      "width": 3236,
+      "height": 2160,
+      "duration": 32.108003
+    },
+    "card": {
+      "width": 720,
+      "height": 480
+    },
+    "hero": {
+      "width": 1920,
+      "height": 1282
+    }
+  },
+  "projects/design-system/Design System Final Video.MP4": {
+    "source": {
+      "width": 2852,
+      "height": 2160,
+      "duration": 189.3
+    },
+    "card": {
+      "width": 720,
+      "height": 546
+    },
+    "hero": {
+      "width": 1920,
+      "height": 1454
+    }
+  },
+  "projects/smart-markets/International Commerce Final video.MP4": {
+    "source": {
+      "width": 3772,
+      "height": 2160,
+      "duration": 29.016667
+    },
+    "card": {
+      "width": 720,
+      "height": 412
+    },
+    "hero": {
+      "width": 1920,
+      "height": 1100
+    }
+  },
+  "projects/shop-balance/Shop Balance final video.MP4": {
+    "source": {
+      "width": 1268,
+      "height": 2160,
+      "duration": 78.985
+    },
+    "card": {
+      "width": 720,
+      "height": 1226
+    },
+    "hero": {
+      "width": 940,
+      "height": 1600
+    }
+  },
+  "projects/Listening Room/Listening Room final video.MP4": {
+    "source": {
+      "width": 3772,
+      "height": 2160,
+      "duration": 97.258
+    },
+    "card": {
+      "width": 720,
+      "height": 412
+    },
+    "hero": {
+      "width": 1920,
+      "height": 1100
+    }
+  },
+  "Playground-page/shader-experiment-one/Shader-experiment-one.mov": {
+    "source": {
+      "width": 3024,
+      "height": 1508,
+      "duration": 14.166667
+    },
+    "card": {
+      "width": 720,
+      "height": 360
+    },
+    "hero": {
+      "width": 1920,
+      "height": 958
+    }
+  },
+  "projects/shop-balance/Video 1.mov": {
+    "source": {
+      "width": 1268,
+      "height": 2160,
+      "duration": 21.99
+    },
+    "hero": {
+      "width": 940,
+      "height": 1600
+    }
+  },
+  "projects/shop-balance/video 2.MOV": {
+    "source": {
+      "width": 1268,
+      "height": 2160,
+      "duration": 16.03
+    },
+    "hero": {
+      "width": 940,
+      "height": 1600
+    }
+  },
+  "projects/shop-balance/video 3.MOV": {
+    "source": {
+      "width": 1268,
+      "height": 2160,
+      "duration": 8.92
+    },
+    "hero": {
+      "width": 940,
+      "height": 1600
+    }
+  },
+  "projects/shop-balance/video 4.MOV": {
+    "source": {
+      "width": 1268,
+      "height": 2160,
+      "duration": 10.776667
+    },
+    "hero": {
+      "width": 940,
+      "height": 1600
+    }
+  },
+  "projects/shop-balance/video 5.MOV": {
+    "source": {
+      "width": 1268,
+      "height": 2160,
+      "duration": 14.286667
+    },
+    "hero": {
+      "width": 940,
+      "height": 1600
+    }
+  }
+}

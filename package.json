@@ -9,7 +9,8 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "deploy": "npm run build && gh-pages -d dist",
-    "deploy:vercel": "vercel --prod"
+    "deploy:vercel": "vercel --prod",
+    "media": "node scripts/encode-media.mjs"
   },
   "dependencies": {
     "@fontsource/geist": "^5.2.8",
@@ -42,9 +43,11 @@
     "gh-pages": "^6.1.1",
     "playwright": "^1.58.2",
     "postcss": "^8.4.32",
+    "sharp": "^0.35.5",
     "tailwindcss": "^3.4.0",
     "vercel": "^50.37.1",
     "vite": "^5.0.8",
+    "vite-imagetools": "^7.1.1",
     "vite-plugin-qrcode": "^0.4.1"
   }
 }
