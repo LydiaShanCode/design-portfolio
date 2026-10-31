@@ -5,6 +5,7 @@ slug: smart-markets
 company: Shopify
 protected: true
 date: "3 weeks · 2025"
+start: "Dec 2025"
 timeline: Dec 2025
 highlights:
   - Contextual AI Design

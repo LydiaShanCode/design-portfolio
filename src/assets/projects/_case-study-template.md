@@ -8,6 +8,7 @@ protected: false               # true = requires password gate before content is
 
 # Date & timeline
 date: "3 weeks · 2025"        # shown in meta row: "duration · year"
+start: "Jan 2025"               # shown on the work card (start month + year)
 timeline: Jan 2025 – Mar 2025  # shown in meta row below date
 
 # Work card badges (shown on the projects grid card)

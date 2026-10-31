@@ -26,7 +26,7 @@ export function getVideo(file, variant = 'hero') {
 
   const base = `../assets/${stripExtension(file)}`
   const sources = []
-  const av1Src = av1[`${base}.${variant}.av1.mp4`]
+  const av1Src = dims.av1 !== false && av1[`${base}.${variant}.av1.mp4`]
   if (av1Src) {
     sources.push({ src: av1Src, type: `video/mp4; codecs="av01.0.${av1Level(dims.width, dims.height)}M.08"` })
   }

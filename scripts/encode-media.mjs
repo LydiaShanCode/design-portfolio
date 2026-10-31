@@ -20,6 +20,7 @@ const VARIANTS = {
 
 const SOURCES = [
   { file: 'projects/payouts-uplift/payouts uplift final video.MP4', variants: ['card', 'hero'] },
+  { file: 'projects/payouts-uplift/payouts uplift audit video compressed.mp4', variants: ['hero'] },
   { file: 'projects/design-system/Design System Final Video.MP4', variants: ['card', 'hero'] },
   { file: 'projects/smart-markets/International Commerce Final video.MP4', variants: ['card', 'hero'] },
   { file: 'projects/shop-balance/Shop Balance final video.MP4', variants: ['card', 'hero'] },
@@ -74,7 +75,9 @@ for (const { file, variants } of SOURCES) {
     encode(src, `${base}.${name}.mp4`, v, 'h264')
     encode(src, `${base}.${name}.av1.mp4`, v, 'av1')
     const { width, height } = probe(`${base}.${name}.mp4`)
-    entry[name] = { width, height }
+    // Already-compressed screen recordings can come out larger in AV1; browsers pick the first playable source
+    const av1Smaller = fs.statSync(`${base}.${name}.av1.mp4`).size < fs.statSync(`${base}.${name}.mp4`).size
+    entry[name] = { width, height, ...(av1Smaller ? {} : { av1: false }) }
   }
   const poster = `${base}.poster.webp`
   const posterFrom = `${base}.${variants.includes('hero') ? 'hero' : 'card'}.mp4`

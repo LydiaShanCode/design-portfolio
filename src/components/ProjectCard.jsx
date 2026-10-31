@@ -21,7 +21,7 @@ function ProjectCard({
   const {
     title,
     company,
-    date,
+    start,
     highlights = [],
     image,
     imagePlaceholder,
@@ -95,7 +95,7 @@ function ProjectCard({
         ) : null}
         <div className="work-card-meta">
           <span>{company}</span>
-          <span>{date}</span>
+          {start ? <span className="work-card-meta-date">{start}</span> : null}
         </div>
         <ul className="work-card-highlights">
           {highlights.map((item) => (

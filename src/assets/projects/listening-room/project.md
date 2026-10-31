@@ -4,6 +4,7 @@ title: Listening Room
 slug: listening-room
 company: Personal
 date: "1 week · 2026"
+start: "Feb 2026"
 timeline: 2026
 highlights:
   - Three.js

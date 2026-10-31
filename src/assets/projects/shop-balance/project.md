@@ -5,6 +5,7 @@ slug: shop-balance
 company: Shopify
 protected: true
 date: "2 weeks · 2026"
+start: "Jan 2026"
 timeline: Jan. 2026
 highlights:
   - Mobile design

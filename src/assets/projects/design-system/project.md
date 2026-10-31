@@ -4,7 +4,8 @@ title: Design System
 slug: design-system
 company: SearchEye
 date: "1 month · 2023"
-timeline: 2024
+start: "Oct 2023"
+timeline: Oct 2023
 highlights:
   - 0 → 1 Design
   - A/B testing

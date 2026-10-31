@@ -14,6 +14,18 @@
       "height": 1282
     }
   },
+  "projects/payouts-uplift/payouts uplift audit video compressed.mp4": {
+    "source": {
+      "width": 3172,
+      "height": 2160,
+      "duration": 50.333008
+    },
+    "hero": {
+      "width": 1920,
+      "height": 1308,
+      "av1": false
+    }
+  },
   "projects/design-system/Design System Final Video.MP4": {
     "source": {
       "width": 2852,
@@ -37,11 +49,13 @@
     },
     "card": {
       "width": 720,
-      "height": 412
+      "height": 412,
+      "av1": false
     },
     "hero": {
       "width": 1920,
-      "height": 1100
+      "height": 1100,
+      "av1": false
     }
   },
   "projects/shop-balance/Shop Balance final video.MP4": {
@@ -52,11 +66,13 @@
     },
     "card": {
       "width": 720,
-      "height": 1226
+      "height": 1226,
+      "av1": false
     },
     "hero": {
       "width": 940,
-      "height": 1600
+      "height": 1600,
+      "av1": false
     }
   },
   "projects/Listening Room/Listening Room final video.MP4": {
@@ -97,7 +113,8 @@
     },
     "hero": {
       "width": 940,
-      "height": 1600
+      "height": 1600,
+      "av1": false
     }
   },
   "projects/shop-balance/video 2.MOV": {
@@ -108,7 +125,8 @@
     },
     "hero": {
       "width": 940,
-      "height": 1600
+      "height": 1600,
+      "av1": false
     }
   },
   "projects/shop-balance/video 3.MOV": {
@@ -119,7 +137,8 @@
     },
     "hero": {
       "width": 940,
-      "height": 1600
+      "height": 1600,
+      "av1": false
     }
   },
   "projects/shop-balance/video 4.MOV": {
@@ -130,7 +149,8 @@
     },
     "hero": {
       "width": 940,
-      "height": 1600
+      "height": 1600,
+      "av1": false
     }
   },
   "projects/shop-balance/video 5.MOV": {
@@ -141,7 +161,8 @@
     },
     "hero": {
       "width": 940,
-      "height": 1600
+      "height": 1600,
+      "av1": false
     }
   }
 }

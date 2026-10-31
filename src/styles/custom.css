@@ -573,6 +573,12 @@ body {
   font-size: 16px;
 }
 
+/* 70% keeps ~4.9:1 contrast on the white card; --color-text-muted is too faint at 16px */
+.work-card-meta-date {
+  color: color-mix(in srgb, var(--color-primary) 70%, transparent);
+  font-weight: 400;
+}
+
 .work-card-highlights {
   list-style: none;
   padding: 0;
