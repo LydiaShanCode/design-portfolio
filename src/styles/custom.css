@@ -141,51 +141,6 @@
 .glass-btn--md  svg { width: 13px; height: 13px; }
 .glass-btn--lg  svg { width: 16px; height: 16px; }
 
-/* ── Site Intro ── */
-
-/* White background — fades out on its own, does not affect logo opacity */
-.site-intro-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  background: var(--color-bg);
-  pointer-events: none;
-}
-
-/* Logo — sits above the bg so parent fade never cascades onto it */
-.site-intro-logo {
-  position: fixed;
-  /* Mobile default: matches h-6 w-6 (24px) in bottom nav */
-  top: calc(50% - 12px);
-  left: calc(50% - 12px);
-  z-index: 9999;
-  width: 24px;
-  height: 24px;
-  pointer-events: none;
-  user-select: none;
-  will-change: transform, opacity;
-}
-
-@media (min-width: 480px) and (max-width: 767px) {
-  /* Matches min-[480px]:h-7 min-[480px]:w-7 (28px) */
-  .site-intro-logo {
-    width: 28px;
-    height: 28px;
-    top: calc(50% - 14px);
-    left: calc(50% - 14px);
-  }
-}
-
-@media (min-width: 768px) {
-  /* Matches h-6 w-6 (24px) in desktop nav */
-  .site-intro-logo {
-    width: 24px;
-    height: 24px;
-    top: calc(50% - 12px);
-    left: calc(50% - 12px);
-  }
-}
-
 @keyframes nav-logo-spin-once {
   from {
     transform: rotate(0deg);

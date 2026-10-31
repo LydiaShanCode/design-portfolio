@@ -9,7 +9,6 @@ import ActivityLog from './components/ActivityLog'
 import Footer from './components/Footer'
 import WaterCanvas from './components/WaterCanvas'
 import CustomCursor from './components/CustomCursor'
-import SiteIntro from './components/SiteIntro'
 import { Analytics } from '@vercel/analytics/react'
 
 const Play = lazy(() => import('./components/Play'))
@@ -66,7 +65,6 @@ function App() {
         />
       )} */}
       <Analytics />
-      <SiteIntro />
       <div className="min-h-screen bg-white">
         <CustomCursor />
         <WaterCanvas />
