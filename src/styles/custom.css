@@ -336,14 +336,26 @@ body {
 /* Custom cursor — hidden on touch/mobile devices */
 .custom-cursor {
   position: fixed;
+  top: 0;
+  left: 0;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background-color: rgba(0, 0, 0, 0.8);
   pointer-events: none;
   z-index: 9999;
+  opacity: 0;
   transform: translate(-50%, -50%);
-  transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+  will-change: transform;
+  transition:
+    width 0.3s var(--ease-smooth),
+    height 0.3s var(--ease-smooth),
+    background-color 0.3s var(--ease-smooth),
+    opacity 0.2s var(--ease-smooth);
+}
+
+.custom-cursor.is-active {
+  opacity: 1;
 }
 
 @media (max-width: 1023px) {

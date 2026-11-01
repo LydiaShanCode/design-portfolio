@@ -2,30 +2,24 @@ import { useEffect, useRef } from 'react'
 
 function CustomCursor() {
   const cursorRef = useRef(null)
-  const cursorDotRef = useRef({ x: 0, y: 0 })
-  const cursorPositionRef = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
     const cursor = cursorRef.current
     if (!cursor) return
 
     let isHovering = false
+    let lastTarget = null
+    let x = 0
+    let y = 0
+    let frameId = 0
 
-    const updateCursor = () => {
-      cursorDotRef.current.x = cursorPositionRef.current.x
-      cursorDotRef.current.y = cursorPositionRef.current.y
-      cursor.style.left = `${cursorDotRef.current.x}px`
-      cursor.style.top = `${cursorDotRef.current.y}px`
-      requestAnimationFrame(updateCursor)
+    // Transform-only positioning stays on the compositor; left/top would force layout every frame.
+    const paint = () => {
+      frameId = 0
+      cursor.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`
     }
 
-    const handleMouseMoveWithHover = (e) => {
-      cursorPositionRef.current.x = e.clientX
-      cursorPositionRef.current.y = e.clientY
-
-      const target = document.elementFromPoint(e.clientX, e.clientY)
-      if (!(target instanceof Element)) return
-
+    const updateState = (target) => {
       // Hidden state
       const shouldHide = !!target.closest('[data-hide-cursor]')
       cursor.classList.toggle('hidden', shouldHide)
@@ -57,11 +51,28 @@ function CustomCursor() {
       }
     }
 
-    window.addEventListener('mousemove', handleMouseMoveWithHover)
-    updateCursor()
+    // The cursor itself is pointer-events: none, so e.target is already the element under the pointer.
+    const handleMouseMove = (e) => {
+      x = e.clientX
+      y = e.clientY
+      if (!frameId) frameId = requestAnimationFrame(paint)
+      cursor.classList.add('is-active')
+
+      if (e.target !== lastTarget && e.target instanceof Element) {
+        lastTarget = e.target
+        updateState(e.target)
+      }
+    }
+
+    const handleMouseLeave = () => cursor.classList.remove('is-active')
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
+    document.documentElement.addEventListener('mouseleave', handleMouseLeave)
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMoveWithHover)
+      window.removeEventListener('mousemove', handleMouseMove)
+      document.documentElement.removeEventListener('mouseleave', handleMouseLeave)
+      cancelAnimationFrame(frameId)
     }
   }, [])
 
