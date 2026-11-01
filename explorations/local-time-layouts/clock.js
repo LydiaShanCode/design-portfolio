@@ -1,4 +1,4 @@
-// Shared live-clock behaviour for every version. Brooklyn time comes from Intl, never the visitor's clock.
+// Shared live-clock behaviour for every version. New York time comes from Intl, never the visitor's clock.
 // Add ?at=23:10 to any page to freeze the time (useful for checking night/morning copy).
 const TIME_ZONE = 'America/New_York'
 const fixedAt = new URLSearchParams(location.search).get('at')
