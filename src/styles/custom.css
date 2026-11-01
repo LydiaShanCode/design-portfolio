@@ -336,14 +336,28 @@ body {
 /* Custom cursor — hidden on touch/mobile devices */
 .custom-cursor {
   position: fixed;
+  top: 0;
+  left: 0;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background-color: rgba(0, 0, 0, 0.8);
+  border: 1px solid transparent;
   pointer-events: none;
   z-index: 9999;
+  opacity: 0;
   transform: translate(-50%, -50%);
-  transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+  will-change: transform;
+  transition:
+    width 0.3s var(--ease-smooth),
+    height 0.3s var(--ease-smooth),
+    background-color 0.3s var(--ease-smooth),
+    border-color 0.3s var(--ease-smooth),
+    opacity 0.2s var(--ease-smooth);
+}
+
+.custom-cursor.is-active {
+  opacity: 1;
 }
 
 @media (max-width: 1023px) {
@@ -355,8 +369,8 @@ body {
 .custom-cursor.hover {
   width: 32px;
   height: 32px;
-  background-color: rgba(0, 0, 0, 0.2);
-  border: 2px solid rgba(0, 0, 0, 0.5);
+  background-color: color-mix(in srgb, var(--color-primary) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 45%, transparent);
 }
 
 .custom-cursor.hidden {
