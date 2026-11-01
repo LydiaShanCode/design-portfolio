@@ -1382,14 +1382,37 @@ body {
   padding: 160px 40px 40px;
 }
 
-.footer-copyright {
+.footer-colophon {
   margin-top: auto;
-  padding-bottom: 24px;
+  width: 100%;
+  max-width: var(--max-w-content);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0 24px;
+  border-top: 1px solid var(--color-hairline);
   font-family: 'Geist', system-ui, sans-serif;
   font-size: 12px;
   letter-spacing: -0.5px;
+}
+
+.footer-copyright,
+.local-time {
+  margin: 0;
   opacity: 0.5;
-  align-self: flex-start;
+}
+
+.local-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.local-time-value {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0;
 }
 
 .footer-inner {
@@ -1687,8 +1710,9 @@ button.footer-link {
     text-align: left;
   }
 
-  .footer-copyright {
-    align-self: center;
+  .footer-colophon {
+    flex-direction: column;
+    gap: 6px;
   }
 
 }

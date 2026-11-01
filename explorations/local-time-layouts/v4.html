@@ -1,0 +1,75 @@
+<!--
+  v4 — Corner folio.
+  Idea: a fixed, editorial page-folio in the bottom-left corner on desktop — small Geist Mono
+  caps, "NEW YORK CITY  2:42 PM", with a live dot that breathes. It's present on every page like
+  a running header in a magazine, without touching any layout.
+  Trade-off: always-on chrome; it has to stay faint enough not to compete with content. On
+  mobile the bottom nav owns that edge, so the folio drops into the top of the page instead.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v4 — Corner folio</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .folio {
+      position: fixed;
+      left: 28px;
+      bottom: 24px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0.55;
+      z-index: 40;
+    }
+
+    .folio-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      animation: folio-breathe 3.2s ease-in-out infinite;
+    }
+
+    @keyframes folio-breathe {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.8); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .folio-dot { animation: none; }
+    }
+
+    @media (max-width: 767px) {
+      .folio {
+        position: static;
+        display: flex;
+        justify-content: center;
+        padding-top: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <p class="folio">
+    <span class="folio-dot" aria-hidden="true"></span>
+    <span>New York City</span>
+    <span class="clock-time" data-clock-time>2:42 pm</span>
+  </p>
+  <section class="hero-section">
+    <div class="koi-placeholder" data-koi aria-hidden="true"></div>
+    <h1 class="hero-title">LYDIA IS <em>designing</em></h1>
+    <p class="hero-subtext">Designing and tinkering... prev. at Shopify</p>
+    <a class="badge-pill" href="#">Recently: building a dj app ↗</a>
+  </section>
+  <nav class="mobile-nav" aria-hidden="true"><span>Work</span><span>Play</span><i></i><span>About</span><span>CV</span></nav>
+  <script src="clock.js"></script>
+</body>
+</html>

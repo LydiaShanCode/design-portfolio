@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Local time — layout exploration</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    body { padding: 32px; background: var(--color-surface); color: var(--color-text); }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px 24px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 32px;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+    }
+
+    .controls { display: flex; gap: 20px; font-size: 13px; color: var(--color-text-subdued); }
+    label { cursor: pointer; }
+    select { font: inherit; }
+
+    /* One column so each frame stays above the 768px breakpoint and shows the desktop layout */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+
+    .grid--mobile { grid-template-columns: repeat(auto-fill, minmax(390px, 1fr)); }
+
+    figure { margin: 0; }
+
+    figcaption {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    figcaption b { font-weight: 600; }
+    figcaption span { color: var(--color-text-subdued); }
+    figcaption a { margin-left: auto; color: var(--color-primary); text-decoration: none; }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 680px;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: #fff;
+      box-shadow: 0 0 0 1px rgba(15, 20, 50, 0.06);
+    }
+
+    .grid--mobile iframe { width: 390px; height: 780px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Local time</h1>
+    <div class="controls">
+      <label><input type="checkbox" id="mobile" /> Mobile width</label>
+      <label>Time
+        <select id="at">
+          <option value="">Live (New York City)</option>
+          <option value="08:15">8:15 am</option>
+          <option value="14:42">2:42 pm</option>
+          <option value="19:30">7:30 pm</option>
+          <option value="23:30">11:30 pm</option>
+        </select>
+      </label>
+    </div>
+  </header>
+  <div class="grid">
+    <figure><figcaption><b>Current</b><span>No local time</span><a href="current.html" target="_blank">Open ↗</a></figcaption><iframe data-src="current.html"></iframe></figure>
+    <figure><figcaption><b>v1</b><span>Quiet line under the footer icons</span><a href="v1.html" target="_blank">Open ↗</a></figcaption><iframe data-src="v1.html"></iframe></figure>
+    <figure><figcaption><b>v2</b><span>Colophon bar beside the copyright</span><a href="v2.html" target="_blank">Open ↗</a></figcaption><iframe data-src="v2.html"></iframe></figure>
+    <figure><figcaption><b>v3</b><span>Hero chip, hover/tap for offset</span><a href="v3.html" target="_blank">Open ↗</a></figcaption><iframe data-src="v3.html"></iframe></figure>
+    <figure><figcaption><b>v4</b><span>Fixed corner folio</span><a href="v4.html" target="_blank">Open ↗</a></figcaption><iframe data-src="v4.html"></iframe></figure>
+    <figure><figcaption><b>v5</b><span>Time-aware sign-off</span><a href="v5.html" target="_blank">Open ↗</a></figcaption><iframe data-src="v5.html"></iframe></figure>
+  </div>
+  <script>
+    const mobile = document.getElementById('mobile')
+    const at = document.getElementById('at')
+    const grid = document.querySelector('.grid')
+    const frames = [...document.querySelectorAll('iframe')]
+    const load = () => {
+      grid.classList.toggle('grid--mobile', mobile.checked)
+      frames.forEach((f) => { f.src = `${f.dataset.src}${at.value ? `?at=${at.value}` : ''}` })
+    }
+    at.addEventListener('change', load)
+    mobile.addEventListener('change', load)
+    load()
+  </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!--
+  v3 — Hero chip that knows where you are.
+  Idea: a dotted badge pill next to "Recently: building a dj app", so the time shows up in the
+  first viewport. Hover (or tap on touch) unfolds a second half: "5 hrs ahead of you", computed
+  from the visitor's own time zone — the clock turns into a small "hello, from here to there".
+  Trade-off: most visible and most playful, but it adds a second chip to the hero's one focal
+  row. On mobile the dj chip is already hidden, so the clock chip takes its place alone.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v3 — Hero chip</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .chip-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+
+    .time-chip {
+      cursor: pointer;
+      transition: background-color 200ms var(--ease-smooth), transform 150ms var(--ease-smooth);
+    }
+
+    .time-chip:hover,
+    .time-chip[aria-expanded='true'] { background: var(--color-surface); }
+    .time-chip:active { transform: scale(0.97); }
+    .time-chip:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }
+
+    .time-chip .clock-icon { width: 13px; height: 13px; }
+
+    /* Grid 0fr → 1fr lets the offset unfold to its natural width instead of popping in */
+    .time-chip-extra {
+      display: grid;
+      grid-template-columns: 0fr;
+      opacity: 0;
+      transition: grid-template-columns 300ms var(--ease-smooth), opacity 200ms var(--ease-smooth);
+    }
+
+    .time-chip-extra > span { overflow: hidden; white-space: nowrap; }
+
+    .time-chip:hover .time-chip-extra,
+    .time-chip[aria-expanded='true'] .time-chip-extra { grid-template-columns: 1fr; opacity: 0.6; }
+
+    .dj-chip { display: inline-flex; }
+
+    @media (max-width: 639px) {
+      .dj-chip { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .time-chip-extra { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero-section">
+    <div class="koi-placeholder" data-koi aria-hidden="true"></div>
+    <h1 class="hero-title">LYDIA IS <em>designing</em></h1>
+    <p class="hero-subtext">Designing and tinkering... prev. at Shopify</p>
+    <div class="chip-row">
+      <a class="badge-pill dj-chip" href="#">Recently: building a dj app ↗</a>
+      <button type="button" class="badge-pill time-chip" aria-expanded="false" data-time-chip>
+        <span data-clock-icon></span>
+        <span><span class="clock-time" data-clock-time>2:42 pm</span> in New York City</span>
+        <span class="time-chip-extra"><span>· <span data-clock-offset>5 hrs ahead of you</span></span></span>
+      </button>
+    </div>
+  </section>
+  <nav class="mobile-nav" aria-hidden="true"><span>Work</span><span>Play</span><i></i><span>About</span><span>CV</span></nav>
+  <script src="clock.js"></script>
+  <script>
+    const chip = document.querySelector('[data-time-chip]')
+    chip.addEventListener('click', () => {
+      chip.setAttribute('aria-expanded', String(chip.getAttribute('aria-expanded') !== 'true'))
+    })
+  </script>
+</body>
+</html>
