@@ -1,0 +1,213 @@
+/* Copied read-only from src/styles/index.css + the footer / hero shells in custom.css */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap');
+
+:root {
+  --color-primary: #001dd9;
+  --color-bg: #ffffff;
+  --color-surface: #f8f8fb;
+  --color-text: #1c1c1c;
+  --color-text-subdued: #6f6f6f;
+  --color-text-light: #a0a0a0;
+  --color-text-muted: #8b9bc4;
+  --color-badge-border: #7b8dff;
+  --color-hairline: rgba(15, 20, 50, 0.12);
+  --glass-bg-chip: rgba(255, 255, 255, 0.72);
+  --shadow-chip: 0 0 0 0.5px rgba(15, 20, 50, 0.08), 0 4px 16px rgba(15, 20, 50, 0.08);
+  --shadow-postcard: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --radius-xs: 4px;
+  --radius-sm: 12px;
+  --radius-full: 9999px;
+  --ease-smooth: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-dramatic: cubic-bezier(0.12, 0.8, 0.2, 1);
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-mono: 'Geist Mono', monospace;
+  --max-w-content: 1200px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font: inherit; color: inherit; }
+
+/* ── Clock icon: two hands rotated to the real Brooklyn time by clock.js ── */
+.clock-icon {
+  flex-shrink: 0;
+  width: 1.05em;
+  height: 1.05em;
+  overflow: visible;
+}
+
+.clock-hand {
+  transform-box: view-box;
+  transform-origin: 12px 12px;
+  transition: transform 700ms var(--ease-dramatic);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clock-hand { transition: none; }
+}
+
+.clock-time { font-variant-numeric: tabular-nums; }
+
+/* ── Footer shell ── */
+.footer-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 40px 40px;
+}
+
+.footer-inner {
+  max-width: var(--max-w-content);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 60px;
+}
+
+.footer-left {
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footer-heading {
+  margin: 0 0 24px;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.1;
+}
+
+.footer-links { display: flex; align-items: center; gap: 16px; }
+
+.footer-link {
+  display: flex;
+  opacity: 0.6;
+  transition: opacity 200ms var(--ease-smooth);
+}
+
+.footer-link:hover { opacity: 1; }
+
+.footer-right { flex: 1; display: flex; justify-content: flex-end; }
+
+.postcard-placeholder {
+  width: min(520px, 100%);
+  aspect-ratio: 3 / 2;
+  border-radius: var(--radius-xs);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-postcard);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--color-text-muted);
+}
+
+.footer-copyright {
+  margin-top: auto;
+  padding-bottom: 8px;
+  align-self: flex-start;
+  font-size: 12px;
+  letter-spacing: -0.5px;
+  opacity: 0.5;
+}
+
+@media (max-width: 767px) {
+  .footer-section { padding: 80px 20px 110px; }
+  .footer-inner { flex-direction: column; gap: 48px; }
+  .footer-right { justify-content: center; width: 100%; }
+}
+
+/* ── Hero shell ── */
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 72px 16px;
+  text-align: center;
+}
+
+.koi-placeholder {
+  display: grid;
+  place-items: center;
+  width: min(420px, 90vw);
+  height: 260px;
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1;
+  white-space: pre;
+  opacity: 0.9;
+}
+
+.hero-title {
+  margin: 8px 0 16px;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: 48px;
+  line-height: 0.95;
+  letter-spacing: -0.5px;
+}
+
+.hero-title em { font-style: normal; }
+
+.hero-subtext { margin: 0 0 20px; font-size: 16px; font-weight: 300; }
+
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px dotted var(--color-badge-border);
+  border-radius: var(--radius-full);
+  background: var(--color-bg);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--color-primary);
+}
+
+/* ── Mobile bottom nav shell, so placements can be judged against it ── */
+.mobile-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  display: none;
+  gap: 22px;
+  align-items: center;
+  padding: 16px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  letter-spacing: 0.025em;
+  z-index: 50;
+}
+
+.mobile-nav span { opacity: 0.4; }
+.mobile-nav span:first-child { opacity: 1; font-weight: 500; }
+.mobile-nav i { width: 22px; height: 22px; background: var(--color-primary); border-radius: 3px; opacity: 0.9; }
+
+@media (max-width: 767px) {
+  .mobile-nav { display: inline-flex; }
+}

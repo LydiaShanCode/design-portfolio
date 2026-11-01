@@ -1,0 +1,61 @@
+<!--
+  v2 — Colophon bar.
+  Idea: turn the lone copyright line into a two-sided colophon: credits on the left,
+  Brooklyn time on the right, same 12px / 50% opacity. Reads like the masthead of a printed page.
+  Trade-off: the most restrained option and adds zero layout weight, but it's tiny and easy to miss.
+  On mobile the two halves stack so neither truncates.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v2 — Colophon bar</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .colophon {
+      margin-top: auto;
+      width: 100%;
+      max-width: var(--max-w-content);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding-top: 16px;
+      padding-bottom: 8px;
+      border-top: 1px solid var(--color-hairline);
+      font-size: 12px;
+      letter-spacing: -0.2px;
+    }
+
+    .colophon > * { margin: 0; opacity: 0.5; }
+
+    .colophon-time { display: inline-flex; align-items: center; gap: 6px; }
+    .colophon-time .clock-icon { width: 13px; height: 13px; }
+
+    @media (max-width: 767px) {
+      .colophon { flex-direction: column; align-items: flex-start; gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <footer class="footer-section">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <h2 class="footer-heading">Thanks for stopping by</h2>
+        <div class="footer-links" data-footer-links></div>
+      </div>
+      <div class="footer-right"><div class="postcard-placeholder">postcard</div></div>
+    </div>
+    <div class="colophon">
+      <p>© 2026 — coded by me and Claude Code</p>
+      <p class="colophon-time">
+        <span data-clock-icon></span>
+        <span><span class="clock-time" data-clock-time>2:42 pm</span> in Brooklyn</span>
+      </p>
+    </div>
+  </footer>
+  <nav class="mobile-nav" aria-hidden="true"><span>Work</span><span>Play</span><i></i><span>About</span><span>CV</span></nav>
+  <script src="clock.js"></script>
+</body>
+</html>

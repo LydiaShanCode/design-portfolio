@@ -1,0 +1,54 @@
+<!--
+  v5 — The sign-off knows what time it is.
+  Idea: fold the time into the footer's voice. Under "Thanks for stopping by", a serif line:
+  "It's 2:42 pm in Brooklyn — I'm probably deep in Figma." The second half changes with the
+  hour (asleep, coffee, lunch, making something for fun…). Try ?at=23:30 or ?at=08:15.
+  Trade-off: the most personality, but copy has to stay true-ish and age well; it's also the
+  heaviest option visually, so the clock icon is dropped and the words carry it.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v5 — Time-aware sign-off</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .footer-heading { margin-bottom: 6px; }
+
+    .sign-off {
+      max-width: 30ch;
+      margin: 0 0 24px;
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 1.25;
+      text-align: center;
+      color: var(--color-text-muted);
+      text-wrap: balance;
+    }
+
+    .sign-off .clock-time {
+      color: var(--color-primary);
+      font-variant-numeric: lining-nums proportional-nums;
+    }
+  </style>
+</head>
+<body>
+  <footer class="footer-section">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <h2 class="footer-heading">Thanks for stopping by</h2>
+        <p class="sign-off">
+          It's <span class="clock-time" data-clock-time>2:42 pm</span> in Brooklyn — I'm <span data-clock-status>probably deep in Figma</span>.
+        </p>
+        <div class="footer-links" data-footer-links></div>
+      </div>
+      <div class="footer-right"><div class="postcard-placeholder">postcard</div></div>
+    </div>
+    <p class="footer-copyright">© 2026 — coded by me and Claude Code</p>
+  </footer>
+  <nav class="mobile-nav" aria-hidden="true"><span>Work</span><span>Play</span><i></i><span>About</span><span>CV</span></nav>
+  <script src="clock.js"></script>
+</body>
+</html>

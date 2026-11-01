@@ -1,0 +1,46 @@
+<!--
+  v1 — Quiet line under the footer icons.
+  Idea: the reference, almost verbatim. Clock + "2:42 pm in Brooklyn" sits under the social
+  icons in grey, so it reads as a sign-off detail rather than a feature.
+  Trade-off: lowest-risk and most "found", but it only lives at the very bottom of the page,
+  so most visitors won't see it. Grey breaks the all-blue palette slightly on purpose.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v1 — Under the footer icons</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .local-time {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--color-text-subdued);
+    }
+
+    .local-time .clock-icon { width: 16px; height: 16px; }
+  </style>
+</head>
+<body>
+  <footer class="footer-section">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <h2 class="footer-heading">Thanks for stopping by</h2>
+        <div class="footer-links" data-footer-links></div>
+        <p class="local-time">
+          <span data-clock-icon></span>
+          <span><span class="clock-time" data-clock-time>2:42 pm</span> in Brooklyn</span>
+        </p>
+      </div>
+      <div class="footer-right"><div class="postcard-placeholder">postcard</div></div>
+    </div>
+    <p class="footer-copyright">© 2026 — coded by me and Claude Code</p>
+  </footer>
+  <nav class="mobile-nav" aria-hidden="true"><span>Work</span><span>Play</span><i></i><span>About</span><span>CV</span></nav>
+  <script src="clock.js"></script>
+</body>
+</html>
