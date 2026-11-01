@@ -1410,7 +1410,9 @@ body {
 }
 
 .local-time-value {
-  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0;
 }
 
 .footer-inner {
