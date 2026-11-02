@@ -90,10 +90,17 @@ function ProjectPreview({ project, cardRect, onClose }) {
       return { x, y }
     }
 
+    // Visibility is driven by this rather than :hover, which misfires while the flip-in sweeps the card under a still pointer
+    const setPointerInside = (inside) => wrap.toggleAttribute('data-pointer-inside', inside)
+
     const place = (clientX, clientY) => {
       const origin = settledOrigin()
       mousePos.current.x = clientX - origin.x
       mousePos.current.y = clientY - origin.y
+      setPointerInside(
+        mousePos.current.x >= 0 && mousePos.current.x <= wrap.offsetWidth &&
+        mousePos.current.y >= 0 && mousePos.current.y <= wrap.offsetHeight
+      )
     }
 
     const paintPill = () => {
@@ -120,9 +127,13 @@ function ProjectPreview({ project, cardRect, onClose }) {
       }
     }
 
+    const onLeave = () => setPointerInside(false)
+
     wrap.addEventListener('mousemove', onMove)
+    wrap.addEventListener('mouseleave', onLeave)
     return () => {
       wrap.removeEventListener('mousemove', onMove)
+      wrap.removeEventListener('mouseleave', onLeave)
       if (rafId.current) cancelAnimationFrame(rafId.current)
     }
   }, [project.protected, passwordPhase])
