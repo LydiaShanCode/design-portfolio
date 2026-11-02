@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion'
 import Badge from './ui/Badge'
 import TextScrub from './TextScrub'
+import { playScrubSound, stopScrubSound } from '../lib/scrubSound'
 
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTPY6pk7hcjpXCTIuNj1N98xJmSNIBnM8g0qLoQSLEnq9bPBxfrL4m1ri1QE34SckjmmY8TbhCGPykg/pub?output=csv'
 
@@ -314,8 +315,8 @@ function ActivityLog() {
                         rel="noopener noreferrer"
                         className="group block hover:bg-gray-50 transition-colors duration-200 -mx-4 px-4 rounded-xl"
                         data-hoverable
-                        onMouseEnter={() => { setHoveredImage(imageCacheRef.current[activity.Link.trim()] || null); setHoveredIndex(index) }}
-                        onMouseLeave={() => { setHoveredImage(null); setHoveredIndex(null) }}
+                        onMouseEnter={() => { setHoveredImage(imageCacheRef.current[activity.Link.trim()] || null); setHoveredIndex(index); playScrubSound() }}
+                        onMouseLeave={() => { setHoveredImage(null); setHoveredIndex(null); stopScrubSound() }}
                       >
                         {rowContent}
                       </a>
