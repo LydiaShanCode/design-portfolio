@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Picture from './Picture'
 import Video from './Video'
+import { lastPointer } from '../lib/pointer'
 
 const CORRECT_PASSWORD = 'design is awesome'
 
@@ -67,17 +68,53 @@ function ProjectPreview({ project, cardRect, onClose }) {
     // For protected projects, stop tracking once the password form is open
     if (project.protected && passwordPhase !== 'idle') return
 
+    // Measures where the wrap sits once the card has settled. offsetLeft/offsetTop ignore transforms,
+    // so the pill lands under the pointer even while the flip-in still has the card edge-on.
+    const settledOrigin = () => {
+      const overlay = overlayRef.current
+      const overlayRect = overlay.getBoundingClientRect()
+      let x = overlayRect.left + overlay.clientLeft
+      let y = overlayRect.top + overlay.clientTop
+      for (let node = wrap; node && node !== overlay; node = node.offsetParent) {
+        x += node.offsetLeft
+        y += node.offsetTop
+        if (node.offsetParent && node.offsetParent !== overlay) {
+          x += node.offsetParent.clientLeft
+          y += node.offsetParent.clientTop
+        }
+      }
+      for (let node = wrap.parentElement; node && node !== overlay; node = node.parentElement) {
+        x -= node.scrollLeft
+        y -= node.scrollTop
+      }
+      return { x, y }
+    }
+
+    const place = (clientX, clientY) => {
+      const origin = settledOrigin()
+      mousePos.current.x = clientX - origin.x
+      mousePos.current.y = clientY - origin.y
+    }
+
+    const paintPill = () => {
+      if (btnRef.current) {
+        btnRef.current.style.transform =
+          `translate(${mousePos.current.x}px, ${mousePos.current.y}px) translate(-50%, -50%)`
+      }
+    }
+
+    // The preview usually opens under a mouse that hasn't moved yet, so start the pill where the pointer already is
+    if (lastPointer.x !== null) {
+      place(lastPointer.x, lastPointer.y)
+      paintPill()
+    }
+
     const onMove = (e) => {
-      const rect = wrap.getBoundingClientRect()
-      mousePos.current.x = e.clientX - rect.left
-      mousePos.current.y = e.clientY - rect.top
+      place(e.clientX, e.clientY)
 
       if (!rafId.current) {
         rafId.current = requestAnimationFrame(() => {
-          if (btnRef.current) {
-            btnRef.current.style.transform =
-              `translate(${mousePos.current.x}px, ${mousePos.current.y}px) translate(-50%, -50%)`
-          }
+          paintPill()
           rafId.current = null
         })
       }

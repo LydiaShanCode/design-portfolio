@@ -109,13 +109,41 @@ function CustomCursor() {
       lastTarget = null
     }
 
+    // Clicks (opening a modal), keys (Escape closing one), scrolling and finished animations (a modal's flip-in)
+    // change what's under a still pointer, and mousemove won't fire until it moves, so hit-test once afterwards.
+    let recheckId = 0
+    const recheck = () => {
+      recheckId = 0
+      if (!cursor.classList.contains('is-active')) return
+      const target = document.elementFromPoint(pointerX, pointerY)
+      if (target && target !== lastTarget) {
+        lastTarget = target
+        updateState(target)
+        requestPaint()
+      }
+    }
+    const scheduleRecheck = () => {
+      if (!recheckId) recheckId = requestAnimationFrame(() => { recheckId = requestAnimationFrame(recheck) })
+    }
+
     window.addEventListener('mousemove', handleMouseMove, { passive: true })
     document.documentElement.addEventListener('mouseleave', handleMouseLeave)
+    window.addEventListener('click', scheduleRecheck, { passive: true })
+    window.addEventListener('keyup', scheduleRecheck, { passive: true })
+    window.addEventListener('scroll', scheduleRecheck, { passive: true })
+    window.addEventListener('animationend', scheduleRecheck, { passive: true })
+    window.addEventListener('transitionend', scheduleRecheck, { passive: true })
 
     return () => {
+      window.removeEventListener('animationend', scheduleRecheck)
+      window.removeEventListener('transitionend', scheduleRecheck)
       window.removeEventListener('mousemove', handleMouseMove)
       document.documentElement.removeEventListener('mouseleave', handleMouseLeave)
+      window.removeEventListener('click', scheduleRecheck)
+      window.removeEventListener('keyup', scheduleRecheck)
+      window.removeEventListener('scroll', scheduleRecheck)
       cancelAnimationFrame(frameId)
+      cancelAnimationFrame(recheckId)
     }
   }, [])
 
