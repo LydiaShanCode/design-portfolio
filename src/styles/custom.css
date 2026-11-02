@@ -278,6 +278,41 @@ body {
 }
 
 /* Water canvas overlay */
+/* ── First-load intro (html.is-intro, set by src/lib/intro.js) ──
+   0ms koi alone → 500ms content blur-fades in → 800ms nav drops in. Timings mirror INTRO_MS. */
+.is-intro .intro-reveal {
+  animation: intro-reveal 500ms var(--ease-smooth) 500ms backwards;
+}
+
+.is-intro .intro-nav {
+  animation: intro-nav-drop 500ms var(--ease-dramatic) 800ms backwards;
+}
+
+.is-intro .intro-nav-bottom {
+  animation: intro-nav-rise 500ms var(--ease-dramatic) 800ms backwards;
+}
+
+@keyframes intro-reveal {
+  from {
+    opacity: 0;
+    filter: blur(12px);
+  }
+}
+
+@keyframes intro-nav-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes intro-nav-rise {
+  from {
+    opacity: 0;
+    transform: translateY(calc(100% + 20px));
+  }
+}
+
 .water-canvas {
   position: fixed;
   top: 0;

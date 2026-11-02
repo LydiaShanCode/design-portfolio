@@ -109,7 +109,7 @@ function Footer() {
   }, [showSwimFish, fishSvgWithAnchor])
 
   return (
-    <footer className="footer-section">
+    <footer className="footer-section intro-reveal">
       <div className="footer-inner">
         <div className="footer-left">
           <h2 className="footer-heading">

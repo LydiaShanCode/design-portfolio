@@ -20,8 +20,10 @@ function Home() {
   return (
     <>
       <Hero />
-      <ProjectsGrid />
-      <ActivityLog />
+      <div className="intro-reveal">
+        <ProjectsGrid />
+        <ActivityLog />
+      </div>
     </>
   )
 }
