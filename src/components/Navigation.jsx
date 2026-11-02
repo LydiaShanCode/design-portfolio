@@ -145,7 +145,7 @@ function Navigation() {
         />
       )}
       <nav 
-        className={`nav-blur fixed top-0 left-0 right-0 z-50 hidden md:block text-current transition-transform duration-300 ${
+        className={`intro-nav nav-blur fixed top-0 left-0 right-0 z-50 hidden md:block text-current transition-transform duration-300 ${
           isVisible ? 'translate-y-0' : '-translate-y-full'
         }`}
         onMouseEnter={handleNavMouseEnter}
@@ -275,7 +275,7 @@ function Navigation() {
       </nav>
 
       {/* Mobile bottom nav bar */}
-      <div className="fixed bottom-5 left-0 right-0 z-50 flex justify-center px-3 md:hidden">
+      <div className="intro-nav-bottom fixed bottom-5 left-0 right-0 z-50 flex justify-center px-3 md:hidden">
         <div className="inline-flex items-center gap-5 min-[400px]:gap-7 min-[480px]:gap-8 rounded-full border border-white/30 bg-white/60 px-6 min-[400px]:px-8 min-[480px]:px-10 py-4 min-[480px]:py-5 shadow-lg backdrop-blur-xl">
           {leftItems.map((item) =>
             item.isHash ? (
