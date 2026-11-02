@@ -2,6 +2,15 @@
   "repo": "LydiaShanCode/design-portfolio",
   "commits": [
     {
+      "sha": "c9e75bbaa8096cb5fbd5ea2eec3d270b089e9b0b",
+      "subject": "feat(work): add Adaptive Security cards and poster-first card media",
+      "date": "2026-11-02T16:38:08-05:00",
+      "author": "lydia shan",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/c9e75bbaa8096cb5fbd5ea2eec3d270b089e9b0b"
+    },
+    {
       "sha": "c1a3922a757136617a70b430575f2c1ce5ffd6c7",
       "subject": "Merge pull request #2 from LydiaShanCode/cursor/remove-intro-spinner-b53d",
       "date": "2026-11-02T04:02:09+00:00",

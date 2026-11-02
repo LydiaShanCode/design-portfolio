@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react
 import { Link, useNavigate } from 'react-router-dom'
 import Picture from './Picture'
 import Video from './Video'
+import { lastPointer } from '../lib/pointer'
 import { useDesignVersion } from './design-versions/DesignVersionProvider'
 import {
   MOTION_VERSIONS,
@@ -169,25 +170,72 @@ function ProjectPreview({ project, cardRect, originNode, onClose }) {
     // For protected projects, stop tracking once the password form is open
     if (project.protected && passwordPhase !== 'idle') return
 
+    // Measures where the wrap sits once the card has settled. offsetLeft/offsetTop ignore transforms,
+    // so the pill lands under the pointer even while the flip-in still has the card edge-on.
+    const settledOrigin = () => {
+      const overlay = overlayRef.current
+      const overlayRect = overlay.getBoundingClientRect()
+      let x = overlayRect.left + overlay.clientLeft
+      let y = overlayRect.top + overlay.clientTop
+      for (let node = wrap; node && node !== overlay; node = node.offsetParent) {
+        x += node.offsetLeft
+        y += node.offsetTop
+        if (node.offsetParent && node.offsetParent !== overlay) {
+          x += node.offsetParent.clientLeft
+          y += node.offsetParent.clientTop
+        }
+      }
+      for (let node = wrap.parentElement; node && node !== overlay; node = node.parentElement) {
+        x -= node.scrollLeft
+        y -= node.scrollTop
+      }
+      return { x, y }
+    }
+
+    // Visibility is driven by this rather than :hover, which misfires while the flip-in sweeps the card under a still pointer
+    const setPointerInside = (inside) => wrap.toggleAttribute('data-pointer-inside', inside)
+
+    const place = (clientX, clientY) => {
+      const origin = settledOrigin()
+      mousePos.current.x = clientX - origin.x
+      mousePos.current.y = clientY - origin.y
+      setPointerInside(
+        mousePos.current.x >= 0 && mousePos.current.x <= wrap.offsetWidth &&
+        mousePos.current.y >= 0 && mousePos.current.y <= wrap.offsetHeight
+      )
+    }
+
+    const paintPill = () => {
+      if (btnRef.current) {
+        btnRef.current.style.transform =
+          `translate(${mousePos.current.x}px, ${mousePos.current.y}px) translate(-50%, -50%)`
+      }
+    }
+
+    // The preview usually opens under a mouse that hasn't moved yet, so start the pill where the pointer already is
+    if (lastPointer.x !== null) {
+      place(lastPointer.x, lastPointer.y)
+      paintPill()
+    }
+
     const onMove = (e) => {
-      const rect = wrap.getBoundingClientRect()
-      mousePos.current.x = e.clientX - rect.left
-      mousePos.current.y = e.clientY - rect.top
+      place(e.clientX, e.clientY)
 
       if (!rafId.current) {
         rafId.current = requestAnimationFrame(() => {
-          if (btnRef.current) {
-            btnRef.current.style.transform =
-              `translate(${mousePos.current.x}px, ${mousePos.current.y}px) translate(-50%, -50%)`
-          }
+          paintPill()
           rafId.current = null
         })
       }
     }
 
+    const onLeave = () => setPointerInside(false)
+
     wrap.addEventListener('mousemove', onMove)
+    wrap.addEventListener('mouseleave', onLeave)
     return () => {
       wrap.removeEventListener('mousemove', onMove)
+      wrap.removeEventListener('mouseleave', onLeave)
       if (rafId.current) cancelAnimationFrame(rafId.current)
     }
   }, [project.protected, passwordPhase])
