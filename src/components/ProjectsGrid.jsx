@@ -1,11 +1,23 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'framer-motion'
+import { animate, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion'
 import ProjectCard from './ProjectCard'
 import ProjectPreview from './ProjectPreview'
-import projectsFromMd from '../data/projectLoader'
+import { useDesignVersion } from './design-versions/DesignVersionProvider'
+import {
+  FAN_CARD_WIDTH,
+  FAN_FRONT_DELAY,
+  FAN_MIDDLE,
+  FAN_OFFSET,
+  FAN_ORIGIN_Y,
+  FAN_POINTER_TILT,
+  FAN_TIGHTEN,
+  FAN_VERSIONS,
+  fanPoses,
+} from './work-fan/fanLayouts'
+import { featuredProjects } from '../data/projectLoader'
 import { withProjectAssets } from '../data/projectAssets'
-
+import { initCardSfx, playCardSfx, preloadCardSfx } from '../lib/cardSfx'
 const SPRING = { type: 'spring', stiffness: 380, damping: 28, mass: 1.1 }
 const INSTANT = { duration: 0 }
 const FADE = { duration: 0.15, ease: [0.22, 0.61, 0.36, 1] }
@@ -14,36 +26,55 @@ const MOBILE_BREAKPOINT = 640
 const MOBILE_INITIAL_ORDER = [2, 1, 3, 4, 0]
 const DESKTOP_ORDER = [0, 1, 2, 3, 4]
 
-// Desktop fan: one entry per stack slot
-const FAN_OFFSET = [-2, -1, 0, 1, 2]
-const FAN_TILT = [-8, -4, 0, 4, 8]
-const FAN_EDGE_PUSH = [0, 1, 1, 1, 0]
-const FAN_Z = [1, 2, 3, 2, 1]
-const FAN_CARD_WIDTH = 340
 const FAN_MIN_OVERLAP = 24
 const FAN_MIN_SPREAD = 120
-const FAN_TIGHTEN = 0.82
-const FAN_HOVER_PUSH = 36
-const FAN_HOVER_LIFT = -22
-
+// How much of a pushed card may tuck past the viewport edge (the page clips overflow-x)
+const FAN_TUCK = 0.45
+const TILT_SPRING = { type: 'spring', stiffness: 260, damping: 22, mass: 0.6 }
+// The hovered card only comes forward once its neighbours have started sliding away
+const FAN_FRONT_DELAY_MS = 90
+// How close to its own edge the pointer may end up when a newly hovered card re-centres
+const FAN_POINTER_MARGIN = 56
+const FAN_LEAVE_DELAY_MS = 180
+// Cards lift and pivot under a still pointer; ignore sibling enters unless the pointer moved
+const FAN_POINTER_STILL_PX = 10
+// Matches the intro content reveal delay in custom.css so cards arrive with the hero copy
+const CARD_ENTER_DELAY_MS = 200
+const CARD_ENTER_RISE = 180
+const CARD_ENTER_STAGGER = 0.05
 // Mobile stack: one entry per depth
 const STACK_ROTATIONS = [0, -2, 3, -1.5, 2]
 const STACK_PEEK = 8
 const SWIPE_DISTANCE = 80
 const SWIPE_VELOCITY = 400
 
-function fanPose(slot, hoverIndex, spreadBase) {
-  const hovered = hoverIndex !== null
-  const spread = hovered ? spreadBase : spreadBase * FAN_TIGHTEN
-  const push = hovered ? FAN_HOVER_PUSH * FAN_EDGE_PUSH[slot] * (slot - hoverIndex) : 0
-  const lift = slot === hoverIndex ? FAN_HOVER_LIFT : 0
-  // The lift travels along the card's own (rotated) axis
-  const tilt = (FAN_TILT[slot] * Math.PI) / 180
-  return {
-    x: spread * FAN_OFFSET[slot] + push - lift * Math.sin(tilt),
-    y: lift * Math.cos(tilt),
-    rotate: FAN_TILT[slot],
+function FanCard({ pointerTilt, motionProps, ...cardProps }) {
+  const rotateX = useSpring(0, TILT_SPRING)
+  const rotateY = useSpring(0, TILT_SPRING)
+
+  useEffect(() => {
+    if (pointerTilt) return
+    rotateX.set(0)
+    rotateY.set(0)
+  }, [pointerTilt, rotateX, rotateY])
+
+  const followPointer = (event) => {
+    if (!pointerTilt) return
+    const { left, top, width, height } = event.currentTarget.getBoundingClientRect()
+    rotateY.set(((event.clientX - left) / width - 0.5) * 2 * pointerTilt)
+    rotateX.set(-((event.clientY - top) / height - 0.5) * 2 * pointerTilt)
   }
+
+  return (
+    <ProjectCard
+      {...cardProps}
+      motionProps={{
+        ...motionProps,
+        style: { ...motionProps.style, rotateX, rotateY, transformPerspective: 1000 },
+        onPointerMove: followPointer,
+      }}
+    />
+  )
 }
 
 function stackPose(depth) {
@@ -161,7 +192,7 @@ const StackCard = forwardRef(function StackCard({
 })
 
 function ProjectsGrid() {
-  const projects = useMemo(() => projectsFromMd.slice(0, 5).map(withProjectAssets), [])
+  const projects = useMemo(() => featuredProjects.slice(0, 5).map(withProjectAssets), [])
   const reduceMotion = useReducedMotion()
   const [isMobile, setIsMobile] = useState(
     () => typeof window !== 'undefined' && window.innerWidth <= MOBILE_BREAKPOINT,
@@ -171,15 +202,23 @@ function ProjectsGrid() {
   const [isBusy, setIsBusy] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [hoverIndex, setHoverIndex] = useState(null)
-  const [settlingIndex, setSettlingIndex] = useState(null)
+  const [frontIndex, setFrontIndex] = useState(FAN_MIDDLE)
+  const [hoverFrom, setHoverFrom] = useState(null)
+  const [hoverAnchor, setHoverAnchor] = useState(null)
   const [spreadBase, setSpreadBase] = useState(200)
+  const [edgeLimit, setEdgeLimit] = useState(0)
   const [videosWarm, setVideosWarm] = useState(false)
   const [selectedProject, setSelectedProject] = useState(null)
   const [cardRect, setCardRect] = useState(null)
+  const [cardNode, setCardNode] = useState(null)
   const [inView, setInView] = useState(true)
   const [pageVisible, setPageVisible] = useState(
     () => typeof document === 'undefined' || !document.hidden,
   )
+  const [cardsEntered, setCardsEntered] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth <= MOBILE_BREAKPOINT,
+  )
+  const staggerEntranceRef = useRef(true)
 
   const stackRef = useRef(null)
   const cardRefs = useRef(new Map())
@@ -200,6 +239,26 @@ function ProjectsGrid() {
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
+  useEffect(() => initCardSfx(), [])
+
+  useEffect(() => {
+    if (isMobile || reduceMotion) {
+      setCardsEntered(true)
+      return undefined
+    }
+    const delay = document.documentElement.classList.contains('is-intro') ? CARD_ENTER_DELAY_MS : 0
+    const timeout = window.setTimeout(() => setCardsEntered(true), delay)
+    return () => window.clearTimeout(timeout)
+  }, [isMobile, reduceMotion])
+
+  useEffect(() => {
+    if (!cardsEntered) return undefined
+    const timeout = window.setTimeout(() => {
+      staggerEntranceRef.current = false
+    }, 700)
+    return () => window.clearTimeout(timeout)
+  }, [cardsEntered])
+
   useEffect(() => {
     const stack = stackRef.current
     if (!stack || isMobile) return
@@ -209,6 +268,10 @@ function ProjectsGrid() {
       if (!width) return
       const desired = (width - FAN_CARD_WIDTH) / Math.max(count - 1, 1)
       setSpreadBase(Math.min(FAN_CARD_WIDTH - FAN_MIN_OVERLAP, Math.max(FAN_MIN_SPREAD, desired)))
+      const { left, right } = stack.getBoundingClientRect()
+      const center = (left + right) / 2
+      const toViewportEdge = Math.min(center, document.documentElement.clientWidth - center)
+      setEdgeLimit(toViewportEdge - FAN_CARD_WIDTH / 2 + FAN_CARD_WIDTH * FAN_TUCK)
     }
     update()
     const observer = new ResizeObserver(update)
@@ -280,15 +343,17 @@ function ProjectsGrid() {
     return clearAutoCycle
   }, [autoCycleEnabled, isBusy, isDragging, cycle])
 
-  const handleSelect = useCallback((project, rect) => {
+  const handleSelect = useCallback((project, rect, node = null) => {
     if (busyRef.current) return
     setCardRect(rect)
+    setCardNode(node)
     setSelectedProject(project)
   }, [])
 
   const handleClosePreview = useCallback(() => {
     setSelectedProject(null)
     setCardRect(null)
+    setCardNode(null)
   }, [])
 
   // Dragging blocks auto-cycle via busyRef but must not flip `canDrag` mid-gesture
@@ -311,26 +376,140 @@ function ProjectsGrid() {
     cycle(direction, velocity)
   }, [cycle])
 
-  const hoverCard = (index) => {
-    if (hoverIndex !== null && hoverIndex !== index) setSettlingIndex(hoverIndex)
-    setHoverIndex(index)
-  }
-
-  const leaveCard = (event) => {
-    if (event.relatedTarget?.closest?.('.work-card')) return
-    if (hoverIndex !== null) setSettlingIndex(hoverIndex)
-    setHoverIndex(null)
-  }
-
+  // Every major version so far has cards; scope this (e.g. `scope: ['v1']`) once one doesn't.
+  const fanVersion = useDesignVersion('fan-hover', FAN_VERSIONS, { label: 'Card hover', scope: 'global' })
   const fanTransition = reduceMotion ? INSTANT : SPRING
+  const fanPosesNow = useMemo(() => {
+    const poses = fanPoses(fanVersion, { hoverIndex, hoverFrom, spreadBase, edgeLimit, anchorX: hoverAnchor })
+    const stripped = reduceMotion ? poses.map(({ transition, ...rest }) => rest) : poses
+    if (isMobile) return stripped
+    if (!cardsEntered) {
+      return stripped.map((pose) => ({
+        ...pose,
+        y: (pose.y || 0) + CARD_ENTER_RISE,
+        opacity: 0,
+        transition: INSTANT,
+      }))
+    }
+    return stripped.map((pose, index) => ({
+      ...pose,
+      opacity: 1,
+      transition: staggerEntranceRef.current
+        ? {
+            ...(pose.transition || fanTransition),
+            delay: (pose.transition?.delay || 0) + Math.abs(index - FAN_MIDDLE) * CARD_ENTER_STAGGER,
+          }
+        : pose.transition || fanTransition,
+    }))
+  }, [fanVersion, hoverIndex, hoverFrom, spreadBase, edgeLimit, hoverAnchor, reduceMotion, isMobile, cardsEntered, fanTransition])
+  const pointerTilt = reduceMotion ? 0 : FAN_POINTER_TILT[fanVersion] || 0
+  const fanOriginY = FAN_ORIGIN_Y[fanVersion] ?? 0.5
+  const frontDelay = FAN_FRONT_DELAY[fanVersion]
+
+  const hoverRef = useRef(hoverIndex)
+  const frontRef = useRef(frontIndex)
+  frontRef.current = frontIndex
+  const spreadRef = useRef(spreadBase)
+  const pointerRef = useRef({ x: null, y: null })
+  const pointerAtHoverRef = useRef({ x: null, y: null })
+  const pendingRef = useRef({ timer: null, index: undefined })
+  hoverRef.current = hoverIndex
+  spreadRef.current = spreadBase
+
+  useEffect(() => () => clearTimeout(pendingRef.current.timer), [])
+
+  const cancelPendingHover = () => {
+    clearTimeout(pendingRef.current.timer)
+    pendingRef.current = { timer: null, index: undefined }
+  }
+
+  // Moving straight from one card to another, the new card heads back toward its resting spot
+  // but stops short of sliding out from under the pointer
+  const anchorFor = (index) => {
+    const stack = stackRef.current
+    if (index === null || hoverRef.current === null || pointerRef.current.x === null || !stack) return null
+    const { left, right } = stack.getBoundingClientRect()
+    const pointer = pointerRef.current.x - (left + right) / 2
+    const rest = spreadRef.current * FAN_TIGHTEN * FAN_OFFSET[index]
+    const reach = FAN_CARD_WIDTH / 2 - FAN_POINTER_MARGIN
+    return Math.min(pointer + reach, Math.max(pointer - reach, rest))
+  }
+
+  const commitHover = (index) => {
+    pendingRef.current = { timer: null, index: undefined }
+    pointerAtHoverRef.current = { ...pointerRef.current }
+    setHoverAnchor(anchorFor(index))
+    setHoverFrom(index === null ? null : hoverRef.current ?? frontRef.current)
+    setHoverIndex(index)
+    if (index !== null) playCardSfx()
+  }
+
+  const pointerMovedSinceHover = () => {
+    const from = pointerAtHoverRef.current
+    const to = pointerRef.current
+    if (from.x === null || to.x === null) return true
+    const dx = to.x - from.x
+    const dy = to.y - from.y
+    return dx * dx + dy * dy >= FAN_POINTER_STILL_PX * FAN_POINTER_STILL_PX
+  }
+
+  // Cards slide and lift under a still pointer, so the fan waits out a grace period before resetting
+  const requestHover = (index, delay) => {
+    cancelPendingHover()
+    if (index === hoverRef.current) return
+    if (!delay || reduceMotion) {
+      commitHover(index)
+      return
+    }
+    pendingRef.current = { timer: setTimeout(() => commitHover(index), delay), index }
+  }
+
+  const hoverCard = (index) => {
+    if (hoverRef.current !== null && index !== hoverRef.current && !pointerMovedSinceHover()) return
+    requestHover(index, 0)
+  }
+
+  const enterStack = () => {
+    setVideosWarm(true)
+    preloadCardSfx()
+    if (pendingRef.current.index === null) cancelPendingHover()
+  }
+
+  const leaveStack = () => requestHover(null, FAN_LEAVE_DELAY_MS)
+
+  const blurCard = (event) => {
+    if (!stackRef.current?.contains(event.relatedTarget)) requestHover(null, 0)
+  }
+
+  const focusCard = (index) => {
+    pointerRef.current = { x: null, y: null }
+    requestHover(index, 0)
+  }
+
+  // The last hovered card stays in front after the pointer leaves. The switch lags the hover
+  // so re-layering happens once cards are sliding apart, not while they overlap.
+  useEffect(() => {
+    if (hoverIndex === null) return undefined
+    if (reduceMotion) {
+      setFrontIndex(hoverIndex)
+      return undefined
+    }
+    const timer = setTimeout(() => setFrontIndex(hoverIndex), frontDelay ?? FAN_FRONT_DELAY_MS)
+    return () => clearTimeout(timer)
+  }, [hoverIndex, reduceMotion, frontDelay])
+
+  // Cards nearest the front card sit on top of the ones further out
+  const fanZ = (index) => 10 - Math.abs(index - frontIndex)
 
   return (
     <section id="work" className="pt-0 pb-0 px-4 mt-0">
       <div className="max-w-7xl mx-auto">
         <div
-          className={`work-stack ${isMobile ? 'work-stack--mobile' : ''}`}
+          className={`work-stack${isMobile ? ' work-stack--mobile' : ''}${!cardsEntered ? ' work-stack--entering' : ''}${fanVersion === 'v9' ? ' work-stack--restraint' : ''}`}
           ref={stackRef}
-          onPointerEnter={isMobile ? undefined : () => setVideosWarm(true)}
+          onPointerEnter={isMobile ? undefined : enterStack}
+          onPointerLeave={isMobile ? undefined : leaveStack}
+          onPointerMove={isMobile ? undefined : (event) => { pointerRef.current = { x: event.clientX, y: event.clientY } }}
         >
           {isMobile
             ? projects.map((project, index) => {
@@ -352,32 +531,30 @@ function ProjectsGrid() {
                     onSwipe={handleSwipe}
                     onDragStart={handleDragStart}
                     onDragCancel={handleDragCancel}
-                    onTap={(node) => handleSelect(project, node?.getBoundingClientRect())}
+                    onTap={(node) => handleSelect(project, node?.getBoundingClientRect(), node?.querySelector('.work-card') ?? node)}
                   />
                 )
               })
             : projects.map((project, index) => (
-                <ProjectCard
+                <FanCard
                   key={project.id}
                   project={project}
                   stackIndex={index}
                   shouldAutoplay={index === hoverIndex}
                   warmVideo={videosWarm}
                   onSelect={handleSelect}
+                  pointerTilt={index === hoverIndex ? pointerTilt : 0}
                   motionProps={{
                     initial: false,
-                    animate: fanPose(index, hoverIndex, spreadBase),
+                    animate: fanPosesNow[index],
                     transition: fanTransition,
                     style: {
-                      zIndex: index === hoverIndex ? 10 : index === settlingIndex ? 9 : FAN_Z[index],
-                    },
-                    onAnimationComplete: () => {
-                      if (index === settlingIndex) setSettlingIndex(null)
+                      zIndex: hoverIndex === index && !frontDelay ? 20 : fanZ(index),
+                      originY: fanOriginY,
                     },
                     onPointerEnter: () => hoverCard(index),
-                    onPointerLeave: leaveCard,
-                    onFocus: () => hoverCard(index),
-                    onBlur: leaveCard,
+                    onFocus: () => focusCard(index),
+                    onBlur: blurCard,
                   }}
                 />
               ))}
@@ -388,6 +565,7 @@ function ProjectsGrid() {
         <ProjectPreview
           project={selectedProject}
           cardRect={cardRect}
+          originNode={cardNode}
           onClose={handleClosePreview}
         />
       )}

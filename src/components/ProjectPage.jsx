@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect, useCallback, useRef, Children, isValidEle
 import { useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Markdown from 'react-markdown'
-import projectsFromMd from '../data/projectLoader'
+import projectsFromMd, { featuredProjects } from '../data/projectLoader'
 import IterationsViewer from './IterationsViewer'
 import CaseStudyGate from './CaseStudyGate'
 import Picture from './Picture'
@@ -423,10 +423,10 @@ function ProjectPage() {
   const headings = useMemo(() => parseHeadings(project?.content), [project?.content])
 
   const nextProject = useMemo(() => {
-    const ready = projectsFromMd.filter((item) => item.caseStudyReady && item.slug !== slug)
+    const ready = featuredProjects.filter((item) => item.caseStudyReady && item.slug !== slug)
     if (!ready.length) return null
-    const currentIdx = projectsFromMd.findIndex((item) => item.slug === slug)
-    const after = ready.find((item) => projectsFromMd.indexOf(item) > currentIdx)
+    const currentIdx = featuredProjects.findIndex((item) => item.slug === slug)
+    const after = ready.find((item) => featuredProjects.indexOf(item) > currentIdx)
     return after || ready[0]
   }, [slug])
 

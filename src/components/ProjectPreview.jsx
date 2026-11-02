@@ -1,7 +1,21 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Picture from './Picture'
 import Video from './Video'
+import { useDesignVersion } from './design-versions/DesignVersionProvider'
+import {
+  MOTION_VERSIONS,
+  PREVIEW_VERSIONS,
+  buildGeometry,
+  cloneCardFace,
+  measureOrigin,
+  playTimeline,
+  primePose,
+} from './preview-motion/previewTransitions'
+
+const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+// Faces seen from behind are mirrored so they read correctly once the card has turned
+const FACE_MIRROR = { v2: 'scaleX(-1)', v4: 'scaleX(-1)', v5: 'scaleY(-1)' }
 
 const CORRECT_PASSWORD = 'design is awesome'
 
@@ -9,7 +23,7 @@ function sessionKey(slug) {
   return `case-study-unlocked-${slug}`
 }
 
-function ProjectPreview({ project, cardRect, onClose }) {
+function ProjectPreview({ project, cardRect, originNode, onClose }) {
   const overlayRef = useRef(null)
   const inputRef = useRef(null)
   const videoWrapRef = useRef(null)
@@ -21,10 +35,98 @@ function ProjectPreview({ project, cardRect, onClose }) {
   const [passwordPhase, setPasswordPhase] = useState('idle') // idle | input | error
   const [passwordValue, setPasswordValue] = useState('')
 
+  const openVersion = useDesignVersion('preview-open', PREVIEW_VERSIONS, { label: 'Card → preview' })
+  const [version] = useState(openVersion)
+  const [useMotion] = useState(() => MOTION_VERSIONS.has(version) && Boolean(originNode) && !prefersReducedMotion())
+  const stageRef = useRef(null)
+  const cardRef = useRef(null)
+  const frontRef = useRef(null)
+  const shadeRef = useRef(null)
+  const coverRef = useRef(null)
+  const hingeRef = useRef(null)
+  const hingeFrontRef = useRef(null)
+  const hingeBackRef = useRef(null)
+  const hingeShadeRef = useRef(null)
+  const controlsRef = useRef(null)
+  const closingRef = useRef(false)
+
+  const motionEls = () => ({
+    card: cardRef.current,
+    front: frontRef.current,
+    shade: shadeRef.current,
+    cover: coverRef.current,
+    hinge: hingeRef.current,
+    hingeFront: hingeFrontRef.current,
+    hingeBack: hingeBackRef.current,
+    hingeShade: hingeShadeRef.current,
+  })
+
+  const prepareFaces = (geometry) => {
+    const card = cardRef.current
+    const faceSize = { width: `${geometry.faceWidth}px`, height: `${geometry.faceHeight}px` }
+    Object.assign(frontRef.current.style, faceSize, {
+      left: `${geometry.insetX}px`,
+      top: `${geometry.insetY}px`,
+      transform: FACE_MIRROR[version] || '',
+    })
+    frontRef.current.replaceChildren(cloneCardFace(originNode, geometry.fit))
+    if (version !== 'v6') return
+    Object.assign(coverRef.current.style, {
+      left: `${card.offsetLeft}px`,
+      top: `${card.offsetTop}px`,
+      width: `${card.offsetWidth}px`,
+      height: `${card.offsetHeight}px`,
+    })
+    Object.assign(hingeRef.current.style, faceSize, { borderRadius: `${geometry.startRadius}px` })
+    hingeFrontRef.current.replaceChildren(cloneCardFace(originNode, geometry.fit))
+    hingeBackRef.current.style.backgroundImage = originNode.style.backgroundImage
+  }
+
+  useLayoutEffect(() => {
+    if (!useMotion) return undefined
+    const geometry = buildGeometry(measureOrigin(originNode), cardRef.current)
+    prepareFaces(geometry)
+    primePose(version, geometry, motionEls())
+    originNode.style.visibility = 'hidden'
+    stageRef.current.classList.add('is-animating')
+    controlsRef.current = playTimeline(version, geometry, motionEls(), {
+      from: 0,
+      to: 1,
+      onComplete: () => stageRef.current?.classList.remove('is-animating'),
+    })
+    return () => {
+      controlsRef.current?.stop()
+      originNode.style.visibility = ''
+    }
+    // Plays once per open; later version switches apply to the next open
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const handleClose = useCallback(() => {
+    if (closingRef.current) return
+    closingRef.current = true
     setPhase('flip-out')
-    setTimeout(onClose, 400)
-  }, [onClose])
+    if (!useMotion) {
+      setTimeout(onClose, 400)
+      return
+    }
+    controlsRef.current?.stop()
+    const card = cardRef.current
+    card.style.transform = ''
+    card.style.clipPath = ''
+    const geometry = buildGeometry(measureOrigin(originNode), card)
+    prepareFaces(geometry)
+    stageRef.current.classList.add('is-animating')
+    controlsRef.current = playTimeline(version, geometry, motionEls(), {
+      from: 1,
+      to: 0,
+      onComplete: () => {
+        originNode.style.visibility = ''
+        onClose()
+      },
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onClose, useMotion, version, originNode])
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -97,10 +199,12 @@ function ProjectPreview({ project, cardRect, onClose }) {
     image,
     highlights,
     caseStudyReady,
-    protected: isProtected,
+    protected: passwordGated,
     prototypeUrl,
     siteUrl,
   } = project
+  // Unready case studies read "coming soon" from the grid; /project/<slug> stays reachable for drafting
+  const isProtected = passwordGated && caseStudyReady
 
   const resetMobileZoom = () => {
     const viewport = document.querySelector('meta[name="viewport"]')
@@ -248,13 +352,20 @@ function ProjectPreview({ project, cardRect, onClose }) {
   return (
     <div
       ref={overlayRef}
-      className={`project-preview-overlay project-preview--${phase}`}
+      className={`project-preview-overlay project-preview--${phase}${useMotion ? ' project-preview--motion' : ''}`}
       onClick={(e) => {
         if (e.target === overlayRef.current) handleClose()
       }}
       style={originStyle}
     >
-      <div className="project-preview-card">
+      <div ref={stageRef} className="project-preview-stage">
+      <div ref={cardRef} className="project-preview-card">
+        {useMotion ? (
+          <>
+            <div ref={frontRef} className="project-preview-face" aria-hidden="true" />
+            <div ref={shadeRef} className="project-preview-shade" aria-hidden="true" />
+          </>
+        ) : null}
         <button
           type="button"
           className="project-preview-close"
@@ -402,6 +513,16 @@ function ProjectPreview({ project, cardRect, onClose }) {
             </div>
           </div>
         </div>
+      </div>
+      {useMotion ? (
+        <div ref={coverRef} className="project-preview-cover" aria-hidden="true" style={{ display: 'none' }}>
+          <div ref={hingeRef} className="project-preview-hinge">
+            <div ref={hingeFrontRef} className="project-preview-hinge-face" />
+            <div ref={hingeBackRef} className="project-preview-hinge-face project-preview-hinge-back" />
+            <div ref={hingeShadeRef} className="project-preview-shade" />
+          </div>
+        </div>
+      ) : null}
       </div>
     </div>
   )

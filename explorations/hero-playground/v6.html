@@ -1,0 +1,331 @@
+<!--
+  v6 — X-ray blueprint.
+  Idea: the cursor is a lens that x-rays the hero down to its blueprint — grid, wireframed type,
+  redline dimensions measured live from the real layout, type specs and build notes, plus an
+  architect's title block. Press to widen the lens; "Show the blueprint" reveals the whole sheet.
+  It shows the craft behind the page instead of adding a toy on top of it. Inspired by the
+  "hover to see how it's made" / spec-overlay posts designers share on X.
+  Trade-off: the most "designer" of the set and quietly impressive to the right audience. But it's
+  discoverable mostly on hover; on touch the toggle does the heavy lifting.
+  Reduced motion: the lens tracks the pointer without easing, and the reveal is instant.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v6 — X-ray blueprint</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .hero { display: grid; place-items: center; }
+    .hero-copy { grid-area: 1 / 1; }
+
+    .blueprint {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      color: #fff;
+      background-color: var(--color-primary);
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+        linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+      background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+      background-position: var(--gx, 0) var(--gy, 0);
+      -webkit-mask-image: radial-gradient(circle var(--r, 0px) at var(--x, 50%) var(--y, 50%), #000 calc(100% - 1px), transparent 100%);
+      mask-image: radial-gradient(circle var(--r, 0px) at var(--x, 50%) var(--y, 50%), #000 calc(100% - 1px), transparent 100%);
+    }
+
+    .blueprint .hero-copy {
+      position: absolute;
+      color: transparent;
+      -webkit-text-stroke: 0.7px #fff;
+    }
+    .blueprint .hero-subtext, .blueprint .chip { -webkit-text-stroke: 0.4px #fff; }
+    .blueprint .koi pre { color: #fff; -webkit-text-stroke: 0; opacity: 0.85; }
+    .blueprint .chip { background: transparent; box-shadow: none; border-color: rgba(255, 255, 255, 0.7); }
+    .blueprint img { filter: brightness(0) invert(1); opacity: 0.85; }
+
+    .marks { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .marks text { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.04em; fill: #fff; }
+    .marks .note { fill: rgba(255, 255, 255, 0.78); }
+    .marks .line { stroke: #fff; stroke-width: 1; fill: none; }
+    .marks .soft { stroke: rgba(255, 255, 255, 0.5); stroke-dasharray: 3 3; }
+    .marks .red { stroke: #fff; }
+
+    .title-block {
+      position: absolute;
+      right: 24px;
+      bottom: 24px;
+      display: grid;
+      grid-template-columns: auto auto;
+      border: 1px solid #fff;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .title-block span { padding: 6px 10px; border: 0.5px solid rgba(255, 255, 255, 0.6); }
+    .title-block .big { grid-column: span 2; font-family: var(--font-serif); font-size: 20px; letter-spacing: 0; text-transform: none; }
+
+    .lens {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 11;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px var(--color-primary), 0 0 0 4px rgba(0, 29, 217, 0.12), 0 10px 40px rgba(0, 29, 217, 0.2);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 200ms var(--ease-smooth);
+    }
+    .lens[data-on] { opacity: 1; }
+    .lens-tag {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      transform: translate(-50%, -50%);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+
+    .toggle {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      z-index: 20;
+      min-height: 44px;
+      padding: 0 18px;
+      border: 1px dotted var(--color-badge-border);
+      border-radius: var(--radius-full);
+      background: var(--glass-bg-chip);
+      box-shadow: var(--shadow-chip);
+      backdrop-filter: blur(16px);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 200ms var(--ease-smooth), transform 200ms var(--ease-smooth);
+    }
+    .toggle:hover { background: #fff; }
+    .toggle:active { transform: scale(0.97); }
+
+    @media (max-width: 767px) {
+      .title-block { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="hero-copy" data-copy>
+      <div class="hero-row">
+        <h1 class="hero-word hero-word--left" data-left>LYDIA IS</h1>
+        <div class="koi" data-koi-box><pre data-koi></pre></div>
+        <div class="hero-word hero-word--right" data-right><span data-verb></span><span class="caret">|</span></div>
+      </div>
+      <p class="hero-subtext" data-subtext></p>
+      <div data-chip></div>
+    </div>
+
+    <div class="blueprint" data-blueprint aria-hidden="true" inert>
+      <svg class="marks" data-marks></svg>
+      <div class="title-block">
+        <span class="big">Lydia Shan — Hero</span>
+        <span>Sheet 01 / 01</span><span>Rev. 2026.11</span>
+        <span>Scale 1:1</span><span>Units px</span>
+      </div>
+    </div>
+    <div class="lens" data-lens aria-hidden="true"><span class="lens-tag">X-RAY</span></div>
+
+    <button class="toggle" type="button" aria-pressed="false" data-toggle>Show the blueprint</button>
+    <p class="hint" data-hint>Move to x-ray · press to widen</p>
+  </section>
+
+  <script type="module">
+    import { typewriter, loadKoiFrames, prefersReduced, subtextHTML, chipHTML, clamp } from './hero.js'
+
+    const reduced = prefersReduced()
+    const hero = document.querySelector('.hero')
+    const copy = document.querySelector('[data-copy]')
+    const blueprint = document.querySelector('[data-blueprint]')
+    const marks = document.querySelector('[data-marks]')
+    const lensEl = document.querySelector('[data-lens]')
+    const toggle = document.querySelector('[data-toggle]')
+    document.querySelector('[data-subtext]').innerHTML = subtextHTML()
+    document.querySelector('[data-chip]').innerHTML = chipHTML()
+
+    // Wireframe twin of the real copy, kept in sync below.
+    const twin = copy.cloneNode(true)
+    twin.removeAttribute('data-copy')
+    blueprint.prepend(twin)
+    const verbs = [document.querySelector('[data-verb]'), twin.querySelector('[data-verb]')]
+    const kois = [document.querySelector('[data-koi]'), twin.querySelector('[data-koi]')]
+
+    typewriter((t) => verbs.forEach((v) => { v.textContent = t }), { reduced })
+    const frames = await loadKoiFrames()
+    kois.forEach((k) => { k.textContent = frames[0] })
+    if (!reduced && frames.length > 1) {
+      let i = 0
+      setInterval(() => { i = (i + 1) % frames.length; kois.forEach((k) => { k.textContent = frames[i] }) }, 50)
+    }
+    await document.fonts.ready
+
+    // ── Redlines, measured from the live layout ──
+    const ns = 'http://www.w3.org/2000/svg'
+    function el(name, attrs, text) {
+      const n = document.createElementNS(ns, name)
+      for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v)
+      if (text) n.textContent = text
+      marks.append(n)
+      return n
+    }
+    const local = (node) => {
+      const o = hero.getBoundingClientRect()
+      const r = node.getBoundingClientRect()
+      return { x: r.left - o.left, y: r.top - o.top, w: r.width, h: r.height, r: r.right - o.left, b: r.bottom - o.top }
+    }
+    const box = (r, cls = 'line soft') => el('rect', { x: r.x, y: r.y, width: r.w, height: r.h, class: cls })
+    function dimH(x1, x2, y, label) {
+      el('path', { d: `M${x1} ${y} H${x2} M${x1} ${y - 5} V${y + 5} M${x2} ${y - 5} V${y + 5}`, class: 'line red' })
+      el('text', { x: (x1 + x2) / 2, y: y - 7, 'text-anchor': 'middle' }, label)
+    }
+    function dimV(x, y1, y2, label) {
+      el('path', { d: `M${x} ${y1} V${y2} M${x - 5} ${y1} H${x + 5} M${x - 5} ${y2} H${x + 5}`, class: 'line red' })
+      el('text', { x: x + 8, y: (y1 + y2) / 2 + 4 }, label)
+    }
+    function callout(x, y, tx, ty, lines, anchor = 'start') {
+      el('path', { d: `M${x} ${y} L${tx} ${ty}`, class: 'line soft' })
+      el('circle', { cx: x, cy: y, r: 2.5, fill: '#fff' })
+      lines.forEach((line, i) => el('text', { x: tx + (anchor === 'start' ? 6 : -6), y: ty + 4 + i * 14, 'text-anchor': anchor, class: i ? 'note' : '' }, line))
+    }
+
+    function drawMarks() {
+      marks.textContent = ''
+      const W = hero.clientWidth
+      const H = hero.clientHeight
+      const left = local(document.querySelector('[data-left]'))
+      const right = local(document.querySelector('[data-right]'))
+      const koi = local(document.querySelector('[data-koi-box]'))
+      const sub = local(document.querySelector('[data-subtext]'))
+      const chip = local(document.querySelector('.chip'))
+      const cx = W / 2
+
+      el('path', { d: `M${cx} 0 V${H} M0 ${koi.y + koi.h / 2} H${W}`, class: 'line soft' })
+      el('text', { x: cx + 6, y: 18, class: 'note' }, '℄ CENTRE')
+      ;[left, right, koi, sub, chip].forEach((r) => box(r))
+
+      const narrow = W < 768
+      if (!narrow) {
+        dimH(left.r, koi.x, left.y - 14, `${Math.round(koi.x - left.r)}`)
+        dimH(koi.r, right.x, right.y - 14, `${Math.round(right.x - koi.r)}`)
+        dimH(right.x, right.r, right.b + 18, `${Math.round(right.w)} FIXED`)
+        el('text', { x: right.x, y: right.b + 34, class: 'note' }, 'so the koi never shifts while verbs type')
+        if (sub.y - koi.b > 4) dimV(koi.r + 14, koi.b, sub.y, `${Math.round(sub.y - koi.b)}`)
+        dimV(chip.r + 14, sub.b, chip.y, `${Math.round(chip.y - sub.b)}`)
+        callout(left.x + 10, left.y + 6, left.x - 40, left.y - 60, ['CORMORANT GARAMOND 300', '48 / 0.95 · −0.5 TRACKING'], 'end')
+        callout(koi.x + koi.w * 0.22, koi.y + 24, koi.x - 60, koi.y - 34, ['ASCII KOI', '198 frames · 20 fps · Courier 7px'], 'end')
+        callout(right.x + 8, right.b - 6, right.r + 40, right.y - 50, ['TYPEWRITER', '100ms in · 2s hold · 50ms out'])
+        callout(sub.x + 4, sub.b - 4, sub.x - 70, sub.b + 40, ['GEIST 400 · 16'], 'end')
+        callout(chip.r - 6, chip.b - 4, chip.r + 70, chip.b + 34, ['CHIP · 12/500', 'dotted #7b8dff · radius full'])
+      } else {
+        callout(koi.x + koi.w * 0.3, koi.y + 30, 16, koi.y - 6, ['ASCII KOI · 198 frames'])
+        callout(chip.r - 6, chip.b - 4, 16, chip.b + 40, ['CHIP · 12/500 · dotted'])
+      }
+      el('text', { x: 24, y: 32 }, 'HERO / 100dvh')
+      el('text', { x: 24, y: 46, class: 'note' }, `${Math.round(W)} × ${Math.round(H)}`)
+    }
+
+    function layout() {
+      const o = hero.getBoundingClientRect()
+      const r = copy.getBoundingClientRect()
+      Object.assign(twin.style, { left: `${r.left - o.left}px`, top: `${r.top - o.top}px`, width: `${r.width}px` })
+      drawMarks()
+    }
+    new ResizeObserver(layout).observe(hero)
+    layout()
+
+    // ── Lens ──
+    const BASE_R = 130
+    const PRESS_R = 250
+    const lens = { x: 0, y: 0, r: 0, tx: 0, ty: 0, tr: 0 }
+    let hovering = false
+    let pressed = false
+    let full = false
+
+    const fullR = () => Math.hypot(hero.clientWidth, hero.clientHeight)
+    function aim() {
+      lens.tr = full ? fullR() : hovering ? (pressed ? PRESS_R : BASE_R) : 0
+    }
+
+    hero.addEventListener('pointermove', (e) => {
+      const o = hero.getBoundingClientRect()
+      lens.tx = e.clientX - o.left
+      lens.ty = e.clientY - o.top
+      if (!hovering) { lens.x = lens.tx; lens.y = lens.ty }
+      hovering = true
+      aim()
+    })
+    hero.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('button')) return
+      const o = hero.getBoundingClientRect()
+      lens.tx = lens.x = e.clientX - o.left
+      lens.ty = lens.y = e.clientY - o.top
+      hovering = true
+      pressed = true
+      aim()
+    })
+    const lift = (e) => {
+      pressed = false
+      if (e.pointerType !== 'mouse') hovering = false
+      aim()
+    }
+    hero.addEventListener('pointerup', lift)
+    hero.addEventListener('pointercancel', lift)
+    hero.addEventListener('pointerleave', () => { hovering = false; pressed = false; aim() })
+
+    function setFull(on) {
+      full = on
+      toggle.setAttribute('aria-pressed', String(on))
+      toggle.textContent = on ? 'Hide the blueprint' : 'Show the blueprint'
+      if (on && !hovering) { lens.x = lens.tx = hero.clientWidth / 2; lens.y = lens.ty = hero.clientHeight / 2 }
+      aim()
+    }
+    toggle.addEventListener('click', () => setFull(!full))
+    addEventListener('keydown', (e) => { if (e.key === 'Escape' && full) setFull(false) })
+
+    let prev = performance.now()
+    function frame(now) {
+      const dt = Math.min((now - prev) / 1000, 1 / 30)
+      prev = now
+      const kPos = reduced ? 1 : 1 - Math.exp(-dt * 18)
+      const kR = reduced ? 1 : 1 - Math.exp(-dt * (full ? 5 : 12))
+      lens.x += (lens.tx - lens.x) * kPos
+      lens.y += (lens.ty - lens.y) * kPos
+      lens.r += (lens.tr - lens.r) * kR
+      if (lens.r < 0.5 && lens.tr === 0) lens.r = 0
+
+      blueprint.style.setProperty('--x', `${lens.x}px`)
+      blueprint.style.setProperty('--y', `${lens.y}px`)
+      blueprint.style.setProperty('--r', `${lens.r}px`)
+      // The grid drifts a touch against the lens so it reads as a layer beneath, not a sticker.
+      blueprint.style.setProperty('--gx', `${-(lens.x - hero.clientWidth / 2) * 0.04}px`)
+      blueprint.style.setProperty('--gy', `${-(lens.y - hero.clientHeight / 2) * 0.04}px`)
+
+      const showRing = lens.r > 4 && lens.r < fullR() * 0.6
+      if (showRing) lensEl.dataset.on = ''
+      else delete lensEl.dataset.on
+      lensEl.style.width = lensEl.style.height = `${lens.r * 2}px`
+      lensEl.style.transform = `translate(${lens.x - lens.r}px, ${lens.y - lens.r}px)`
+      requestAnimationFrame(frame)
+    }
+    requestAnimationFrame(frame)
+  </script>
+</body>
+</html>

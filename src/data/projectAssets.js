@@ -11,6 +11,7 @@ import listeningRoomLqip from '../assets/projects/Listening Room/listening room 
 import currentRibbon from '../assets/current ribbon.svg'
 import shopifyIcon from '../assets/shopify-icon.svg'
 import searchEyeIcon from '../assets/searcheye icon.svg'
+import adaptiveIcon from '../assets/adaptive icon.svg'
 import { getVideo, getProjectVideo } from './media'
 
 const images = {
@@ -27,22 +28,29 @@ const videoSources = {
   internationalCommerce: 'projects/smart-markets/International Commerce Final video.MP4',
   shopBalance: 'projects/shop-balance/Shop Balance final video.MP4',
   listeningRoom: 'projects/Listening Room/Listening Room final video.MP4',
+  aicc: 'projects/level-up-aicc/Framebuilder video.mov',
+  coreWorkflows: 'projects/core-workflows/Core workflows.mov',
 }
 
 const ribbons = { current: currentRibbon }
-const icons = { shopify: shopifyIcon, searchEye: searchEyeIcon }
+const icons = { shopify: shopifyIcon, searchEye: searchEyeIcon, adaptive: adaptiveIcon }
 
 /** Attaches resolved media to a project parsed from markdown. */
 export function withProjectAssets(project) {
   const source = videoSources[project.videoKey]
+  const cardVideo = source ? getVideo(source, 'card') : null
   const { image, placeholder } = images[project.imageKey] || {}
   return {
     ...project,
-    image,
+    // Projects without a cover image use the card video's first frame as their still
+    image: image || cardVideo?.poster || null,
     imagePlaceholder: placeholder,
+    // Work cards always rest on the video's first frame (under the blue overlay) so hover is seamless
+    cardImage: cardVideo?.poster || image || null,
+    cardImagePlaceholder: cardVideo?.poster ? null : placeholder,
     ribbon: ribbons[project.ribbonKey],
     icon: icons[project.iconKey],
-    cardVideo: source ? getVideo(source, 'card') : null,
+    cardVideo,
     video: source ? getVideo(source, 'hero') : null,
   }
 }

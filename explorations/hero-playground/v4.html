@@ -1,0 +1,333 @@
+<!--
+  v4 — Fling the headline.
+  Idea: every letter of "LYDIA IS ___" is a physical object. Grab one and throw it — it tumbles, bounces
+  off the walls and floor, and knocks loose any letter it hits hard enough. "Tidy up" springs them all
+  home and the typewriter carries on. Inspired by the draggable/fallable-type portfolio heroes that do
+  well on X (e.g. Andy Reff's headline you can pull apart).
+  Trade-off: instantly understood, very shareable ("I broke her name"). But it's a one-trick toy, and
+  a scattered headline is briefly unreadable — the sr-only h1 and the Tidy button cover that.
+  Reduced motion: fridge magnets — drag letters anywhere and they stay put. No throw, no gravity.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v4 — Fling the headline</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .hero { display: grid; place-items: center; }
+    .glyph {
+      display: inline-block;
+      position: relative;
+      z-index: 5;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      transition: color 200ms var(--ease-smooth);
+    }
+    .glyph:hover { color: #3349ff; }
+    .glyph[data-grabbed] { cursor: grabbing; z-index: 6; }
+    .space { display: inline-block; width: 0.25em; }
+
+    .tidy {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      z-index: 20;
+      min-height: 44px;
+      padding: 0 18px;
+      border: 1px dotted var(--color-badge-border);
+      border-radius: var(--radius-full);
+      background: var(--glass-bg-chip);
+      box-shadow: var(--shadow-chip);
+      backdrop-filter: blur(16px);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-6px);
+      transition: opacity 200ms var(--ease-smooth), transform 200ms var(--ease-smooth), background 200ms var(--ease-smooth), visibility 0s 200ms;
+    }
+    .tidy[data-show] { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+    .tidy:hover { background: #fff; }
+    .tidy:active { transform: scale(0.97); }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <h1 class="sr-only">Lydia is designing, building, deploying, drawing, dancing, making music</h1>
+    <div class="hero-copy">
+      <div class="hero-row" aria-hidden="true">
+        <div class="hero-word hero-word--left" data-left></div>
+        <div class="koi"><pre data-koi></pre></div>
+        <div class="hero-word hero-word--right"><span data-verb></span><span class="caret" data-caret>|</span></div>
+      </div>
+      <p class="hero-subtext" data-subtext></p>
+      <div data-chip></div>
+    </div>
+    <button class="tidy" type="button" data-tidy>Tidy up</button>
+    <p class="hint" data-hint>Grab a letter · throw it</p>
+  </section>
+
+  <script type="module">
+    import { typewriter, loadKoiFrames, playKoi, prefersReduced, subtextHTML, chipHTML, clamp } from './hero.js'
+
+    const reduced = prefersReduced()
+    const hero = document.querySelector('.hero')
+    const leftEl = document.querySelector('[data-left]')
+    const verbEl = document.querySelector('[data-verb]')
+    const caret = document.querySelector('[data-caret]')
+    const tidyBtn = document.querySelector('[data-tidy]')
+    document.querySelector('[data-subtext]').innerHTML = subtextHTML()
+    document.querySelector('[data-chip]').innerHTML = chipHTML()
+    loadKoiFrames().then((frames) => playKoi(document.querySelector('[data-koi]'), frames, { reduced }))
+    if (reduced) document.querySelector('[data-hint]').textContent = 'Drag letters anywhere'
+
+    const bodies = []
+
+    function makeGlyphs(container, text, group) {
+      for (let i = bodies.length - 1; i >= 0; i--) if (bodies[i].group === group) bodies.splice(i, 1)
+      container.textContent = ''
+      for (const ch of text) {
+        if (ch === ' ') {
+          container.insertAdjacentHTML('beforeend', '<span class="space"></span>')
+          continue
+        }
+        const el = document.createElement('span')
+        el.className = 'glyph'
+        el.textContent = ch
+        container.append(el)
+        bodies.push({ el, group, hx: 0, hy: 0, x: 0, y: 0, vx: 0, vy: 0, a: 0, av: 0, r: 12, free: false, grabbed: false, tidying: false })
+      }
+      measure(bodies.filter((b) => b.group === group))
+    }
+
+    function measure(list = bodies) {
+      const o = hero.getBoundingClientRect()
+      for (const b of list) {
+        const r = b.el.getBoundingClientRect()
+        const dx = b.x - b.hx
+        const dy = b.y - b.hy
+        b.hx = r.left - o.left + r.width / 2 - (b.free || b.tidying ? dx : 0)
+        b.hy = r.top - o.top + r.height / 2 - (b.free || b.tidying ? dy : 0)
+        if (!b.free && !b.tidying) { b.x = b.hx; b.y = b.hy }
+        else { b.x = b.hx + dx; b.y = b.hy + dy }
+        b.r = Math.max(10, Math.min(r.width, r.height) * 0.42)
+      }
+    }
+
+    await document.fonts.ready
+    makeGlyphs(leftEl, 'LYDIA IS', 'left')
+
+    const verbLoose = () => bodies.some((b) => b.group === 'verb' && (b.free || b.tidying))
+    let pendingVerb = ''
+    typewriter((t) => {
+      pendingVerb = t
+      if (!verbLoose()) makeGlyphs(verbEl, t, 'verb')
+    }, { reduced })
+
+    function render(b) {
+      b.el.style.transform = b.free || b.tidying ? `translate(${b.x - b.hx}px, ${b.y - b.hy}px) rotate(${b.a}rad)` : ''
+    }
+
+    function updateTidy() {
+      const loose = bodies.some((b) => b.free)
+      if (loose) tidyBtn.dataset.show = ''
+      else delete tidyBtn.dataset.show
+      caret.style.visibility = verbLoose() ? 'hidden' : ''
+    }
+
+    // ── Grab / throw ──
+    let grab = null
+    hero.addEventListener('pointerdown', (e) => {
+      const el = e.target.closest('.glyph')
+      const b = el && bodies.find((x) => x.el === el)
+      if (!b) return
+      e.preventDefault()
+      el.setPointerCapture(e.pointerId)
+      const o = hero.getBoundingClientRect()
+      const px = e.clientX - o.left
+      const py = e.clientY - o.top
+      b.free = true
+      b.tidying = false
+      b.grabbed = true
+      b.vx = b.vy = b.av = 0
+      el.dataset.grabbed = ''
+      grab = { b, id: e.pointerId, ox: px - b.x, oy: py - b.y, tx: b.x, ty: b.y, samples: [{ x: px, y: py, t: e.timeStamp }] }
+      updateTidy()
+    })
+    hero.addEventListener('pointermove', (e) => {
+      if (!grab || e.pointerId !== grab.id) return
+      const o = hero.getBoundingClientRect()
+      const px = e.clientX - o.left
+      const py = e.clientY - o.top
+      grab.tx = px - grab.ox
+      grab.ty = py - grab.oy
+      grab.samples.push({ x: px, y: py, t: e.timeStamp })
+      while (grab.samples.length > 2 && e.timeStamp - grab.samples[0].t > 90) grab.samples.shift()
+      if (reduced) { grab.b.x = grab.tx; grab.b.y = grab.ty; render(grab.b) }
+    })
+    const release = (e) => {
+      if (!grab || e.pointerId !== grab.id) return
+      const { b, samples } = grab
+      const first = samples[0]
+      const last = samples[samples.length - 1]
+      const dt = Math.max((last.t - first.t) / 1000, 0.016)
+      if (!reduced) {
+        b.vx = clamp((last.x - first.x) / dt, -3200, 3200)
+        b.vy = clamp((last.y - first.y) / dt, -3200, 3200)
+        b.av = b.vx * 0.012
+      }
+      b.grabbed = false
+      delete b.el.dataset.grabbed
+      grab = null
+    }
+    hero.addEventListener('pointerup', release)
+    hero.addEventListener('pointercancel', release)
+
+    tidyBtn.addEventListener('click', () => {
+      for (const b of bodies) {
+        if (!b.free) continue
+        b.free = false
+        b.grabbed = false
+        b.tidying = true
+        b.vx = b.vy = b.av = 0
+        if (reduced) { b.x = b.hx; b.y = b.hy; b.a = 0 }
+      }
+      if (reduced) finishTidy()
+      updateTidy()
+    })
+
+    function finishTidy() {
+      for (const b of bodies) if (b.tidying) { b.tidying = false; b.x = b.hx; b.y = b.hy; b.a = 0; render(b) }
+      if (!verbLoose() && verbEl.textContent !== pendingVerb) makeGlyphs(verbEl, pendingVerb, 'verb')
+      updateTidy()
+    }
+
+    // ── Physics ──
+    const G = 2600
+    const BOUNCE = 0.42
+    const KNOCK = 520
+    const STEP = 1 / 120
+
+    function physics(dt) {
+      const W = hero.clientWidth
+      const H = hero.clientHeight
+      for (const b of bodies) {
+        if (b.grabbed) {
+          // Follow the finger on a stiff spring so drags still feel weighty.
+          const k = 1 - Math.exp(-dt * 30)
+          const nx = b.x + (grab.tx - b.x) * k
+          const ny = b.y + (grab.ty - b.y) * k
+          b.a += ((nx - b.x) * 0.004 - b.a * 0.15)
+          b.x = nx
+          b.y = ny
+          continue
+        }
+        if (b.tidying) {
+          // Critically damped spring home.
+          const w = 14
+          const ax = -w * w * (b.x - b.hx) - 2 * w * b.vx
+          const ay = -w * w * (b.y - b.hy) - 2 * w * b.vy
+          b.vx += ax * dt
+          b.vy += ay * dt
+          b.x += b.vx * dt
+          b.y += b.vy * dt
+          b.a += (0 - b.a) * (1 - Math.exp(-dt * 10))
+          continue
+        }
+        if (!b.free) continue
+        b.vy += G * dt
+        b.x += b.vx * dt
+        b.y += b.vy * dt
+        b.a += b.av * dt
+        const floor = H - 16 - b.r
+        if (b.y > floor) {
+          b.y = floor
+          b.vy = Math.abs(b.vy) < 60 ? 0 : -b.vy * BOUNCE
+          b.vx *= 0.86
+          b.av = b.vx / b.r
+        }
+        if (b.y < b.r) { b.y = b.r; b.vy = Math.abs(b.vy) * BOUNCE }
+        if (b.x < b.r) { b.x = b.r; b.vx = Math.abs(b.vx) * BOUNCE; b.av *= -0.6 }
+        if (b.x > W - b.r) { b.x = W - b.r; b.vx = -Math.abs(b.vx) * BOUNCE; b.av *= -0.6 }
+      }
+
+      for (let i = 0; i < bodies.length; i++) {
+        const p = bodies[i]
+        for (let j = i + 1; j < bodies.length; j++) {
+          const q = bodies[j]
+          if (!p.free && !q.free) continue
+          if (p.tidying || q.tidying) continue
+          const dx = q.x - p.x
+          const dy = q.y - p.y
+          const d = Math.hypot(dx, dy)
+          const min = p.r + q.r
+          if (d >= min || d === 0) continue
+          const nx = dx / d
+          const ny = dy / d
+          const rel = (p.vx - q.vx) * nx + (p.vy - q.vy) * ny
+          for (const [still, mover] of [[q, p], [p, q]]) {
+            if (!still.free && mover.free && Math.abs(rel) > KNOCK) {
+              still.free = true
+              still.vx = mover.vx * 0.6
+              still.vy = mover.vy * 0.6 - 300
+              still.av = (Math.random() - 0.5) * 18
+              updateTidy()
+            }
+          }
+          const pm = p.free && !p.grabbed ? 1 : 0
+          const qm = q.free && !q.grabbed ? 1 : 0
+          if (!pm && !qm) continue
+          const overlap = min - d
+          const share = pm + qm
+          p.x -= nx * overlap * (pm / share)
+          p.y -= ny * overlap * (pm / share)
+          q.x += nx * overlap * (qm / share)
+          q.y += ny * overlap * (qm / share)
+          if (rel > 0) {
+            const impulse = (1 + BOUNCE) * rel / share
+            p.vx -= impulse * nx * pm
+            p.vy -= impulse * ny * pm
+            q.vx += impulse * nx * qm
+            q.vy += impulse * ny * qm
+            p.av += (Math.random() - 0.5) * rel * 0.01 * pm
+            q.av += (Math.random() - 0.5) * rel * 0.01 * qm
+          }
+        }
+      }
+    }
+
+    new ResizeObserver(() => measure()).observe(hero)
+
+    let acc = 0
+    let prev = performance.now()
+    function loop(now) {
+      acc = Math.min(acc + (now - prev) / 1000, 0.1)
+      prev = now
+      if (!reduced) {
+        while (acc >= STEP) { physics(STEP); acc -= STEP }
+        let landed = false
+        for (const b of bodies) {
+          if (b.tidying && Math.hypot(b.x - b.hx, b.y - b.hy) < 0.4 && Math.hypot(b.vx, b.vy) < 6) {
+            b.tidying = false
+            b.x = b.hx
+            b.y = b.hy
+            b.a = 0
+            landed = true
+          }
+          render(b)
+        }
+        if (landed && !bodies.some((b) => b.tidying)) finishTidy()
+      } else {
+        acc = 0
+      }
+      requestAnimationFrame(loop)
+    }
+    requestAnimationFrame(loop)
+  </script>
+</body>
+</html>

@@ -1,0 +1,419 @@
+{
+  "repo": "LydiaShanCode/design-portfolio",
+  "commits": [
+    {
+      "sha": "c1a3922a757136617a70b430575f2c1ce5ffd6c7",
+      "subject": "Merge pull request #2 from LydiaShanCode/cursor/remove-intro-spinner-b53d",
+      "date": "2026-11-02T04:02:09+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-3f3wqfpvu-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/c1a3922a757136617a70b430575f2c1ce5ffd6c7"
+    },
+    {
+      "sha": "f1bb094e5b79a9b49f2fffda9571413893e441dc",
+      "subject": "Tighten intro: koi fades in, content at 200ms, nav at 400ms",
+      "date": "2026-11-02T03:59:55+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-ddk8xzobp-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/f1bb094e5b79a9b49f2fffda9571413893e441dc"
+    },
+    {
+      "sha": "4c8c5f529b8b7002dbf0b5395b74dce724d32e28",
+      "subject": "Merge pull request #3 from LydiaShanCode/cursor/local-time-layouts-b53d",
+      "date": "2026-11-02T03:58:39+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-ec1fmrcxw-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/4c8c5f529b8b7002dbf0b5395b74dce724d32e28"
+    },
+    {
+      "sha": "268f68bb9a56fa18f40e1575391698598488e4a0",
+      "subject": "Replace boot spinner with koi-first intro: content blur-fades in, nav drops in",
+      "date": "2026-11-02T03:36:11+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-gdvkmfx5p-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/268f68bb9a56fa18f40e1575391698598488e4a0"
+    },
+    {
+      "sha": "0ca2e833fa2a1ae9b51c024caa2731342c132c93",
+      "subject": "Merge remote-tracking branch 'origin/main' into cursor/remove-intro-spinner-b53d Co-authored-by: Lydia Shan <LydiaShanCode@users.noreply.github.com>",
+      "date": "2026-11-02T03:33:48+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/0ca2e833fa2a1ae9b51c024caa2731342c132c93"
+    },
+    {
+      "sha": "6296dd4b6ddad9883df13452ab3a574aa9c4b4dd",
+      "subject": "Show seconds in footer time with rolling digit animation; drop clock icon",
+      "date": "2026-11-02T03:33:30+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-m0zzb31im-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/6296dd4b6ddad9883df13452ab3a574aa9c4b4dd"
+    },
+    {
+      "sha": "5f19bd9f19e6c2c69494adc899f5ae2f5377ead3",
+      "subject": "Set footer local time in uppercase Helvetica Neue",
+      "date": "2026-11-02T03:28:24+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-7ybj3rk6k-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/5f19bd9f19e6c2c69494adc899f5ae2f5377ead3"
+    },
+    {
+      "sha": "9c67ae41de07236401fcfec1b8829088801553a1",
+      "subject": "Merge pull request #4 from LydiaShanCode/cursor/smooth-cursor-ripples-b53d",
+      "date": "2026-11-02T03:17:42+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-qguymvxul-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/9c67ae41de07236401fcfec1b8829088801553a1"
+    },
+    {
+      "sha": "652902e818b806fa24c91d18cdab58363a7c49c9",
+      "subject": "Set footer local time in Geist Mono",
+      "date": "2026-11-01T20:59:53+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-evgwjvlzk-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/652902e818b806fa24c91d18cdab58363a7c49c9"
+    },
+    {
+      "sha": "cd0155d19f39c98a463a37fef6c14abe37025b7b",
+      "subject": "Snap hover cursor to small targets; thinner blue ring with faint blue fill",
+      "date": "2026-11-01T20:58:50+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-q9w0uhda2-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/cd0155d19f39c98a463a37fef6c14abe37025b7b"
+    },
+    {
+      "sha": "20e628d398c82df8e1170014790cf07b66c0590b",
+      "subject": "Ripple on click with eased, time-based rings; idle canvas stops drawing",
+      "date": "2026-11-01T20:37:27+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-dm7lqpsan-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/20e628d398c82df8e1170014790cf07b66c0590b"
+    },
+    {
+      "sha": "8e905e0c8bcc323a077c3f12be1e5d7a3cbaa35f",
+      "subject": "Move custom cursor with transform and skip per-move hit-testing",
+      "date": "2026-11-01T20:37:27+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/8e905e0c8bcc323a077c3f12be1e5d7a3cbaa35f"
+    },
+    {
+      "sha": "6626fd03843c8ec523908396292a65beee1c293c",
+      "subject": "Move local-time exploration back out of public/ and say New York City",
+      "date": "2026-11-01T20:25:59+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-cljq0woju-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/6626fd03843c8ec523908396292a65beee1c293c"
+    },
+    {
+      "sha": "38b43e8373ff36e6015a76a82eae000de665bffa",
+      "subject": "Add New York City local time to the footer colophon",
+      "date": "2026-11-01T20:25:59+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/38b43e8373ff36e6015a76a82eae000de665bffa"
+    },
+    {
+      "sha": "2cfea08055f9dee395261713a8f4714d8da76605",
+      "subject": "Move local-time exploration into public/ so the Vercel preview serves it",
+      "date": "2026-11-01T20:12:32+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-p8e9bgtsg-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/2cfea08055f9dee395261713a8f4714d8da76605"
+    },
+    {
+      "sha": "2f37e1d50fb64de94a088ce9d7ffeaa7ab594989",
+      "subject": "Add local-time layout exploration with five placements",
+      "date": "2026-11-01T19:48:44+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-1tbic6mcm-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/2f37e1d50fb64de94a088ce9d7ffeaa7ab594989"
+    },
+    {
+      "sha": "9633858b159be23fec127e2256e7a420ce5bcb54",
+      "subject": "Replace always-on intro spinner with a boot spinner that only appears on slow loads",
+      "date": "2026-10-31T20:57:33+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-7ll6nhy5b-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/9633858b159be23fec127e2256e7a420ce5bcb54"
+    },
+    {
+      "sha": "639f7a6d5bfe3752a80734cb515378ab22c8a159",
+      "subject": "feat(projects): restore payouts case study and show start dates on cards",
+      "date": "2026-10-30T20:49:05-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-p9q9dox60-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/639f7a6d5bfe3752a80734cb515378ab22c8a159"
+    },
+    {
+      "sha": "8810d3c4b29e0123f1be533727c369cea7e99777",
+      "subject": "perf: optimize media loading and smooth project card stack motion",
+      "date": "2026-10-30T13:22:23-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-3xbpmhwg7-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/8810d3c4b29e0123f1be533727c369cea7e99777"
+    },
+    {
+      "sha": "9bbc5170dac7f215e9fcc97bb15b0d9c9b2e8fad",
+      "subject": "fix(project-page): replace require.context and serve from root on Vercel",
+      "date": "2026-10-29T13:14:31-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-20qxe244l-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/9bbc5170dac7f215e9fcc97bb15b0d9c9b2e8fad"
+    },
+    {
+      "sha": "0ee362725162ec9ef4e7f9c8d7f37078eefe8cbf",
+      "subject": "fix(deploy): restore GitHub Pages asset base path",
+      "date": "2026-09-06T15:04:54-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-rrn2jac3q-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/0ee362725162ec9ef4e7f9c8d7f37078eefe8cbf"
+    },
+    {
+      "sha": "4e7bf320f7537bc160a865f7378c17d5e125dd53",
+      "subject": "feat(portfolio): refresh hero and payouts case study",
+      "date": "2026-09-06T15:02:22-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-p7ocwdzi4-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/4e7bf320f7537bc160a865f7378c17d5e125dd53"
+    },
+    {
+      "sha": "5766fb1a49770b9f237fca5aaa31fa66b94d6c8e",
+      "subject": "og preview and mobile card fixes",
+      "date": "2026-04-07T01:41:48-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-jfe241ib0-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/5766fb1a49770b9f237fca5aaa31fa66b94d6c8e"
+    },
+    {
+      "sha": "038e4dc4a78262f3611222bfb111e5f103c1a5ab",
+      "subject": "load animation",
+      "date": "2026-04-05T01:28:42-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-4ddlle6ka-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/038e4dc4a78262f3611222bfb111e5f103c1a5ab"
+    },
+    {
+      "sha": "116122a8b9022c6612622c3c436229ca8beca3ed",
+      "subject": "og preview and mobile card fixes",
+      "date": "2026-04-05T00:41:33-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-keg11emsf-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/116122a8b9022c6612622c3c436229ca8beca3ed"
+    },
+    {
+      "sha": "9d7a68d98ca25ddc470eef5f3d8e5f6e5be472ce",
+      "subject": "og preview and mobile card fixes",
+      "date": "2026-04-01T01:06:34-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-2ze8go9aw-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/9d7a68d98ca25ddc470eef5f3d8e5f6e5be472ce"
+    },
+    {
+      "sha": "cb626e0685227fa57d631da649806bed5dc429d9",
+      "subject": "og preview and mobile card fixes",
+      "date": "2026-03-31T13:45:06-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-8ni2m40rq-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/cb626e0685227fa57d631da649806bed5dc429d9"
+    },
+    {
+      "sha": "ac8257b6c217c00eb824a9ab50094740e53c8ef4",
+      "subject": "og preview and mobile card fixes",
+      "date": "2026-03-31T13:27:52-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-49zymf4wa-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/ac8257b6c217c00eb824a9ab50094740e53c8ef4"
+    },
+    {
+      "sha": "63ff59f9c833af93d5d996b07951349039ecefe7",
+      "subject": "og preview and mobile card fixes",
+      "date": "2026-03-30T00:54:26-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-25kp9r0sk-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/63ff59f9c833af93d5d996b07951349039ecefe7"
+    },
+    {
+      "sha": "84fd214b7911effbe1ded735997bfebc54885195",
+      "subject": "Describe your changes",
+      "date": "2026-03-29T17:35:24-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-7x948h3d1-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/84fd214b7911effbe1ded735997bfebc54885195"
+    },
+    {
+      "sha": "f43d43f294d8f76ee2911736b28924a160d6501b",
+      "subject": "Describe your changes",
+      "date": "2026-03-29T17:15:18-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-6iy83zwf2-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/f43d43f294d8f76ee2911736b28924a160d6501b"
+    },
+    {
+      "sha": "f4b4619074b9fa44eee1c86b1a4ff83b1248e798",
+      "subject": "Describe your changes",
+      "date": "2026-03-29T17:13:47-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-kkeau42dr-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/f4b4619074b9fa44eee1c86b1a4ff83b1248e798"
+    },
+    {
+      "sha": "2c05189ff03e12f8d32dc4d19985e12f3d9f6c98",
+      "subject": "Describe your changes",
+      "date": "2026-03-29T16:57:03-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-nghuz18e8-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/2c05189ff03e12f8d32dc4d19985e12f3d9f6c98"
+    },
+    {
+      "sha": "5c57c18881e49ad930eeed5ef3a9dbc8f6aa970c",
+      "subject": "Describe your changes",
+      "date": "2026-03-29T16:55:49-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-g25rh5q43-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/5c57c18881e49ad930eeed5ef3a9dbc8f6aa970c"
+    },
+    {
+      "sha": "f29f662a34228cb10116d7472a904908dca5be42",
+      "subject": "resume margin",
+      "date": "2026-03-29T16:53:34-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-5pwg3ggda-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/f29f662a34228cb10116d7472a904908dca5be42"
+    },
+    {
+      "sha": "3292d8df57037a5c20439714e9abeaa71d21c933",
+      "subject": "about page spacing",
+      "date": "2026-03-29T16:52:12-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-mz6i31liw-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/3292d8df57037a5c20439714e9abeaa71d21c933"
+    },
+    {
+      "sha": "0b60e20e1681de23fddca9233798b70a2653f73a",
+      "subject": "compress mage",
+      "date": "2026-03-29T16:48:55-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-hov4einwo-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/0b60e20e1681de23fddca9233798b70a2653f73a"
+    },
+    {
+      "sha": "7505fe5681dc7327ad69ddce6a2f211b8ce4cab7",
+      "subject": "About and resume page",
+      "date": "2026-03-29T16:45:46-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-d3kz5sw09-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/7505fe5681dc7327ad69ddce6a2f211b8ce4cab7"
+    },
+    {
+      "sha": "8683e19434cd33744278ecb62874c433b967b56d",
+      "subject": "Update footer styles",
+      "date": "2026-03-26T00:23:48-04:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-k3d84awsg-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/8683e19434cd33744278ecb62874c433b967b56d"
+    },
+    {
+      "sha": "d7c2a5890d839184d1f64ed552565ce68a9a8da6",
+      "subject": "Add deploy workflow, update base path for custom domain",
+      "date": "2026-03-22T02:34:40-04:00",
+      "author": "lydia shan",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/d7c2a5890d839184d1f64ed552565ce68a9a8da6"
+    },
+    {
+      "sha": "77773351afe8280549bb2ad2f73f1958b7d60f50",
+      "subject": "add iterations viewer and compress video assets",
+      "date": "2026-03-22T01:32:13-04:00",
+      "author": "lydia shan",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/77773351afe8280549bb2ad2f73f1958b7d60f50"
+    },
+    {
+      "sha": "a95dc403bf61f5ce739b43b53d2b0da3d04f52b7",
+      "subject": "add shader experiment to playground page with video preview",
+      "date": "2026-03-07T00:39:06-08:00",
+      "author": "lydia shan",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/a95dc403bf61f5ce739b43b53d2b0da3d04f52b7"
+    },
+    {
+      "sha": "e2c24019601d08b925b27e263af3a91cb08e0bfe",
+      "subject": "fix mobile issues",
+      "date": "2026-02-24T01:05:08-05:00",
+      "author": "lydia shan",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/e2c24019601d08b925b27e263af3a91cb08e0bfe"
+    },
+    {
+      "sha": "ff3e85cf5cb8668420b4efaa641b8aa793a0940e",
+      "subject": "swipe cards fix",
+      "date": "2026-02-24T00:04:51-05:00",
+      "author": "lydia shan",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/ff3e85cf5cb8668420b4efaa641b8aa793a0940e"
+    },
+    {
+      "sha": "ce594c824c8b69c72561900c0dd73b23db5b1627",
+      "subject": "deployment fixes",
+      "date": "2026-02-22T21:30:29-05:00",
+      "author": "lydia",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/ce594c824c8b69c72561900c0dd73b23db5b1627"
+    },
+    {
+      "sha": "7d0b979035bcccd4d6335d8541bd21d47807e768",
+      "subject": "Initial commit: Portfolio 2026",
+      "date": "2026-02-22T19:47:39-05:00",
+      "author": "lydia",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/7d0b979035bcccd4d6335d8541bd21d47807e768"
+    }
+  ]
+}

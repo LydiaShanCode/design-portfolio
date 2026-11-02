@@ -2,6 +2,7 @@
 id: 5
 title: Listening Room
 slug: listening-room
+archived: true
 company: Personal
 date: "1 week · 2026"
 start: "Feb 2026"

@@ -222,7 +222,7 @@ function ActivityLog() {
                 height: 140,
                 objectFit: 'cover',
                 borderRadius: 10,
-                boxShadow: '0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10)',
+                boxShadow: '0 8px 32px rgb(var(--shadow-tint) / 0.18), 0 2px 8px rgb(var(--shadow-tint) / 0.10)',
               }}
             />
           </motion.div>
