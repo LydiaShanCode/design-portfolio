@@ -68,12 +68,32 @@ function ProjectPreview({ project, cardRect, onClose }) {
     // For protected projects, stop tracking once the password form is open
     if (project.protected && passwordPhase !== 'idle') return
 
-    // Maps viewport coordinates into the wrap's own space, so it stays right while the flip-in scales the modal
+    // Measures where the wrap sits once the card has settled. offsetLeft/offsetTop ignore transforms,
+    // so the pill lands under the pointer even while the flip-in still has the card edge-on.
+    const settledOrigin = () => {
+      const overlay = overlayRef.current
+      const overlayRect = overlay.getBoundingClientRect()
+      let x = overlayRect.left + overlay.clientLeft
+      let y = overlayRect.top + overlay.clientTop
+      for (let node = wrap; node && node !== overlay; node = node.offsetParent) {
+        x += node.offsetLeft
+        y += node.offsetTop
+        if (node.offsetParent && node.offsetParent !== overlay) {
+          x += node.offsetParent.clientLeft
+          y += node.offsetParent.clientTop
+        }
+      }
+      for (let node = wrap.parentElement; node && node !== overlay; node = node.parentElement) {
+        x -= node.scrollLeft
+        y -= node.scrollTop
+      }
+      return { x, y }
+    }
+
     const place = (clientX, clientY) => {
-      const rect = wrap.getBoundingClientRect()
-      if (!rect.width || !rect.height) return
-      mousePos.current.x = (clientX - rect.left) * (wrap.offsetWidth / rect.width)
-      mousePos.current.y = (clientY - rect.top) * (wrap.offsetHeight / rect.height)
+      const origin = settledOrigin()
+      mousePos.current.x = clientX - origin.x
+      mousePos.current.y = clientY - origin.y
     }
 
     const paintPill = () => {
@@ -105,7 +125,7 @@ function ProjectPreview({ project, cardRect, onClose }) {
       wrap.removeEventListener('mousemove', onMove)
       if (rafId.current) cancelAnimationFrame(rafId.current)
     }
-  }, [project.protected, passwordPhase, phase])
+  }, [project.protected, passwordPhase])
 
   const {
     title,
