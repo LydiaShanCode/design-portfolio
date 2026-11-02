@@ -1403,16 +1403,24 @@ body {
   opacity: 0.5;
 }
 
+/* Helvetica Neue LT Pro is a licensed webfont; until it's self-hosted this falls back to the system Helvetica Neue */
 .local-time {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  font-family: 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.local-time svg {
+  width: 12px;
+  height: 12px;
 }
 
 .local-time-value {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .footer-inner {
