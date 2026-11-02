@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars -- globals consumed by the version pages via classic <script> tags */
 // Mirrors the frontmatter in src/assets/projects/*/project.md, plus a one-line `outcome`
 // and `summary` that the reworked layouts surface for a skimming hiring manager.
 const PROJECTS = [
