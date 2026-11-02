@@ -1,7 +1,6 @@
 import KoiFish from './KoiFish'
 import DynamicTitle from './DynamicTitle'
 import Chip from './ui/Chip'
-import shopifyIcon from '../assets/shopify-icon.svg'
 
 const ArrowUpRightIcon = () => (
   <svg
@@ -47,22 +46,9 @@ function Hero() {
             <DynamicTitle />
           </div>
         </div>
-        <p className="intro-reveal hero-subtext body-text mb-6 flex flex-wrap items-baseline justify-center gap-x-1.5 text-center text-[14px] font-light sm:text-lg sm:font-normal lg:mb-4 lg:text-base">
-          <span>Designing and tinkering... prev. at</span>
-          <a
-            href="https://www.shopify.com/editions/winter2026#marketing"
-            className="inline-flex items-baseline gap-x-[5px] body-text text-inherit no-underline hover:underline"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <img
-              src={shopifyIcon}
-              alt=""
-              aria-hidden="true"
-              className="size-[0.95em] shrink-0 translate-y-[0.12em]"
-            />
-            Shopify
-          </a>
+        <p className="intro-reveal hero-subtext body-text mx-auto mb-6 max-w-[46ch] text-center text-[14px] font-light sm:text-lg sm:font-normal lg:mb-4 lg:text-base">
+          Product designer in New York City, crafting specialized B2B experiences
+          for merchants, payments, and security.
         </p>
         <div className="intro-reveal">
           <Chip
