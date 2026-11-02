@@ -1,0 +1,258 @@
+<!doctype html>
+<!-- Source for public/resume.pdf. Edit here, then run `npm run resume`. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Resume - Lydia Shan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    @font-face { font-family: 'Geist'; font-weight: 400; src: url('../../node_modules/@fontsource/geist/files/geist-latin-400-normal.woff2') format('woff2'); }
+    @font-face { font-family: 'Geist'; font-weight: 500; src: url('../../node_modules/@fontsource/geist/files/geist-latin-500-normal.woff2') format('woff2'); }
+    @font-face { font-family: 'Geist'; font-weight: 600; src: url('../../node_modules/@fontsource/geist/files/geist-latin-600-normal.woff2') format('woff2'); }
+
+    :root {
+      --color-primary: #001dd9;
+      --color-text: #1c1c1c;
+      --color-text-subdued: #6f6f6f;
+      --color-hairline: rgba(15, 20, 50, 0.12);
+    }
+
+    @page { size: Letter; margin: 0; }
+
+    * { box-sizing: border-box; }
+
+    html, body { margin: 0; }
+
+    body {
+      width: 8.5in;
+      height: 11in;
+      padding: 0.6in 0.65in 0.5in;
+      font-family: 'Geist', system-ui, sans-serif;
+      font-size: 9.4pt;
+      line-height: 1.45;
+      color: var(--color-text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr 2.05in;
+      gap: 0.4in;
+      align-items: end;
+      padding-bottom: 0.22in;
+      border-bottom: 0.5pt solid var(--color-hairline);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 34pt;
+      font-weight: 400;
+      line-height: 0.95;
+      letter-spacing: -0.5px;
+      color: var(--color-primary);
+    }
+
+    .tagline {
+      margin: 8px 0 0;
+      max-width: 4.4in;
+      font-size: 10pt;
+      color: var(--color-text-subdued);
+    }
+
+    .contact {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 8.8pt;
+      line-height: 1.6;
+    }
+
+    .contact a { color: var(--color-primary); }
+
+    main {
+      display: grid;
+      grid-template-columns: 1fr 2.05in;
+      gap: 0.4in;
+      padding-top: 0.22in;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 7.4pt;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-primary);
+    }
+
+    section + section { margin-top: 18px; }
+
+    .role + .role { margin-top: 14px; }
+
+    .role-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 10.2pt;
+      font-weight: 600;
+      letter-spacing: -0.1px;
+    }
+
+    h3 span { font-weight: 400; color: var(--color-text-subdued); }
+
+    .dates {
+      flex-shrink: 0;
+      font-size: 8.4pt;
+      font-variant-numeric: tabular-nums;
+      color: var(--color-text-subdued);
+    }
+
+    .role-summary { margin: 3px 0 0; color: var(--color-text-subdued); }
+
+    ul.points {
+      margin: 5px 0 0;
+      padding-left: 12px;
+    }
+
+    ul.points li { padding-left: 2px; }
+    ul.points li + li { margin-top: 3px; }
+    ul.points li::marker { color: var(--color-primary); }
+
+    b { font-weight: 600; }
+
+    .side-item + .side-item { margin-top: 10px; }
+    .side-item p { margin: 0; }
+    .side-item .title { font-weight: 500; }
+    .side-item .meta { font-size: 8.4pt; color: var(--color-text-subdued); }
+
+    .tags { margin: 0; padding: 0; list-style: none; }
+    .tags li + li { margin-top: 2px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Lydia Shan</h1>
+      <p class="tagline">Product designer crafting specialized B2B experiences for merchants, payments, and security.</p>
+    </div>
+    <ul class="contact">
+      <li>New York, NY</li>
+      <li><a href="mailto:lydiashan.c@gmail.com">lydiashan.c@gmail.com</a></li>
+      <li><a href="https://lydiashan.com">lydiashan.com</a></li>
+      <li>(647) 463 5401</li>
+    </ul>
+  </header>
+
+  <main>
+    <div>
+      <section>
+        <h2>Experience</h2>
+
+        <div class="role">
+          <div class="role-head">
+            <h3>Product Designer <span>— Shopify</span></h3>
+            <span class="dates">07/2024 — Present</span>
+          </div>
+          <p class="role-summary">Payments, Merchant Services. End-to-end financial experiences for merchants at scale.</p>
+          <ul class="points">
+            <li>Designed and shipped <b>Payout Errors Uplift</b>, reducing payout holds on merchant accounts by <b>43%</b>.</li>
+            <li>Redesigned the legacy payouts experience for dual processors (Stripe and PayPal), unifying statuses, timing, and multi-currency cash flow into one trustworthy model.</li>
+            <li>Sole designer on <b>Shop Balance</b>, a 0–1 buyer wallet in the Shop App, defining product vision and core utility with PM.</li>
+            <li>Designed contextual AI assistance for Managed Markets product restrictions, restoring merchant control over cross-border compliance.</li>
+            <li>Led end-to-end design for local payment methods in Mexico across mobile checkout and Shopify Admin.</li>
+            <li>Contributed code to the Admin Playground, an internal coded prototype of Shopify Admin.</li>
+          </ul>
+        </div>
+
+        <div class="role">
+          <div class="role-head">
+            <h3>Product Designer <span>— TD Securities</span></h3>
+            <span class="dates">01/2024 — 07/2024</span>
+          </div>
+          <ul class="points">
+            <li>Defined requirements, user flows, and high-fidelity designs for The Factory, a platform serving partners across FX and commodities trading.</li>
+            <li>Partnered with design leadership and engineering to build a new design system for The Factory’s interface.</li>
+          </ul>
+        </div>
+
+        <div class="role">
+          <div class="role-head">
+            <h3>Product Designer <span>— SearchEye</span></h3>
+            <span class="dates">08/2022 — 01/2024</span>
+          </div>
+          <ul class="points">
+            <li>Led 0–1 product design across web and mobile for a B2B SaaS platform unifying SEO management channels.</li>
+            <li>Owned complex features end-to-end, driving a <b>150%</b> increase in platform engagement at launch.</li>
+            <li>Ran generative and evaluative research and presented prototypes to the CEO, PMs, engineering, and customer success.</li>
+            <li>Built and maintained the design system to WCAG 2.1 AA.</li>
+          </ul>
+        </div>
+
+        <div class="role">
+          <div class="role-head">
+            <h3>Program Tutor <span>— Sheridan College</span></h3>
+            <span class="dates">09/2022 — 04/2023</span>
+          </div>
+          <ul class="points">
+            <li>Mentored Digital Product Design students on UX/UI, research, and product strategy; ran 5 Figma workshops.</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <aside>
+      <section>
+        <h2>Focus</h2>
+        <ul class="tags">
+          <li>B2B &amp; merchant tools</li>
+          <li>Payments &amp; fintech</li>
+          <li>Security &amp; trust design</li>
+          <li>0–1 products</li>
+          <li>Design systems</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Skills</h2>
+        <ul class="tags">
+          <li>End-to-end product design</li>
+          <li>User research &amp; usability testing</li>
+          <li>Prototyping &amp; interaction design</li>
+          <li>Figma, Jira</li>
+          <li>React, HTML/CSS/JS</li>
+          <li>AI-assisted building (Cursor, Claude Code)</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Education</h2>
+        <div class="side-item">
+          <p class="title">Digital Product Design</p>
+          <p>Sheridan College, Graduate Certificate with Honours</p>
+          <p class="meta">2021 — 2022</p>
+        </div>
+        <div class="side-item">
+          <p class="title">Web Development</p>
+          <p>Juno College</p>
+          <p class="meta">2023</p>
+        </div>
+        <div class="side-item">
+          <p class="title">Bachelor of Music</p>
+          <p>University of Toronto</p>
+          <p class="meta">2017 — 2021</p>
+        </div>
+      </section>
+    </aside>
+  </main>
+</body>
+</html>
