@@ -1,8 +1,8 @@
-// Total length of the CSS intro in custom.css (nav: 800ms delay + 500ms drop), plus a small buffer
-const INTRO_MS = 1400
+// Total length of the CSS intro in custom.css (nav: 400ms delay + 450ms drop), plus a small buffer
+const INTRO_MS = 1000
 
 /**
- * First-load intro on the home page: the koi shows alone, then content blur-fades in, then the nav drops.
+ * First-load intro on the home page: the koi fades in, then content blur-fades in, then the nav drops.
  * The class is removed afterwards so client-side navigations back home don't replay it.
  */
 export function startIntro() {
