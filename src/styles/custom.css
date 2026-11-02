@@ -1410,17 +1410,47 @@ body {
   gap: 6px;
   font-family: 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 11px;
+  line-height: 1.2;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.local-time svg {
-  width: 12px;
-  height: 12px;
+.local-time-value {
+  display: inline-flex;
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
 }
 
-.local-time-value {
-  font-variant-numeric: tabular-nums;
+.time-digit {
+  position: relative;
+  display: inline-block;
+  height: 1.2em;
+  line-height: 1.2;
+  overflow: hidden;
+}
+
+.time-digit-face {
+  display: block;
+}
+
+.time-digit-face.is-entering {
+  animation: time-digit-in 320ms var(--ease-smooth) both;
+}
+
+.time-digit-face.is-leaving {
+  position: absolute;
+  inset: 0;
+  animation: time-digit-out 320ms var(--ease-smooth) both;
+}
+
+@keyframes time-digit-in {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes time-digit-out {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-100%); opacity: 0; }
 }
 
 .footer-inner {
