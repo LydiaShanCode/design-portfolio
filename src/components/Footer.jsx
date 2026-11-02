@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Postcard from './Postcard'
+import LocalTime from './LocalTime'
 import { afterLoadIdle } from '../lib/afterLoad'
 import arenaIcon from '../assets/arena-icon.webp'
 
@@ -163,7 +164,10 @@ function Footer() {
           )}
         </div>
       </div>
-      <p className="footer-copyright">© 2026 — coded by me and Claude Code</p>
+      <div className="footer-colophon">
+        <p className="footer-copyright">© 2026 — coded by me and Claude Code</p>
+        <LocalTime />
+      </div>
     </footer>
   )
 }

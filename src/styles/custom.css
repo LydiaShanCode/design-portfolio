@@ -1396,14 +1396,75 @@ body {
   padding: 160px 40px 40px;
 }
 
-.footer-copyright {
+.footer-colophon {
   margin-top: auto;
-  padding-bottom: 24px;
+  width: 100%;
+  max-width: var(--max-w-content);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0 24px;
+  border-top: 1px solid var(--color-hairline);
   font-family: 'Geist', system-ui, sans-serif;
   font-size: 12px;
   letter-spacing: -0.5px;
+}
+
+.footer-copyright,
+.local-time {
+  margin: 0;
   opacity: 0.5;
-  align-self: flex-start;
+}
+
+/* Helvetica Neue LT Pro is a licensed webfont; until it's self-hosted this falls back to the system Helvetica Neue */
+.local-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Helvetica Neue LT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 11px;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.local-time-value {
+  display: inline-flex;
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+}
+
+.time-digit {
+  position: relative;
+  display: inline-block;
+  height: 1.2em;
+  line-height: 1.2;
+  overflow: hidden;
+}
+
+.time-digit-face {
+  display: block;
+}
+
+.time-digit-face.is-entering {
+  animation: time-digit-in 320ms var(--ease-smooth) both;
+}
+
+.time-digit-face.is-leaving {
+  position: absolute;
+  inset: 0;
+  animation: time-digit-out 320ms var(--ease-smooth) both;
+}
+
+@keyframes time-digit-in {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes time-digit-out {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-100%); opacity: 0; }
 }
 
 .footer-inner {
@@ -1701,8 +1762,9 @@ button.footer-link {
     text-align: left;
   }
 
-  .footer-copyright {
-    align-self: center;
+  .footer-colophon {
+    flex-direction: column;
+    gap: 6px;
   }
 
 }
