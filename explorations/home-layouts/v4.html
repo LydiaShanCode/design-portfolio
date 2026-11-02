@@ -1,0 +1,92 @@
+<!--
+  v4 — Case study rows.
+  Idea: the classic product-design portfolio, done carefully. One-line intro, then each project
+  is a full-width row: a large screenshot on one side, and on the other the title, company/year,
+  a one-sentence summary, the outcome set big in serif, and focus tags. Rows alternate sides.
+  The first row's screenshot starts above the fold, so the page opens on work.
+  Hover lifts the screenshot and slides the "Read case study" arrow; no cards, no stacking.
+  Trade-off: richest context per project and the clearest outcomes, but the longest page; the
+  fifth project (personal) sits a few scrolls down, which is arguably right for a B2B pitch.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v4 — Case study rows</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .intro { padding: 48px 0 40px; max-width: 760px; }
+    .intro h1 { font-size: clamp(30px, 3.4vw, 44px); line-height: 1.08; }
+    .intro h1 em { font-style: italic; }
+
+    .rows { display: grid; gap: 96px; padding-bottom: 140px; }
+
+    .case {
+      display: grid;
+      grid-template-columns: 7fr 5fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    .case:nth-child(even) { grid-template-columns: 5fr 7fr; }
+    .case:nth-child(even) .case-media { order: 2; }
+
+    .case-media {
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 0 0 0.5px var(--color-hairline);
+      transition: transform 280ms var(--ease-smooth), box-shadow 280ms var(--ease-smooth);
+    }
+
+    .case-media img { width: 100%; aspect-ratio: 16 / 10.5; object-fit: cover; }
+    .case:hover .case-media { transform: translateY(-6px); box-shadow: var(--shadow-card); }
+    .case:active .case-media { transform: translateY(-2px); }
+
+    .case-body { display: grid; gap: 14px; }
+    .case-meta { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--color-primary-70); }
+    .case-title { margin: 0; font-size: 22px; font-weight: 500; letter-spacing: -0.4px; }
+    .case-summary { margin: 0; font-size: 15px; line-height: 1.55; color: var(--color-text-subdued); max-width: 40ch; }
+    .case-outcome { margin: 6px 0 4px; font-family: var(--font-serif); font-size: 40px; font-weight: 400; line-height: 1; }
+
+    .case-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 14px; font-weight: 500; }
+    .case-link svg { transition: transform 200ms var(--ease-smooth); }
+    .case:hover .case-link svg { transform: translate(3px, -3px); }
+
+    @media (max-width: 900px) {
+      .rows { gap: 64px; }
+      .case, .case:nth-child(even) { grid-template-columns: 1fr; gap: 20px; }
+      .case:nth-child(even) .case-media { order: 0; }
+      .case-outcome { font-size: 32px; }
+    }
+
+    @media (max-width: 767px) {
+      .intro { padding: 36px 0 28px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="intro">
+      <h1 class="display">Lydia Shan is a product designer in New York City, crafting <em>specialized B2B experiences</em> for merchants, payments, and security.</h1>
+    </section>
+    <section class="rows" id="work"></section>
+  </main>
+  <script src="projects.js"></script>
+  <script>
+    mountNav('Work')
+    document.getElementById('work').innerHTML = PROJECTS.map((p) => `
+      <a class="case" href="#${p.slug}">
+        <div class="case-media"><img src="${p.img}" alt="${p.title} preview" /></div>
+        <div class="case-body">
+          <div class="case-meta">${p.company} · ${p.year}${p.locked ? LOCK_SVG : ''}</div>
+          <h2 class="case-title">${p.title}</h2>
+          <p class="case-summary">${p.summary}</p>
+          <p class="case-outcome">${p.outcome}</p>
+          <div class="tags">${p.highlights.slice(0, 3).map((h) => `<span class="tag">${h}</span>`).join('')}</div>
+          <span class="case-link">Read case study ${ARROW_SVG}</span>
+        </div>
+      </a>`).join('')
+  </script>
+</body>
+</html>

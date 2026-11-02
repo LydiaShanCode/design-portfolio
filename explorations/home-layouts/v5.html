@@ -1,0 +1,127 @@
+<!--
+  v5 — Cardboard shelf.
+  Idea: keep the cardboard cards (they're the brand) but take away everything that made them
+  wonky. A compact two-column intro (name + positioning left, koi right) sits over a straight shelf
+  of full cards. Nothing overlaps, so every title, image and highlight is readable at rest.
+  Cards rest with a tiny alternating tilt; hover straightens, lifts and casts a deeper shadow on
+  that card only. The shelf scroll-snaps horizontally with arrow buttons on desktop and native
+  swipe on touch. Ordered B2B-first.
+  Trade-off: preserves personality and fixes the interaction, but a horizontal shelf hides the
+  last one or two cards off-screen at laptop widths (mitigated by the edge fade and arrows).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v5 — Cardboard shelf</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .intro {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 32px;
+      padding: 40px 0 8px;
+    }
+
+    .intro h1 { font-size: 56px; }
+    .intro h1 em { display: block; font-style: italic; }
+    .intro .lede { margin-top: 14px; max-width: 46ch; }
+    .intro .koi { font-size: 6px; }
+
+    .shelf-head { display: flex; align-items: center; justify-content: space-between; margin-top: 24px; }
+
+    .shelf-arrows { display: flex; gap: 8px; }
+
+    .shelf-arrow {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-full);
+      box-shadow: inset 0 0 0 0.5px var(--color-hairline);
+      transition: background-color 200ms var(--ease-smooth), transform 200ms var(--ease-smooth);
+    }
+
+    .shelf-arrow:hover { background: var(--color-surface); }
+    .shelf-arrow:active { transform: scale(0.94); }
+    .shelf-arrow:disabled { opacity: 0.3; cursor: default; }
+
+    .shelf {
+      display: flex;
+      gap: 28px;
+      margin: 0 -32px;
+      padding: 36px 32px 72px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding: 0 32px;
+      scrollbar-width: none;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 32px, #000 calc(100% - 64px), transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 32px, #000 calc(100% - 64px), transparent);
+    }
+
+    .shelf::-webkit-scrollbar { display: none; }
+
+    .shelf .work-card {
+      flex: 0 0 auto;
+      height: 480px;
+      scroll-snap-align: start;
+      rotate: var(--tilt);
+      transition: rotate 300ms var(--ease-dramatic), translate 300ms var(--ease-dramatic), box-shadow 240ms var(--ease-smooth);
+    }
+
+    .shelf .work-card:hover,
+    .shelf .work-card:focus-visible { rotate: 0deg; translate: 0 -12px; box-shadow: var(--shadow-lift); outline: none; }
+    .shelf .work-card:active { translate: 0 -6px; }
+
+    @media (max-width: 767px) {
+      .intro { grid-template-columns: 1fr; padding-top: 36px; }
+      .intro h1 { font-size: 40px; }
+      .intro .koi, .shelf-arrows { display: none; }
+      .shelf { margin: 0 -20px; padding: 24px 20px 120px; scroll-padding: 0 20px; gap: 16px; -webkit-mask-image: none; mask-image: none; }
+      .shelf .work-card { width: 78vw; height: 440px; scroll-snap-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="intro">
+      <div>
+        <h1 class="display">Lydia Shan <em>is designing</em></h1>
+        <p class="lede">Product designer in New York City, crafting specialized B2B experiences for merchants, payments, and security.</p>
+      </div>
+      <pre class="koi" id="koi" aria-hidden="true"></pre>
+    </section>
+    <div class="shelf-head">
+      <p class="eyebrow">Selected work</p>
+      <div class="shelf-arrows">
+        <button class="shelf-arrow" id="prev" aria-label="Previous project">←</button>
+        <button class="shelf-arrow" id="next" aria-label="Next project">→</button>
+      </div>
+    </div>
+    <section class="shelf" id="work"></section>
+  </main>
+  <script src="projects.js"></script>
+  <script>
+    mountNav('Work')
+    document.getElementById('koi').textContent = KOI
+    const shelf = document.getElementById('work')
+    const tilts = ['-1.2deg', '0.8deg', '-0.6deg', '1.1deg', '-0.9deg']
+    shelf.innerHTML = PROJECTS.map((p, i) =>
+      workCardMarkup(p).replace('class="work-card ', `style="--tilt:${tilts[i]}" class="work-card `)).join('')
+
+    const prev = document.getElementById('prev')
+    const next = document.getElementById('next')
+    const step = () => shelf.querySelector('.work-card').offsetWidth + 28
+    prev.addEventListener('click', () => shelf.scrollBy({ left: -step(), behavior: 'smooth' }))
+    next.addEventListener('click', () => shelf.scrollBy({ left: step(), behavior: 'smooth' }))
+    const sync = () => {
+      prev.disabled = shelf.scrollLeft < 4
+      next.disabled = shelf.scrollLeft + shelf.clientWidth > shelf.scrollWidth - 4
+    }
+    shelf.addEventListener('scroll', sync, { passive: true })
+    sync()
+  </script>
+</body>
+</html>

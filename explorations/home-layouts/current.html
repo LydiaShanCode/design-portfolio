@@ -1,0 +1,89 @@
+<!--
+  Current — the home page as it ships today (with the new NYC copy), for comparison.
+  A 100vh splash (LYDIA IS · koi · DESIGNING) pushes the work below the fold; the five cards sit in
+  an overlapping fan whose spread re-flows on every hover, which is where the "wonkiness" comes from:
+  neighbours shove sideways, z-order flips mid-spring, and titles hide under the next card.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Current — splash + card fan</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .hero {
+      min-height: calc(100vh - 64px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .hero-row { display: flex; align-items: center; gap: 24px; }
+    .hero-row .display { width: 220px; font-size: 48px; }
+    .hero-row .display:first-child { text-align: right; }
+    .hero-row .display:last-child { text-align: left; }
+    .hero .lede { max-width: 46ch; }
+
+    .fan {
+      position: relative;
+      height: 560px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 120px;
+    }
+
+    .fan .work-card {
+      position: absolute;
+      transition: transform 380ms var(--ease-dramatic), box-shadow 280ms var(--ease-smooth);
+    }
+
+    .fan .work-card:nth-child(1) { transform: translateX(-330px) rotate(-8deg); z-index: 1; }
+    .fan .work-card:nth-child(2) { transform: translateX(-165px) rotate(-4deg); z-index: 2; }
+    .fan .work-card:nth-child(3) { transform: rotate(0deg); z-index: 3; }
+    .fan .work-card:nth-child(4) { transform: translateX(165px) rotate(4deg); z-index: 2; }
+    .fan .work-card:nth-child(5) { transform: translateX(330px) rotate(8deg); z-index: 1; }
+    .fan .work-card:hover { z-index: 10; box-shadow: var(--shadow-lift); }
+    .fan .work-card:nth-child(1):hover { transform: translateX(-336px) translateY(-22px) rotate(-8deg); }
+    .fan .work-card:nth-child(2):hover { transform: translateX(-168px) translateY(-22px) rotate(-4deg); }
+    .fan .work-card:nth-child(3):hover { transform: translateY(-22px); }
+    .fan .work-card:nth-child(4):hover { transform: translateX(168px) translateY(-22px) rotate(4deg); }
+    .fan .work-card:nth-child(5):hover { transform: translateX(336px) translateY(-22px) rotate(8deg); }
+
+    @media (max-width: 767px) {
+      .hero { min-height: auto; padding: 48px 0 24px; }
+      .hero-row { flex-direction: column; gap: 4px; }
+      .hero-row .display { width: auto; text-align: center !important; font-size: 34px; }
+      .fan .work-card { width: 280px; height: 440px; }
+      .fan .work-card:nth-child(n) { transform: translateX(calc((var(--i) - 2) * 6px)) rotate(calc((var(--i) - 2) * 2deg)); }
+      .fan .work-card:nth-child(3) { z-index: 5; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-row">
+        <p class="display">LYDIA IS</p>
+        <pre class="koi" id="koi"></pre>
+        <p class="display">DESIGNING</p>
+      </div>
+      <p class="lede">Product designer in New York City, crafting specialized B2B experiences for merchants, payments, and security.</p>
+      <span class="badge-pill">Recently: building a dj app <span id="arrow"></span></span>
+    </section>
+    <section class="fan" id="work"></section>
+  </main>
+  <script src="projects.js"></script>
+  <script>
+    mountNav('Work')
+    document.getElementById('koi').textContent = KOI
+    document.getElementById('arrow').outerHTML = ARROW_SVG
+    document.getElementById('work').innerHTML = SHIPPED_ORDER.map((s, i) =>
+      workCardMarkup(bySlug(s)).replace('class="work-card ', `style="--i:${i}" class="work-card `)).join('')
+  </script>
+</body>
+</html>

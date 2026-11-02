@@ -1,0 +1,123 @@
+<!--
+  v2 — Intro rail + featured case study.
+  Idea: the hiring manager lands on the strongest B2B case study, not on a splash. A narrow
+  sticky rail holds name, positioning, focus areas and a CTA; the rest of the viewport is work.
+  Payouts Uplift leads full-width with its outcome, the other four sit in a 2×2 grid underneath.
+  Cards are killed in favour of quiet image tiles: the screenshot is the hero, with a caption row
+  (title, company, year, lock) and one-line summary. Hover lifts the image and nudges the arrow.
+  Trade-off: most "hire-me" efficient and easy to scan; loses the cardboard/koi personality on
+  the landing view (the koi can move to the footer or Play page).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v2 — Intro rail + featured case study</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 56px;
+      padding-block: 40px 120px;
+    }
+
+    .rail { position: sticky; top: 104px; align-self: start; display: grid; gap: 20px; }
+    .rail h1 { font-size: 52px; }
+    .rail .lede { font-size: 15px; }
+    .rail-meta { display: grid; gap: 4px; font-size: 13px; color: var(--color-primary-70); }
+
+    .rail-cta {
+      justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      transition: transform 200ms var(--ease-smooth), box-shadow 200ms var(--ease-smooth);
+    }
+
+    .rail-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 29, 217, 0.35); }
+    .rail-cta:active { transform: translateY(0); box-shadow: none; }
+
+    .work { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 28px; }
+
+    .tile { display: grid; gap: 12px; }
+    .tile--featured { grid-column: 1 / -1; }
+
+    .tile-media {
+      overflow: hidden;
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      box-shadow: 0 0 0 0.5px var(--color-hairline);
+      transition: transform 260ms var(--ease-smooth), box-shadow 260ms var(--ease-smooth);
+    }
+
+    .tile-media img { width: 100%; aspect-ratio: 16 / 10.5; object-fit: cover; }
+    .tile:hover .tile-media { transform: translateY(-4px); box-shadow: var(--shadow-card); }
+    .tile:active .tile-media { transform: translateY(-1px); }
+
+    .tile-caption { display: flex; align-items: baseline; gap: 8px; font-size: 15px; font-weight: 500; }
+    .tile-caption .muted { color: var(--color-primary-70); font-weight: 400; }
+    .tile-caption .arrow { margin-left: auto; transition: transform 200ms var(--ease-smooth); }
+    .tile:hover .tile-caption .arrow { transform: translate(2px, -2px); }
+    .tile-summary { margin: -4px 0 0; font-size: 14px; line-height: 1.5; color: var(--color-text-subdued); }
+
+    .tile--featured .tile-caption { font-size: 18px; }
+    .tile--featured .tile-outcome {
+      font-family: var(--font-serif);
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 400;
+    }
+
+    .tile-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+    @media (max-width: 1023px) {
+      .layout { grid-template-columns: 1fr; gap: 32px; }
+      .rail { position: static; }
+    }
+
+    @media (max-width: 767px) {
+      .layout { padding-block: 32px 120px; }
+      .rail h1 { font-size: 40px; }
+      .work { grid-template-columns: 1fr; gap: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page layout">
+    <aside class="rail">
+      <h1 class="display">Lydia Shan</h1>
+      <p class="lede">Product designer in New York City, crafting specialized B2B experiences for merchants, payments, and security.</p>
+      <div class="tags">
+        <span class="tag">Merchant tools</span><span class="tag">Payments</span><span class="tag">Security &amp; trust</span><span class="tag">0 → 1</span>
+      </div>
+      <div class="rail-meta"><span>Shopify · TD Securities · SearchEye</span></div>
+      <a class="rail-cta" href="#payouts-uplift">Start with Payouts Uplift <span id="cta-arrow"></span></a>
+    </aside>
+    <section class="work" id="work"></section>
+  </main>
+  <script src="projects.js"></script>
+  <script>
+    mountNav('Work')
+    document.getElementById('cta-arrow').outerHTML = ARROW_SVG
+    document.getElementById('work').innerHTML = PROJECTS.map((p, i) => `
+      <a class="tile ${i === 0 ? 'tile--featured' : ''}" href="#${p.slug}">
+        <div class="tile-media"><img src="${p.img}" alt="${p.title} preview" /></div>
+        <div class="tile-caption">
+          <span>${p.title}</span><span class="muted">${p.company} · ${p.year}</span>${p.locked ? LOCK_SVG : ''}
+          <span class="arrow">${ARROW_SVG}</span>
+        </div>
+        ${i === 0
+          ? `<div class="tile-foot"><p class="tile-summary">${p.summary}</p><span class="tile-outcome">${p.outcome}</span></div>`
+          : `<p class="tile-summary">${p.summary}</p>`}
+      </a>`).join('')
+  </script>
+</body>
+</html>

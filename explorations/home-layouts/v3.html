@@ -1,0 +1,145 @@
+<!--
+  v3 — Editorial index.
+  Idea: treat the work like a table of contents. A short masthead (name, positioning, koi as a
+  small mark) is followed immediately by one row per project: number, title, company, focus, year
+  and outcome. A hiring manager can read the whole body of work in about five seconds.
+  On desktop, hovering a row reveals its screenshot in a preview that follows the pointer (lerped
+  with rAF, so it trails rather than snaps). On touch, each row shows an inline thumbnail instead,
+  so nothing depends on hover.
+  Trade-off: the most scannable and the most "senior" in tone; it's text-forward, so it leans on
+  the case studies themselves to carry the visuals.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v3 — Editorial index</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .masthead {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 32px;
+      padding: 56px 0 40px;
+    }
+
+    .masthead h1 { font-size: clamp(48px, 7vw, 88px); }
+    .masthead .lede { margin-top: 16px; max-width: 48ch; }
+    .masthead .koi { font-size: 5px; }
+
+    .index { list-style: none; margin: 0 0 120px; padding: 0; border-top: 0.5px solid var(--color-hairline); }
+
+    .row {
+      display: grid;
+      grid-template-columns: 40px 1.3fr 0.8fr 1.4fr 1fr 56px;
+      align-items: baseline;
+      gap: 24px;
+      padding: 22px 0;
+      border-bottom: 0.5px solid var(--color-hairline);
+      font-size: 14px;
+      transition: padding 240ms var(--ease-smooth), background-color 240ms var(--ease-smooth);
+    }
+
+    .row:hover { padding-left: 12px; background: var(--color-surface); }
+    .row:active { background: var(--color-surface-dark); }
+
+    .row-num { font-family: var(--font-mono); font-size: 12px; color: var(--color-text-muted); }
+    .row-title { display: flex; align-items: center; gap: 8px; font-family: var(--font-serif); font-size: 28px; line-height: 1; }
+    .row-muted { color: var(--color-primary-70); }
+    .row-focus { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .row-outcome { font-weight: 500; }
+    .row-year { justify-self: end; font-variant-numeric: tabular-nums; color: var(--color-primary-70); }
+    .row-thumb { display: none; }
+
+    .preview {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 360px;
+      pointer-events: none;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      box-shadow: var(--shadow-lift);
+      opacity: 0;
+      scale: 0.96;
+      transition: opacity 200ms var(--ease-smooth), scale 200ms var(--ease-smooth);
+      z-index: 40;
+    }
+
+    .preview.is-visible { opacity: 1; scale: 1; }
+
+    @media (max-width: 1023px) {
+      .row { grid-template-columns: 32px 1fr auto; row-gap: 6px; }
+      .row-company, .row-focus { display: none; }
+      .row-outcome { grid-column: 2; }
+      .row-year { grid-row: 1; grid-column: 3; }
+    }
+
+    @media (hover: none), (max-width: 767px) {
+      .preview { display: none; }
+      .masthead { grid-template-columns: 1fr; padding: 40px 0 28px; }
+      .masthead .koi { display: none; }
+      .row { grid-template-columns: 1fr auto; gap: 6px 16px; padding: 18px 0; }
+      .row:hover { padding-left: 0; background: none; }
+      .row-num { display: none; }
+      .row-title { font-size: 24px; }
+      .row-outcome { grid-column: 1; }
+      .row-year { grid-column: 2; }
+      .row-thumb { display: block; grid-column: 1 / -1; margin-top: 8px; border-radius: var(--radius-sm); overflow: hidden; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="masthead">
+      <div>
+        <h1 class="display">Lydia Shan</h1>
+        <p class="lede">Product designer in New York City, crafting specialized B2B experiences for merchants, payments, and security.</p>
+      </div>
+      <pre class="koi" id="koi" aria-hidden="true"></pre>
+    </header>
+    <ol class="index" id="work"></ol>
+  </main>
+  <div class="preview" id="preview" aria-hidden="true"><img alt="" /></div>
+  <script src="projects.js"></script>
+  <script>
+    mountNav('Work')
+    document.getElementById('koi').textContent = KOI
+    const list = document.getElementById('work')
+    list.innerHTML = PROJECTS.map((p, i) => `
+      <li><a class="row" href="#${p.slug}" data-img="${p.img}">
+        <span class="row-num">0${i + 1}</span>
+        <span class="row-title">${p.title}${p.locked ? LOCK_SVG : ''}</span>
+        <span class="row-company row-muted">${p.company}</span>
+        <span class="row-focus row-muted">${p.highlights.slice(0, 2).join(' · ')}</span>
+        <span class="row-outcome">${p.outcome}</span>
+        <span class="row-year">${p.year}</span>
+        <img class="row-thumb" src="${p.img}" alt="" />
+      </a></li>`).join('')
+
+    const preview = document.getElementById('preview')
+    const img = preview.querySelector('img')
+    let x = 0, y = 0, tx = 0, ty = 0, raf = 0
+    const tick = () => {
+      x += (tx - x) * 0.18
+      y += (ty - y) * 0.18
+      preview.style.transform = `translate(${x + 24}px, ${y - 120}px)`
+      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.5 ? requestAnimationFrame(tick) : 0
+    }
+    list.addEventListener('pointermove', (e) => {
+      tx = e.clientX; ty = e.clientY
+      if (!raf) raf = requestAnimationFrame(tick)
+    })
+    list.querySelectorAll('.row').forEach((row) => {
+      row.addEventListener('pointerenter', (e) => {
+        if (!preview.classList.contains('is-visible')) { x = tx = e.clientX; y = ty = e.clientY }
+        img.src = row.dataset.img
+        preview.classList.add('is-visible')
+      })
+    })
+    list.addEventListener('pointerleave', () => preview.classList.remove('is-visible'))
+  </script>
+</body>
+</html>

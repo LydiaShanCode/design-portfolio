@@ -1,0 +1,103 @@
+<!--
+  v1 — Compact intro, steady fan.
+  Idea: smallest change that answers the feedback. The splash collapses to a one-line intro
+  (LYDIA IS DESIGNING with a pocket-sized koi), so the fan sits above the fold at 1440×900.
+  The fan is refined rather than killed: cards overlap less and stack left-to-right so every title edge stays readable; hover
+  only lifts and straightens the card under the pointer. Neighbours never move, so nothing shoves.
+  Mobile drops the swipe stack for a native scroll-snap row (no drag physics to fight).
+  Trade-off: keeps the playful identity, but the fan still hides most of each card's content
+  until hover, and gives no outcomes or summaries at a glance.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v1 — Compact intro, steady fan</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .intro {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 40px 0 8px;
+      text-align: center;
+    }
+
+    .intro-title { display: flex; align-items: center; gap: 14px; font-size: 44px; }
+    .intro-title .koi { font-size: 4px; opacity: 0.9; }
+    .intro .lede { max-width: 52ch; }
+
+    .fan {
+      --spread: 210px;
+      position: relative;
+      height: 580px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .fan .work-card {
+      position: absolute;
+      transform: translateX(calc(var(--o) * var(--spread))) rotate(calc(var(--o) * 2.5deg));
+      transition: transform 320ms var(--ease-dramatic), box-shadow 240ms var(--ease-smooth);
+      z-index: calc(var(--o) + 3);
+    }
+
+    .fan .work-card:hover,
+    .fan .work-card:focus-visible {
+      transform: translateX(calc(var(--o) * var(--spread))) translateY(-18px) rotate(0deg);
+      box-shadow: var(--shadow-lift);
+      z-index: 10;
+      outline: none;
+    }
+
+    .fan .work-card:active { transform: translateX(calc(var(--o) * var(--spread))) translateY(-12px) scale(0.99); }
+
+    @media (max-width: 1200px) { .fan { --spread: 170px; } }
+
+    @media (max-width: 767px) {
+      .intro { padding-top: 40px; }
+      .intro-title { font-size: 32px; flex-direction: column; gap: 6px; }
+      .fan {
+        height: auto;
+        justify-content: flex-start;
+        gap: 14px;
+        margin: 0 -20px;
+        padding: 24px 20px 120px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+      }
+      .fan .work-card {
+        position: relative;
+        flex: 0 0 78%;
+        width: auto;
+        height: 460px;
+        transform: none !important;
+        scroll-snap-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="intro">
+      <h1 class="display intro-title"><span>LYDIA IS</span><pre class="koi" id="koi"></pre><em>DESIGNING</em></h1>
+      <p class="lede">Product designer in New York City, crafting specialized B2B experiences for merchants, payments, and security.</p>
+    </section>
+    <section class="fan" id="work"></section>
+  </main>
+  <script src="projects.js"></script>
+  <script>
+    mountNav('Work')
+    document.getElementById('koi').textContent = KOI
+    const order = ['design-system', 'smart-markets', 'payouts-uplift', 'shop-balance', 'listening-room']
+    document.getElementById('work').innerHTML = order.map((s, i) => {
+      const o = i - 2
+      return workCardMarkup(bySlug(s)).replace('class="work-card ', `style="--o:${o}" class="work-card `)
+    }).join('')
+  </script>
+</body>
+</html>
