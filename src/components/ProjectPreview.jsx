@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Picture from './Picture'
 import Video from './Video'
+import { lastPointer } from '../lib/pointer'
 
 const CORRECT_PASSWORD = 'design is awesome'
 
@@ -67,17 +68,33 @@ function ProjectPreview({ project, cardRect, onClose }) {
     // For protected projects, stop tracking once the password form is open
     if (project.protected && passwordPhase !== 'idle') return
 
-    const onMove = (e) => {
+    // Maps viewport coordinates into the wrap's own space, so it stays right while the flip-in scales the modal
+    const place = (clientX, clientY) => {
       const rect = wrap.getBoundingClientRect()
-      mousePos.current.x = e.clientX - rect.left
-      mousePos.current.y = e.clientY - rect.top
+      if (!rect.width || !rect.height) return
+      mousePos.current.x = (clientX - rect.left) * (wrap.offsetWidth / rect.width)
+      mousePos.current.y = (clientY - rect.top) * (wrap.offsetHeight / rect.height)
+    }
+
+    const paintPill = () => {
+      if (btnRef.current) {
+        btnRef.current.style.transform =
+          `translate(${mousePos.current.x}px, ${mousePos.current.y}px) translate(-50%, -50%)`
+      }
+    }
+
+    // The preview usually opens under a mouse that hasn't moved yet, so start the pill where the pointer already is
+    if (lastPointer.x !== null) {
+      place(lastPointer.x, lastPointer.y)
+      paintPill()
+    }
+
+    const onMove = (e) => {
+      place(e.clientX, e.clientY)
 
       if (!rafId.current) {
         rafId.current = requestAnimationFrame(() => {
-          if (btnRef.current) {
-            btnRef.current.style.transform =
-              `translate(${mousePos.current.x}px, ${mousePos.current.y}px) translate(-50%, -50%)`
-          }
+          paintPill()
           rafId.current = null
         })
       }
@@ -88,7 +105,7 @@ function ProjectPreview({ project, cardRect, onClose }) {
       wrap.removeEventListener('mousemove', onMove)
       if (rafId.current) cancelAnimationFrame(rafId.current)
     }
-  }, [project.protected, passwordPhase])
+  }, [project.protected, passwordPhase, phase])
 
   const {
     title,
