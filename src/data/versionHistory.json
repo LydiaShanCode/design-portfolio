@@ -2,6 +2,15 @@
   "repo": "LydiaShanCode/design-portfolio",
   "commits": [
     {
+      "sha": "f60713875ced9300cf9f70ca6cec875095b58d4f",
+      "subject": "Merge remote-tracking branch 'origin/main'",
+      "date": "2026-11-02T16:57:57-05:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-4mnmfjwwb-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/f60713875ced9300cf9f70ca6cec875095b58d4f"
+    },
+    {
       "sha": "c9e75bbaa8096cb5fbd5ea2eec3d270b089e9b0b",
       "subject": "feat(work): add Adaptive Security cards and poster-first card media",
       "date": "2026-11-02T16:38:08-05:00",
@@ -9,6 +18,60 @@
       "previewUrl": null,
       "prUrl": null,
       "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/c9e75bbaa8096cb5fbd5ea2eec3d270b089e9b0b"
+    },
+    {
+      "sha": "aced48cfb131d97a8e2ef2649974e8718c368023",
+      "subject": "Merge pull request #7 from LydiaShanCode/cursor/pill-hover-only-b53d",
+      "date": "2026-11-02T06:18:59+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-cf2x2qbla-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/aced48cfb131d97a8e2ef2649974e8718c368023"
+    },
+    {
+      "sha": "0858f66ac6018497ad4009054013d68ad03fafd7",
+      "subject": "Show the preview pill only while the pointer is inside the video area",
+      "date": "2026-11-02T06:08:53+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-g8tkslx5g-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/0858f66ac6018497ad4009054013d68ad03fafd7"
+    },
+    {
+      "sha": "2e7d17a9a046556bdb3abfa96c052788a82f8536",
+      "subject": "Merge pull request #5 from LydiaShanCode/cursor/fix-preview-cursor-b53d",
+      "date": "2026-11-02T05:58:26+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-598a8mx5y-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/2e7d17a9a046556bdb3abfa96c052788a82f8536"
+    },
+    {
+      "sha": "32989c039a77e3210fb831cd5216c6659b3ad42d",
+      "subject": "Place preview pill from the card's settled layout so it doesn't ride the corner during flip-in",
+      "date": "2026-11-02T05:30:43+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-7q8fgow4z-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/32989c039a77e3210fb831cd5216c6659b3ad42d"
+    },
+    {
+      "sha": "3d2c84603d830b0a670b47b6a91fafcf55c2c793",
+      "subject": "Re-hit-test custom cursor after clicks, keys, scroll and animations",
+      "date": "2026-11-02T05:26:36+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-pleps7imy-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/3d2c84603d830b0a670b47b6a91fafcf55c2c793"
+    },
+    {
+      "sha": "09b33b70f1a19db88df303a81292d0fbb3a255a3",
+      "subject": "Start project preview pill under the pointer when the modal opens",
+      "date": "2026-11-02T05:26:36+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/09b33b70f1a19db88df303a81292d0fbb3a255a3"
     },
     {
       "sha": "c1a3922a757136617a70b430575f2c1ce5ffd6c7",

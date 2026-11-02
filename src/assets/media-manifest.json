@@ -99,6 +99,11 @@
     "card": {
       "width": 720,
       "height": 448
+    },
+    "hero": {
+      "width": 1920,
+      "height": 1196,
+      "av1": false
     }
   },
   "projects/core-workflows/Core workflows.mov": {
@@ -110,6 +115,10 @@
     "card": {
       "width": 720,
       "height": 394
+    },
+    "hero": {
+      "width": 1920,
+      "height": 1052
     }
   },
   "Playground-page/shader-experiment-one/Shader-experiment-one.mov": {
