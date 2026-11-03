@@ -51,20 +51,22 @@ function Resume() {
                 <li key={label}>
                   <a
                     href={href}
-                    className="resume-link"
+                    className="resume-link resume-contact-link"
                     data-hoverable
                     {...(href.startsWith('http') && { target: '_blank', rel: 'noopener noreferrer' })}
                   >
-                    {value}
+                    <span className="resume-contact-label">{label}</span>
+                    <span>{value}</span>
                   </a>
                 </li>
               ))}
             </ul>
             <p className="resume-actions">
-              <a href="/resume.pdf" download="Lydia Shan Resume.pdf" className="resume-link" data-hoverable>
-                Download PDF
+              <a href="/resume.pdf" download="Lydia Shan Resume.pdf" className="resume-link resume-contact-link" data-hoverable>
+                <span className="resume-contact-label">Résumé</span>
+                <span>Download PDF</span>
               </a>
-              <button type="button" className="resume-link" onClick={() => window.print()} data-hoverable>
+              <button type="button" className="resume-link resume-print" onClick={() => window.print()} data-hoverable>
                 Print
               </button>
             </p>
