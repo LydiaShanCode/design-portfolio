@@ -95,7 +95,7 @@ function About() {
 
         <div className="about-bio">
           <p>
-            Born in Toronto, Canada, I'm currently a product designer at <a href="https://www.shopify.com/ca/editions/winter2026" target="_blank" rel="noopener noreferrer" className="about-link" data-hoverable>Shopify</a>, designing
+            I'm currently a product designer based in New York City at <a href="https://www.shopify.com/editions/winter2026" target="_blank" rel="noopener noreferrer" className="about-link" data-hoverable>Shopify</a>, designing
             financial experiences that help merchants manage payouts, providers, and local
             payment methods at scale.
           </p>
