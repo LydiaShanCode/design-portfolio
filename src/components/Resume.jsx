@@ -74,13 +74,11 @@ function Resume() {
           </div>
 
           <div className="resume-actions">
-            <a href="/resume.pdf" download="Lydia Shan Resume.pdf" className="resume-button" data-hoverable>
+            <a href="/resume.pdf" download="Lydia Shan Resume.pdf" className="resume-button" data-hoverable aria-label="Download PDF">
               <DownloadIcon />
-              Download PDF
             </a>
-            <button type="button" className="resume-button resume-print" onClick={() => window.print()} data-hoverable>
+            <button type="button" className="resume-button resume-print" onClick={() => window.print()} data-hoverable aria-label="Print">
               <PrintIcon />
-              Print
             </button>
           </div>
         </header>

@@ -3848,41 +3848,41 @@ button.work-card {
 
 .resume-actions {
   display: flex;
-  gap: 8px;
+  gap: 4px;
+  margin: -2px -9px 0 0;
 }
 
 .resume-button {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 34px;
-  padding: 0 14px 0 12px;
-  border: 1px solid color-mix(in srgb, var(--color-primary) 28%, transparent);
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
   border-radius: var(--radius-full);
   background: transparent;
   color: var(--color-primary);
-  font: inherit;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: -0.2px;
-  white-space: nowrap;
-  text-decoration: none;
   cursor: pointer;
-  transition: background-color 150ms ease, border-color 150ms ease;
+  transition: background-color 150ms ease;
+}
+
+.resume-button svg {
+  width: 18px;
+  height: 18px;
 }
 
 .resume-button:hover {
-  border-color: var(--color-primary);
-  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
 }
 
 .resume-button:active {
-  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  background: color-mix(in srgb, var(--color-primary) 14%, transparent);
 }
 
 .resume-button:focus-visible {
   outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline-offset: 0;
 }
 
 .resume-link {
@@ -4073,14 +4073,6 @@ button.work-card {
   }
 }
 
-@media (max-width: 767px) {
-  .resume-masthead {
-    grid-template-columns: 1fr;
-    align-items: start;
-    gap: 32px;
-  }
-}
-
 @media (max-width: 640px) {
   .resume-page {
     padding: 64px 20px 64px;
@@ -4103,9 +4095,13 @@ button.work-card {
     padding: 12px 0;
   }
 
+  .resume-actions {
+    margin: -6px -13px 0 0;
+  }
+
   .resume-button {
+    width: 44px;
     height: 44px;
-    padding: 0 18px 0 16px;
   }
 
   .resume-print {
