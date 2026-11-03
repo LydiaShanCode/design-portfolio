@@ -3806,6 +3806,7 @@ button.work-card {
 .resume-page {
   --resume-rule: 1px dashed color-mix(in srgb, var(--color-primary) 22%, transparent);
   --resume-muted: color-mix(in srgb, var(--color-primary) 70%, var(--color-bg));
+  --resume-heading-size: 30px;
   min-height: 100vh;
   padding: 120px 5vw 100px;
   display: flex;
@@ -3821,7 +3822,7 @@ button.work-card {
 .resume-masthead {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
+  align-items: start;
   gap: 48px;
   padding-bottom: 48px;
   border-bottom: var(--resume-rule);
@@ -3829,20 +3830,20 @@ button.work-card {
 
 .resume-name {
   font-family: var(--font-serif);
-  font-size: clamp(52px, 8vw, 96px);
-  font-weight: 400;
-  line-height: 0.88;
-  letter-spacing: -0.02em;
+  font-size: var(--resume-heading-size);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
   margin: 0;
 }
 
 .resume-title {
   font-family: var(--font-serif);
-  font-size: 24px;
+  font-size: calc(var(--resume-heading-size) * 0.7);
   font-style: italic;
   line-height: 1.1;
-  margin-top: 12px;
+  margin-top: 6px;
 }
 
 .resume-location {
@@ -3955,7 +3956,7 @@ button.work-card {
   top: 96px;
   align-self: start;
   font-family: var(--font-serif);
-  font-size: 30px;
+  font-size: var(--resume-heading-size);
   font-weight: 300;
   line-height: 1.1;
   letter-spacing: -0.01em;
@@ -4079,9 +4080,12 @@ button.work-card {
     padding: 40px 0;
   }
 
+  .resume-page {
+    --resume-heading-size: 26px;
+  }
+
   .resume-section-title {
     position: static;
-    font-size: 26px;
   }
 }
 
@@ -4102,10 +4106,6 @@ button.work-card {
     gap: 28px;
     padding-bottom: 0;
     border-bottom: 0;
-  }
-
-  .resume-title {
-    font-size: 21px;
   }
 
   .resume-aside {
@@ -4254,6 +4254,7 @@ button.work-card {
   }
 
   .resume-page {
+    --resume-heading-size: 18px;
     min-height: 0;
     padding: 0;
   }
@@ -4265,15 +4266,6 @@ button.work-card {
   .resume-masthead {
     gap: 32px;
     padding-bottom: 18px;
-  }
-
-  .resume-name {
-    font-size: 50px;
-  }
-
-  .resume-title {
-    font-size: 18px;
-    margin-top: 6px;
   }
 
   .resume-location,
@@ -4302,7 +4294,6 @@ button.work-card {
 
   .resume-section-title {
     position: static;
-    font-size: 18px;
   }
 
   .resume-entry + .resume-entry {
