@@ -2,7 +2,6 @@ export const profile = {
   name: 'Lydia Shan',
   title: 'Product Designer',
   contact: [
-    { label: 'Phone', value: '(646) 541-7791', href: 'tel:+16465417791' },
     { label: 'Email', value: 'lydiashan.c@gmail.com', href: 'mailto:lydiashan.c@gmail.com' },
     { label: 'Portfolio', value: 'lydiashan.com', href: 'https://lydiashan.com' },
     { label: 'GitHub', value: 'github.com/LydiaShanCode', href: 'https://github.com/LydiaShanCode' },
