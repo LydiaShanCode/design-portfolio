@@ -118,6 +118,7 @@ Best practices for coding agents and design agents working on this portfolio. Ev
 - **Hover feedback within 100ms.** Humans perceive delays above this as sluggish
 - **Transitions 200–300ms** for UI state changes. Shorter feels abrupt, longer feels slow
 - **Entrance animations 200–400ms.** Exit animations can be faster (150–250ms)
+- **Optional actions are text + icon buttons.** When an action is secondary (download, print, share, copy) or sits next to other buttons, render it as a button with an icon and a text label — not a bare text link and not an icon-only button
 - **Drag interactions need visual affordance**: cursor change, shadow lift, scale shift
 - **Provide undo/escape.** Every modal closes on Escape and backdrop click. Every destructive action has a way back
 
@@ -165,6 +166,7 @@ Best practices for coding agents and design agents working on this portfolio. Ev
 
 ## Anti-Patterns
 
+- Pulsating, breathing, or "live" status dots used as icons — never add them
 - Crossfading between states when morphing is possible
 - Using `linear` easing for UI transitions
 - Hardcoding colors, shadows, or radii instead of using tokens
