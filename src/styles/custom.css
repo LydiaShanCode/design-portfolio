@@ -3266,6 +3266,18 @@ button.footer-link {
   max-width: 100%;
 }
 
+.project-page-prototype {
+  margin: 48px 0;
+  width: 100%;
+}
+
+.project-page-prototype-fallback {
+  aspect-ratio: 1440 / 900;
+  width: 100%;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+
 /* Success / learnings screenshots — match design width (~387.54px) */
 .project-page-figure--cap-small {
   width: auto;

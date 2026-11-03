@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback, useRef, Children, isValidElement } from 'react'
+import { lazy, Suspense, useMemo, useState, useEffect, useCallback, useRef, Children, isValidElement } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Markdown from 'react-markdown'
@@ -8,6 +8,8 @@ import CaseStudyGate from './CaseStudyGate'
 import Picture from './Picture'
 import Video from './Video'
 import { withProjectAssets, resolveProjectAsset, largestUrl } from '../data/projectAssets'
+
+const CampaignPrototypeEmbed = lazy(() => import('./campaign-prototype/CampaignPrototypeEmbed'))
 
 const FIGURE_SIZES = '(min-width: 1024px) 900px, 100vw'
 
@@ -340,6 +342,8 @@ function encodeMarkdownImageUrls(markdown) {
   )
 }
 
+const CAMPAIGN_PROTOTYPE_MARKER = '{{campaign-prototype}}'
+
 function renderProjectContent(content, components, iterationsElement) {
   const lines = encodeMarkdownImageUrls(content).split('\n')
   const parts = []
@@ -348,6 +352,9 @@ function renderProjectContent(content, components, iterationsElement) {
   while (i < lines.length) {
     if (lines[i].trim() === '{{iterations}}') {
       parts.push({ type: 'iterations' })
+      i++
+    } else if (lines[i].trim() === CAMPAIGN_PROTOTYPE_MARKER) {
+      parts.push({ type: 'campaign-prototype' })
       i++
     } else if (lines[i].startsWith('> ')) {
       const quotes = []
@@ -373,7 +380,12 @@ function renderProjectContent(content, components, iterationsElement) {
       parts.push({ type: 'quotes', quotes })
     } else {
       const start = i
-      while (i < lines.length && !lines[i].startsWith('> ') && lines[i].trim() !== '{{iterations}}') i++
+      while (
+        i < lines.length &&
+        !lines[i].startsWith('> ') &&
+        lines[i].trim() !== '{{iterations}}' &&
+        lines[i].trim() !== CAMPAIGN_PROTOTYPE_MARKER
+      ) i++
       parts.push({ type: 'prose', text: lines.slice(start, i).join('\n') })
     }
   }
@@ -381,6 +393,15 @@ function renderProjectContent(content, components, iterationsElement) {
   return parts.map((part, idx) => {
     if (part.type === 'iterations') {
       return iterationsElement ? <div key={idx}>{iterationsElement}</div> : null
+    }
+    if (part.type === 'campaign-prototype') {
+      return (
+        <div className="project-page-prototype" key={idx}>
+          <Suspense fallback={<div className="project-page-prototype-fallback" aria-hidden="true" />}>
+            <CampaignPrototypeEmbed />
+          </Suspense>
+        </div>
+      )
     }
     if (part.type === 'quotes') {
       if (part.quotes.length >= 2) {
