@@ -20,6 +20,7 @@ const Play = lazy(() => import('./components/Play'))
 const Resume = lazy(() => import('./components/Resume'))
 const ProjectPage = lazy(() => import('./components/ProjectPage'))
 const About = lazy(() => import('./components/About'))
+const PhishingIndexPage = lazy(() => import('./components/prototypes/PhishingIndexPage'))
 
 function Home() {
   const major = useMajorVersion()
@@ -59,6 +60,16 @@ function ScrollToTopOnNavigate() {
   return null
 }
 
+function PrototypeRoute() {
+  const { pathname } = useLocation()
+  if (!pathname.endsWith('/prototypes/phishing-index')) return null
+  return (
+    <Suspense fallback={null}>
+      <PhishingIndexPage />
+    </Suspense>
+  )
+}
+
 function App() {
   const pond = useMajorVersion() === 'pond'
 
@@ -75,6 +86,7 @@ function App() {
         />
       )} */}
       <Analytics />
+      <PrototypeRoute />
       <div className="min-h-screen bg-white">
         <CustomCursor />
         <ClickSfx />
@@ -90,6 +102,7 @@ function App() {
               <Route path="/project/:slug" element={<ProjectPage />} />
               <Route path="/about" element={<About />} />
               <Route path="/resume" element={<Resume />} />
+              <Route path="/prototypes/*" element={null} />
             </Routes>
           </Suspense>
           <Footer />
