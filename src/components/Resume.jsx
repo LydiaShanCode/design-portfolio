@@ -18,6 +18,19 @@ const PrintIcon = () => (
   </svg>
 )
 
+function withProjectLinks(text, links = {}) {
+  const phrases = Object.keys(links)
+  if (!phrases.length) return text
+  const pattern = new RegExp(`(${phrases.join('|')})`)
+  return text.split(pattern).map((part, i) =>
+    links[part] ? (
+      <Link key={i} to={`/project/${links[part]}`} className="resume-link" data-hoverable>{part}</Link>
+    ) : (
+      part
+    ),
+  )
+}
+
 function Dates({ start, end }) {
   return (
     <p className="resume-dates">
@@ -99,8 +112,8 @@ function Resume() {
                 <ul className="resume-points">
                   {job.points.map((point) => (
                     <li key={point.text}>
-                      {point.lead && <strong>{point.lead}: </strong>}
-                      {point.text}
+                      {point.lead && <>{withProjectLinks(point.lead, job.links)}: </>}
+                      {withProjectLinks(point.text, job.links)}
                     </li>
                   ))}
                 </ul>

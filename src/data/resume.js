@@ -14,8 +14,8 @@ export const experience = [
   {
     company: 'Adaptive Security',
     role: 'Product Designer',
-    start: '06/2026',
-    end: '10/2026',
+    start: 'Jun 2026',
+    end: 'Oct 2026',
     points: [
       {
         lead: 'Core Workflows',
@@ -32,16 +32,16 @@ export const experience = [
         text: 'Designed and built a working prototype of a 0-to-1 AI-native Training Module Builder in one week, with customers saying they’d use it right away in concept testing calls.',
       },
     ],
-    caseStudies: [
-      { title: 'Core Workflows', slug: 'core-workflows' },
-      { title: 'Level up AICC', slug: 'level-up-aicc' },
-    ],
+    links: {
+      'Core Workflows': 'core-workflows',
+      'AI Content Creation': 'level-up-aicc',
+    },
   },
   {
     company: 'Shopify',
     role: 'Product Designer',
-    start: '07/2024',
-    end: '06/2026',
+    start: 'Jul 2024',
+    end: 'Jun 2026',
     points: [
       {
         text: 'Designed end-to-end for the Payments team across consumer surfaces, spanning merchant B2B workflows, mobile checkout, and the Shop app for millions of global buyers.',
@@ -56,17 +56,17 @@ export const experience = [
         text: 'Introduced AI-assisted UX patterns for Managed Markets, reducing support tickets for product restrictions by ~18%.',
       },
     ],
-    caseStudies: [
-      { title: 'Payouts Uplift', slug: 'payouts-uplift' },
-      { title: 'Shop Balance', slug: 'shop-balance' },
-      { title: 'Smart Markets', slug: 'smart-markets' },
-    ],
+    links: {
+      'Shop Balance': 'shop-balance',
+      'Payouts Uplift': 'payouts-uplift',
+      'Managed Markets': 'smart-markets',
+    },
   },
   {
     company: 'TD Securities',
     role: 'Product Designer',
-    start: '01/2024',
-    end: '07/2024',
+    start: 'Jan 2024',
+    end: 'Jul 2024',
     points: [
       { text: 'Designed complex financial workflows for FX and commodities trading platforms.' },
     ],
@@ -74,8 +74,8 @@ export const experience = [
   {
     company: 'SearchEye',
     role: 'Founding Product Designer',
-    start: '08/2022',
-    end: '01/2024',
+    start: 'Aug 2022',
+    end: 'Jan 2024',
     points: [],
     caseStudies: [{ title: 'Design System', slug: 'design-system' }],
   },
@@ -86,20 +86,20 @@ export const education = [
     school: 'Sheridan College',
     program: 'Digital Product Design',
     note: 'Graduate Certificate with Honours',
-    start: '09/2021',
-    end: '04/2022',
+    start: 'Sep 2021',
+    end: 'Apr 2022',
   },
   {
     school: 'Juno College',
     program: 'Web Development',
-    start: '04/2023',
-    end: '06/2023',
+    start: 'Apr 2023',
+    end: 'Jun 2023',
   },
   {
     school: 'University of Toronto',
     program: 'Bachelor of Music',
-    start: '09/2017',
-    end: '04/2021',
+    start: 'Sep 2017',
+    end: 'Apr 2021',
   },
 ]
 
@@ -109,7 +109,7 @@ export const skills = [
     items: ['Claude Code', 'Figma', 'Graphite', 'GitHub', 'VS Code', 'PI'],
   },
   {
-    label: 'Building',
+    label: 'Code',
     items: ['Prototyping in code', 'API integration', 'Git-based workflows', 'Command line (CLI)'],
   },
   {
@@ -122,6 +122,6 @@ export const certifications = [
   {
     name: 'Ethical Conduct for Research Involving Humans (TCPS 2)',
     issuer: 'Government of Canada',
-    date: '09/2021',
+    date: 'Sep 2021',
   },
 ]

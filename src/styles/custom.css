@@ -3805,6 +3805,7 @@ button.work-card {
 /* Resume page */
 .resume-page {
   --resume-rule: 1px dashed color-mix(in srgb, var(--color-primary) 22%, transparent);
+  --resume-muted: color-mix(in srgb, var(--color-primary) 70%, var(--color-bg));
   min-height: 100vh;
   padding: 120px 5vw 100px;
   display: flex;
@@ -3848,7 +3849,7 @@ button.work-card {
   margin-top: 6px;
   font-size: 13px;
   letter-spacing: -0.2px;
-  opacity: 0.7;
+  color: var(--resume-muted);
 }
 
 .resume-aside {
@@ -3999,16 +4000,16 @@ button.work-card {
   margin-top: 4px;
   font-size: 13px;
   letter-spacing: -0.2px;
-  opacity: 0.7;
+  color: var(--resume-muted);
 }
 
 .resume-dates {
   flex-shrink: 0;
-  font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
+  letter-spacing: -0.2px;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  opacity: 0.6;
+  color: var(--resume-muted);
 }
 
 .resume-points {
@@ -4033,11 +4034,7 @@ button.work-card {
   content: '–';
   position: absolute;
   left: 0;
-  opacity: 0.4;
-}
-
-.resume-points strong {
-  font-weight: 600;
+  color: var(--resume-muted);
 }
 
 .resume-case-studies {
@@ -4153,7 +4150,7 @@ button.work-card {
 
   .resume-contact-label {
     display: block;
-    opacity: 0.6;
+    color: var(--resume-muted);
   }
 
   .resume-print {
@@ -4196,10 +4193,6 @@ button.work-card {
     margin-top: 8px;
   }
 
-  .resume-dates {
-    font-size: 11px;
-  }
-
   .resume-points {
     margin-top: 12px;
   }
@@ -4232,7 +4225,7 @@ button.work-card {
   .resume-skill-row dt {
     font-size: 13px;
     font-weight: 400;
-    opacity: 0.6;
+    color: var(--resume-muted);
   }
 }
 
@@ -4334,7 +4327,7 @@ button.work-card {
   }
 
   .resume-dates {
-    font-size: 9px;
+    font-size: 10px;
   }
 
   .resume-points {
