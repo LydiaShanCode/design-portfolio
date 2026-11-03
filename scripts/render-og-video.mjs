@@ -63,7 +63,7 @@ const html = `<!doctype html>
 <body>
   <div class="card">
     <div class="wordmark">LYDIA SHAN</div>
-    <div class="subtitle">Product designer, prev. at Shopify</div>
+    <div class="subtitle">Product designer</div>
     <div class="koi-box"><div class="koi" id="koi"></div></div>
   </div>
 </body>
