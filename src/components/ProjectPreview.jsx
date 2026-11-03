@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react'
+import { animate, useReducedMotion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import Picture from './Picture'
 import Video from './Video'
@@ -19,6 +20,7 @@ const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: r
 const FACE_MIRROR = { v2: 'scaleX(-1)', v4: 'scaleX(-1)', v5: 'scaleY(-1)' }
 
 const CORRECT_PASSWORD = 'design is awesome'
+const SPRING = { type: 'spring', stiffness: 380, damping: 28, mass: 1.1 }
 
 function sessionKey(slug) {
   return `case-study-unlocked-${slug}`
@@ -29,6 +31,9 @@ function ProjectPreview({ project, cardRect, originNode, onClose }) {
   const inputRef = useRef(null)
   const videoWrapRef = useRef(null)
   const btnRef = useRef(null)
+  const formRef = useRef(null)
+  const pillSize = useRef(null)
+  const reduceMotion = useReducedMotion()
   const rafId = useRef(null)
   const mousePos = useRef({ x: 0, y: 0 })
   const navigate = useNavigate()
@@ -162,6 +167,33 @@ function ProjectPreview({ project, cardRect, originNode, onClose }) {
       return () => clearTimeout(id)
     }
   }, [passwordPhase])
+
+  // Grow the pill into the form instead of swapping it, so the click reads as one object opening up
+  useLayoutEffect(() => {
+    const form = formRef.current
+    const from = pillSize.current
+    if (passwordPhase !== 'input' || !form || !from) return
+    pillSize.current = null
+    if (reduceMotion) return
+
+    const to = { width: form.offsetWidth, height: form.offsetHeight }
+    form.style.width = `${from.width}px`
+    form.style.height = `${from.height}px`
+    form.classList.add('project-preview-password-form--morphing')
+    const settle = () => {
+      form.style.width = ''
+      form.style.height = ''
+      form.classList.remove('project-preview-password-form--morphing')
+    }
+    const controls = animate(form, { width: [from.width, to.width], height: [from.height, to.height] }, {
+      ...SPRING,
+      onComplete: settle,
+    })
+    return () => {
+      controls.stop()
+      settle()
+    }
+  }, [passwordPhase, reduceMotion])
 
   // Track mouse inside video wrap — position the pill as a custom cursor
   useEffect(() => {
@@ -480,7 +512,8 @@ function ProjectPreview({ project, cardRect, originNode, onClose }) {
                     ref={btnRef}
                     type="button"
                     className="project-preview-password-btn"
-                    onClick={() => {
+                    onClick={(e) => {
+                      pillSize.current = { width: e.currentTarget.offsetWidth, height: e.currentTarget.offsetHeight }
                       setPasswordPhase('input')
                     }}
                   >
@@ -500,6 +533,7 @@ function ProjectPreview({ project, cardRect, originNode, onClose }) {
                     }}
                   >
                     <form
+                      ref={formRef}
                       className={`project-preview-password-form${passwordPhase === 'error' ? ' project-preview-password-form--shake' : ''}${passwordPhase === 'unlocked' ? ' project-preview-password-form--unlocked' : ''}`}
                       onSubmit={handlePasswordSubmit}
                       noValidate
@@ -519,17 +553,19 @@ function ProjectPreview({ project, cardRect, originNode, onClose }) {
                         onChange={(e) => setPasswordValue(e.target.value)}
                         autoComplete="current-password"
                         aria-label="Case study password"
+                        placeholder="Password"
+                        spellCheck={false}
                         autoFocus
                         disabled={passwordPhase === 'unlocked'}
                       />
                       <button
                         type="submit"
-                        className="project-preview-password-submit"
+                        className={`project-preview-password-submit${passwordValue ? ' project-preview-password-submit--ready' : ''}`}
                         data-hoverable
                         aria-label="Submit password"
                         disabled={passwordPhase === 'unlocked'}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" width="14" height="14" aria-hidden="true">
+                        <svg className="project-preview-password-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" width="14" height="14" aria-hidden="true">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                         </svg>
                       </button>
