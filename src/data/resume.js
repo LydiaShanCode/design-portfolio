@@ -1,8 +1,3 @@
-import shopifyIcon from '../assets/shopify-icon.svg'
-import searchEyeIcon from '../assets/searcheye icon.svg'
-import adaptiveIcon from '../assets/adaptive icon.svg'
-import tdIcon from '../assets/td icon.svg'
-
 export const profile = {
   name: 'Lydia Shan',
   title: 'Product Designer',
@@ -21,7 +16,6 @@ export const experience = [
     role: 'Product Designer',
     start: '06/2026',
     end: '10/2026',
-    icon: adaptiveIcon,
     points: [
       {
         lead: 'Core Workflows',
@@ -48,7 +42,6 @@ export const experience = [
     role: 'Product Designer',
     start: '07/2024',
     end: '06/2026',
-    icon: shopifyIcon,
     points: [
       {
         text: 'Designed end-to-end for the Payments team across consumer surfaces, spanning merchant B2B workflows, mobile checkout, and the Shop app for millions of global buyers.',
@@ -74,7 +67,6 @@ export const experience = [
     role: 'Product Designer',
     start: '01/2024',
     end: '07/2024',
-    icon: tdIcon,
     points: [
       { text: 'Designed complex financial workflows for FX and commodities trading platforms.' },
     ],
@@ -84,7 +76,6 @@ export const experience = [
     role: 'Founding Product Designer',
     start: '08/2022',
     end: '01/2024',
-    icon: searchEyeIcon,
     points: [],
     caseStudies: [{ title: 'Design System', slug: 'design-system' }],
   },
@@ -94,7 +85,7 @@ export const education = [
   {
     school: 'Sheridan College',
     program: 'Digital Product Design',
-    note: 'Graduate Certificate, with Honours',
+    note: 'Graduate Certificate with Honours',
     start: '09/2021',
     end: '04/2022',
   },
