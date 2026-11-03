@@ -2371,7 +2371,9 @@ button.footer-link {
     0 4px 20px rgba(0, 0, 0, 0.10),
     0 1px 4px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  padding: 0 0 0 12px;
+  box-sizing: border-box;
+  height: 44px;
+  padding: 0 5px 0 18px;
   transition: border-color 300ms var(--ease-smooth), background 300ms var(--ease-smooth);
 }
 
@@ -2405,8 +2407,8 @@ button.footer-link {
   font-family: var(--font-sans);
   font-size: 16px; /* prevents iOS auto-zoom on focus */
   font-weight: 300;
-  width: 160px;
-  padding: 10px 0;
+  width: 150px;
+  padding: 0 10px 0 0;
 }
 
 .project-preview-password-input::placeholder {
@@ -2417,21 +2419,68 @@ button.footer-link {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  background: var(--color-primary);
+  width: 32px;
+  height: 32px;
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
   border: none;
-  border-radius: 50%;
-  margin: 3px;
-  color: #fff;
-  cursor: pointer;
+  border-radius: var(--radius-full);
+  color: color-mix(in srgb, var(--color-primary) 55%, transparent);
   flex-shrink: 0;
-  transition: background 150ms var(--ease-smooth), transform 150ms var(--ease-smooth);
+  transition:
+    background-color 240ms var(--ease-smooth),
+    color 240ms var(--ease-smooth),
+    box-shadow 240ms var(--ease-smooth),
+    transform 150ms var(--ease-smooth);
 }
 
 .project-preview-password-submit:hover {
-  background: #0016a8;
-  transform: scale(1.05);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+
+.project-preview-password-submit--ready {
+  background: var(--color-primary);
+  color: var(--color-bg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 2px 8px color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+.project-preview-password-submit--ready:hover {
+  background: color-mix(in srgb, var(--color-primary) 88%, black);
+}
+
+.project-preview-password-submit:active {
+  transform: scale(0.92);
+}
+
+.project-preview-password-submit:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.project-preview-password-arrow {
+  transition: transform 200ms var(--ease-smooth);
+}
+
+.project-preview-password-submit--ready:hover .project-preview-password-arrow {
+  transform: translateX(2px);
+}
+
+/* Contents arrive while the pill widens into the form */
+.project-preview-password-form--morphing .project-preview-password-input {
+  animation: password-field-in 260ms var(--ease-smooth) 90ms backwards;
+}
+
+.project-preview-password-form--morphing .project-preview-password-submit {
+  animation: password-submit-in 360ms var(--ease-dramatic) 120ms backwards;
+}
+
+@keyframes password-field-in {
+  from { opacity: 0; transform: translateX(-6px); }
+}
+
+@keyframes password-submit-in {
+  from { opacity: 0; transform: scale(0.4); }
 }
 
 @keyframes preview-password-shake {
@@ -2450,6 +2499,7 @@ button.footer-link {
   position: static;
   display: flex;
   width: 100%;
+  height: auto;
   margin-top: 8px;
   transform: none;
 }
@@ -3758,84 +3808,489 @@ button.work-card {
 
 /* Resume page */
 .resume-page {
+  --resume-rule: 1px dashed color-mix(in srgb, var(--color-primary) 22%, transparent);
+  --resume-muted: color-mix(in srgb, var(--color-primary) 70%, var(--color-bg));
+  --resume-heading-size: 30px;
   min-height: 100vh;
-  padding: 120px 200px 80px;
+  padding: 120px 5vw 100px;
   display: flex;
   justify-content: center;
 }
 
-.resume-shell {
-  width: min(1000px, 100%);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.resume-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.resume-label {
-  font-family: 'Geist', system-ui, sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+.resume-sheet {
+  width: min(1040px, 100%);
   color: var(--color-primary);
+  font-family: var(--font-sans);
+}
+
+.resume-masthead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 48px;
+  padding-bottom: 48px;
+  border-bottom: var(--resume-rule);
+}
+
+.resume-name {
+  font-family: var(--font-serif);
+  font-size: var(--resume-heading-size);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.resume-title {
+  font-family: var(--font-serif);
+  font-size: calc(var(--resume-heading-size) * 0.7);
+  font-style: italic;
+  line-height: 1.1;
+  margin-top: 6px;
 }
 
 .resume-actions {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  gap: 4px;
+  margin: -2px -9px 0 0;
 }
 
-.resume-action {
-  display: flex;
+.resume-button {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
   color: var(--color-primary);
-  opacity: 1;
-  transition: opacity 200ms ease;
+  cursor: pointer;
+  transition: background-color 150ms ease;
 }
 
-.resume-action:hover {
-  opacity: 1;
+.resume-button svg {
+  width: 18px;
+  height: 18px;
 }
 
-.resume-pages {
-  display: flex;
-  flex-direction: column;
+.resume-button:hover {
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+.resume-button:active {
+  background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.resume-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 0;
+}
+
+.resume-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 3px;
+  transition: opacity 150ms ease;
+}
+
+.resume-link:hover {
+  opacity: 0.6;
+}
+
+.resume-link:active {
+  opacity: 0.4;
+}
+
+.resume-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.resume-section {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
   gap: 48px;
+  padding: 48px 0;
 }
 
-.resume-page-card {
-  border-radius: 0;
-  overflow: hidden;
-  box-shadow: 0 4px 24px rgb(var(--shadow-tint) / 0.10), 0 1px 4px rgb(var(--shadow-tint) / 0.06);
+.resume-section + .resume-section {
+  border-top: var(--resume-rule);
 }
 
-.react-pdf__Document {
+.resume-section-title {
+  position: sticky;
+  top: 96px;
+  align-self: start;
+  font-family: var(--font-serif);
+  font-size: var(--resume-heading-size);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.resume-entry + .resume-entry {
+  margin-top: 40px;
+}
+
+.resume-entry--compact + .resume-entry--compact {
+  margin-top: 24px;
+}
+
+.resume-entry-head {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+}
+
+.resume-entry-heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.resume-entry-name {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.resume-entry--compact .resume-entry-name {
+  font-size: 22px;
+}
+
+.resume-entry-detail {
+  margin-top: 4px;
+  font-size: 13px;
+  letter-spacing: -0.2px;
+  color: var(--resume-muted);
+}
+
+.resume-dates {
+  flex-shrink: 0;
+  font-size: 13px;
+  letter-spacing: -0.2px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--resume-muted);
+}
+
+.resume-points {
   display: flex;
   flex-direction: column;
-  gap: 44px;
+  gap: 10px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.resume-page-card .react-pdf__Page {
-  display: block;
+.resume-points li {
+  position: relative;
+  max-width: 64ch;
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.7;
+  letter-spacing: -0.2px;
 }
 
-.resume-page-card .react-pdf__Page__canvas {
-  display: block;
-  width: 100% !important;
-  height: auto !important;
+.resume-points li::before {
+  content: '–';
+  position: absolute;
+  left: 0;
+  color: var(--resume-muted);
 }
 
-@media (max-width: 768px) {
+.resume-case-studies {
+  margin-top: 14px;
+  font-size: 13px;
+  letter-spacing: -0.2px;
+}
+
+.resume-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 0;
+  padding: 32px 0 0;
+  border-top: var(--resume-rule);
+  list-style: none;
+  font-size: 13px;
+  letter-spacing: -0.2px;
+}
+
+.resume-skills {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+}
+
+.resume-skill-row {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  letter-spacing: -0.2px;
+}
+
+.resume-skill-row dt {
+  font-weight: 500;
+}
+
+.resume-skill-row dd {
+  max-width: 64ch;
+  margin: 0;
+}
+
+@media (max-width: 1023px) {
+  .resume-masthead {
+    gap: 32px;
+  }
+
+  .resume-section {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 40px 0;
+  }
+
   .resume-page {
-    padding: 72px 16px 60px;
+    --resume-heading-size: 26px;
+  }
+
+  .resume-section-title {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .resume-page {
+    padding: 64px 20px 64px;
+  }
+
+  .resume-masthead {
+    gap: 24px;
+    padding-bottom: 36px;
+  }
+
+  .resume-contact {
+    flex-direction: column;
+    gap: 0;
+    padding-top: 20px;
+    font-size: 14px;
+  }
+
+  .resume-contact .resume-link {
+    display: inline-block;
+    padding: 12px 0;
+  }
+
+  .resume-actions {
+    margin: -6px -13px 0 0;
+  }
+
+  .resume-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .resume-print {
+    display: none;
+  }
+
+  .resume-section {
+    gap: 20px;
+    padding: 36px 0;
+  }
+
+  .resume-entry + .resume-entry {
+    margin-top: 32px;
+  }
+
+  .resume-entry--compact + .resume-entry--compact {
+    margin-top: 20px;
+  }
+
+  .resume-entry-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 0 12px;
+  }
+
+  .resume-entry-heading {
+    display: contents;
+  }
+
+  .resume-entry-name {
+    grid-column: 1 / -1;
+  }
+
+  .resume-entry-detail {
+    margin-top: 8px;
+  }
+
+  .resume-points {
+    margin-top: 12px;
+  }
+
+  .resume-points li {
+    padding-left: 14px;
+  }
+
+  .resume-case-studies {
+    line-height: 2;
+  }
+
+  .resume-case-studies .resume-link {
+    padding: 12px 0;
+  }
+
+  .resume-entry-name {
+    font-size: 23px;
+  }
+
+  .resume-entry--compact .resume-entry-name {
+    font-size: 20px;
+  }
+
+  .resume-skill-row {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .resume-skill-row dt {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--resume-muted);
+  }
+}
+
+@media print {
+  @page {
+    size: letter;
+    margin: 0.45in 0.55in;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  nav,
+  footer,
+  .water-canvas,
+  .pond-canvas,
+  .custom-cursor,
+  .dv-menu,
+  .resume-actions,
+  .resume-case-studies {
+    display: none !important;
+  }
+
+  .resume-page {
+    --resume-heading-size: 18px;
+    min-height: 0;
+    padding: 0;
+  }
+
+  .resume-sheet {
+    width: 100%;
+  }
+
+  .resume-masthead {
+    gap: 32px;
+    padding-bottom: 18px;
+  }
+
+  .resume-entry-detail {
+    font-size: 10px;
+  }
+
+  .resume-contact {
+    gap: 4px 20px;
+    padding-top: 12px;
+    font-size: 10px;
+  }
+
+  .resume-link {
+    text-decoration: none;
+  }
+
+  .resume-section {
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 24px;
+    padding: 14px 0;
+  }
+
+  .resume-section-title {
+    position: static;
+  }
+
+  .resume-entry + .resume-entry {
+    margin-top: 14px;
+  }
+
+  .resume-entry--compact + .resume-entry--compact {
+    margin-top: 10px;
+  }
+
+  .resume-entry {
+    break-inside: avoid;
+  }
+
+  .resume-entry-name,
+  .resume-entry--compact .resume-entry-name {
+    font-size: 17px;
+  }
+
+  .resume-entry-detail {
+    margin-top: 1px;
+  }
+
+  .resume-dates {
+    font-size: 10px;
+  }
+
+  .resume-points {
+    gap: 3px;
+    margin-top: 7px;
+  }
+
+  .resume-points li,
+  .resume-skill-row {
+    max-width: none;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  .resume-points li {
+    padding-left: 12px;
+  }
+
+  .resume-skills {
+    gap: 3px;
+  }
+
+  .resume-skill-row {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 12px;
   }
 }
 
