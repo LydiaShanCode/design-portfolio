@@ -37,7 +37,7 @@ const html = `<!doctype html>
     font-weight: 400;
     src: url('data:font/woff2;base64,${fs.readFileSync(GEIST).toString('base64')}') format('woff2');
   }
-  html, body { margin: 0; width: ${WIDTH}px; height: ${HEIGHT}px; overflow: hidden; background: #ffffff; }
+  html, body { margin: 0; width: ${WIDTH}px; height: ${HEIGHT}px; overflow: hidden; background: #fafbfd; }
   .card {
     width: 100%; height: 100%;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -97,8 +97,9 @@ try {
   run('ffmpeg', [
     '-y', '-loglevel', 'error',
     '-framerate', String(FPS), '-i', path.join(tmp, '%04d.png'),
-    '-vf', `scale=${WIDTH}:${HEIGHT}:flags=lanczos,format=yuv420p`,
-    '-c:v', 'libx264', '-profile:v', 'high', '-preset', 'veryslow', '-crf', '20', '-tune', 'animation',
+    // Tagged BT.709 so players don't guess the matrix and tint the near-white bg
+    '-vf', `scale=${WIDTH}:${HEIGHT}:flags=lanczos:out_color_matrix=bt709:out_range=tv,format=yuv420p`,
+    '-c:v', 'libx264', '-x264-params', 'colorprim=bt709:transfer=bt709:colormatrix=bt709:range=tv', '-profile:v', 'high', '-preset', 'veryslow', '-crf', '20', '-tune', 'animation',
     '-movflags', '+faststart', '-an',
     OUT_VIDEO,
   ])
