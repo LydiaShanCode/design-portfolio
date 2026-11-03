@@ -15,7 +15,7 @@ highlights:
   - Shipped in code
 iconKey: adaptive
 videoKey: coreWorkflows
-caseStudyReady: true
+caseStudyReady: false
 team:
   - name: Lydia Shan
     role: DES

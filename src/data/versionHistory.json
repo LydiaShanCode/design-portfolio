@@ -2,6 +2,276 @@
   "repo": "LydiaShanCode/design-portfolio",
   "commits": [
     {
+      "sha": "d19ff79055d47bba346bb6ed967997495bc83b3f",
+      "subject": "Merge pull request #16 from LydiaShanCode/cursor/og-video-bg-746e",
+      "date": "2026-11-03T17:31:45+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-kxv8d67ce-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/d19ff79055d47bba346bb6ed967997495bc83b3f"
+    },
+    {
+      "sha": "ce56eace8791c42116514094e87141773e0283f7",
+      "subject": "Match the link preview video background to the site's #FAFBFD",
+      "date": "2026-11-03T17:16:32+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-1i6t1nx3y-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/ce56eace8791c42116514094e87141773e0283f7"
+    },
+    {
+      "sha": "60219beee836dd07612067f01dd3a1ab894966a2",
+      "subject": "Merge branch 'main' of https://github.com/LydiaShanCode/design-portfolio",
+      "date": "2026-11-03T12:13:54-05:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-1qipbyijv-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/60219beee836dd07612067f01dd3a1ab894966a2"
+    },
+    {
+      "sha": "18219781392bc4c571d28925e249a9a48b93da2f",
+      "subject": "feat: mobile stack video hand-off, Adaptive results, page bg, dev tools",
+      "date": "2026-11-03T12:13:53-05:00",
+      "author": "lydia shan",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/18219781392bc4c571d28925e249a9a48b93da2f"
+    },
+    {
+      "sha": "b6c5b83cf842818845b6c35623b69c584c2f7efe",
+      "subject": "Merge pull request #13 from LydiaShanCode/cursor/digital-cv-page-e5b2",
+      "date": "2026-11-03T07:22:17+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-iyv1lwmv6-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/b6c5b83cf842818845b6c35623b69c584c2f7efe"
+    },
+    {
+      "sha": "61bbf735098fc59d1c7f7de05e11e657efe746f2",
+      "subject": "style(cv): make Download and Print icon-only, outline-free, aligned with the name",
+      "date": "2026-11-03T07:13:16+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-m78b5hmgv-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/61bbf735098fc59d1c7f7de05e11e657efe746f2"
+    },
+    {
+      "sha": "826df6a4ebaa7c0f2bfee7216922a6ecc96ea8b1",
+      "subject": "content(cv): add LinkedIn and X links to the bottom of the CV and PDF",
+      "date": "2026-11-03T07:09:47+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-fh0192xm2-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/826df6a4ebaa7c0f2bfee7216922a6ecc96ea8b1"
+    },
+    {
+      "sha": "f3963faa8ef91eb1deaa6d0634b2c366b9b706e7",
+      "subject": "content(cv): drop the portfolio link from the CV page and PDF",
+      "date": "2026-11-03T07:08:33+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-rhbvz9yqe-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/f3963faa8ef91eb1deaa6d0634b2c366b9b706e7"
+    },
+    {
+      "sha": "5eef8e21130ab4473c75d2316ac73bffbeed259c",
+      "subject": "style(cv): move contact links to the bottom as plain links without labels",
+      "date": "2026-11-03T07:07:43+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-g1b8eywvs-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/5eef8e21130ab4473c75d2316ac73bffbeed259c"
+    },
+    {
+      "sha": "717954662edf419dcddde31fb6107e06db32d1f6",
+      "subject": "content(cv): remove the phone number from the CV page and PDF",
+      "date": "2026-11-03T07:05:45+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-mkbrv4i8f-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/717954662edf419dcddde31fb6107e06db32d1f6"
+    },
+    {
+      "sha": "ded0ee9d7b706e648e85009a5c31672f98994743",
+      "subject": "content(cv): remove the location line from the CV page and PDF",
+      "date": "2026-11-03T07:04:43+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-pitzryyo2-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/ded0ee9d7b706e648e85009a5c31672f98994743"
+    },
+    {
+      "sha": "c14012960702e0e0be8edd46ead9de3bc2d4e6ee",
+      "subject": "style(cv): set the name at section heading size in bold",
+      "date": "2026-11-03T07:03:33+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-1rq8vsm39-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/c14012960702e0e0be8edd46ead9de3bc2d4e6ee"
+    },
+    {
+      "sha": "0b0cf4d90d508551ce86f221a07e1156a71d1711",
+      "subject": "refactor(cv): second unslop pass on the CV page",
+      "date": "2026-11-03T06:38:05+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-jyrq3ce0o-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/0b0cf4d90d508551ce86f221a07e1156a71d1711"
+    },
+    {
+      "sha": "cb17ff9331fc26b3b0c010e6fe65b8c3e1653ef7",
+      "subject": "Merge origin/main into cursor/digital-cv-page-e5b2",
+      "date": "2026-11-03T06:36:11+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/cb17ff9331fc26b3b0c010e6fe65b8c3e1653ef7"
+    },
+    {
+      "sha": "1bd9f12e61d8aff89eb985ccb76fea3562163d76",
+      "subject": "feat(cv): render Download PDF and Print as text + icon buttons",
+      "date": "2026-11-03T06:32:30+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-db2g3fbx6-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/1bd9f12e61d8aff89eb985ccb76fea3562163d76"
+    },
+    {
+      "sha": "847458c478cb03cba33faab0ba2aafdf9b3bb920",
+      "subject": "docs(rules): ban pulsing status dots and require text + icon buttons for optional actions",
+      "date": "2026-11-03T06:32:30+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/847458c478cb03cba33faab0ba2aafdf9b3bb920"
+    },
+    {
+      "sha": "af3af143a6a182b5559d21977678fc3a458179e5",
+      "subject": "feat(cv): tune the CV page for phones",
+      "date": "2026-11-03T06:28:02+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-9it3y12e2-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/af3af143a6a182b5559d21977678fc3a458179e5"
+    },
+    {
+      "sha": "04dfa13cbd482abe032435d7e55680331b98fc48",
+      "subject": "refactor(cv): strip decorative motion and pill-heavy styling from the CV page",
+      "date": "2026-11-03T06:24:55+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-5jd1xfauj-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/04dfa13cbd482abe032435d7e55680331b98fc48"
+    },
+    {
+      "sha": "7b612ba97c9b03ac10f94594416014c36df87790",
+      "subject": "Merge pull request #6 from LydiaShanCode/cursor/password-form-polish-b53d",
+      "date": "2026-11-03T06:22:57+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-3sibaj3om-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/7b612ba97c9b03ac10f94594416014c36df87790"
+    },
+    {
+      "sha": "b66b86a385cadda0f9485f1cb01f7ec0058e19cc",
+      "subject": "Merge remote-tracking branch 'origin/main' into cursor/password-form-polish-b53d",
+      "date": "2026-11-03T06:22:51+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-gf7zb8409-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/b66b86a385cadda0f9485f1cb01f7ec0058e19cc"
+    },
+    {
+      "sha": "12affc777e49ace7012a371c8fb154a53e1bebd5",
+      "subject": "Merge remote-tracking branch 'origin/main' into cursor/about-nyc-454c Co-authored-by: Lydia Shan <LydiaShanCode@users.noreply.github.com>",
+      "date": "2026-11-03T06:08:40+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-betuxa594-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/12affc777e49ace7012a371c8fb154a53e1bebd5"
+    },
+    {
+      "sha": "214b01eda1bf4ca546052fe6ee8490934a2ca1b7",
+      "subject": "chore(cv): regenerate resume.pdf from the CV page's print layout",
+      "date": "2026-11-03T06:08:11+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-6nvzvpvnq-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/214b01eda1bf4ca546052fe6ee8490934a2ca1b7"
+    },
+    {
+      "sha": "9853619a6ccd3973aeb84e584522e6523431b580",
+      "subject": "feat(cv): rebuild the CV page as a native layout from the 2026 résumé",
+      "date": "2026-11-03T06:08:11+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": null,
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/9853619a6ccd3973aeb84e584522e6523431b580"
+    },
+    {
+      "sha": "cc7ba216611c7806da9a20be8d5da39888ecd074",
+      "subject": "Update about bio: now at Adaptive Security, previously Shopify payments",
+      "date": "2026-11-03T06:02:46+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-jujg9190e-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/cc7ba216611c7806da9a20be8d5da39888ecd074"
+    },
+    {
+      "sha": "a830a506728998565dac68ae52cd8bdbbce7b8ea",
+      "subject": "Update about bio to say based in New York City",
+      "date": "2026-11-03T06:01:28+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-hthajoqep-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/a830a506728998565dac68ae52cd8bdbbce7b8ea"
+    },
+    {
+      "sha": "af4b72b6502c387ee9098721c99ca0da95c11fc7",
+      "subject": "Merge pull request #10 from LydiaShanCode/cursor/imessage-video-preview-746e",
+      "date": "2026-11-03T05:41:52+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-b5puvbwtc-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/af4b72b6502c387ee9098721c99ca0da95c11fc7"
+    },
+    {
+      "sha": "bd8d8225caeb34dd6e94185d8bf60493ba1a1bd6",
+      "subject": "Drop Shopify from link previews and meta descriptions",
+      "date": "2026-11-03T04:56:07+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-qb3tfmopn-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/bd8d8225caeb34dd6e94185d8bf60493ba1a1bd6"
+    },
+    {
+      "sha": "68c8eccb68d059e6c6f94587b316a2f07a1c2914",
+      "subject": "Say prev. at Shopify in the link preview and meta descriptions",
+      "date": "2026-11-03T04:28:53+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-eoo5n34e0-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/68c8eccb68d059e6c6f94587b316a2f07a1c2914"
+    },
+    {
+      "sha": "55fb913238b8330ff640983417aa81b31fc5fdb8",
+      "subject": "Add og:video link preview so iMessage plays the swimming koi",
+      "date": "2026-11-03T00:39:56+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-o41sq3ag1-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/55fb913238b8330ff640983417aa81b31fc5fdb8"
+    },
+    {
+      "sha": "3e169ad86bcd62242b9f8b7d41ad630079cd84d3",
+      "subject": "fix(preview): encode full-size videos so Adaptive Security previews play",
+      "date": "2026-11-02T17:10:58-05:00",
+      "author": "lydia shan",
+      "previewUrl": "https://design-portfolio-q6vpjo5t7-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/3e169ad86bcd62242b9f8b7d41ad630079cd84d3"
+    },
+    {
       "sha": "f60713875ced9300cf9f70ca6cec875095b58d4f",
       "subject": "Merge remote-tracking branch 'origin/main'",
       "date": "2026-11-02T16:57:57-05:00",
@@ -36,6 +306,15 @@
       "previewUrl": "https://design-portfolio-g8tkslx5g-lydiashanc-2288s-projects.vercel.app",
       "prUrl": null,
       "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/0858f66ac6018497ad4009054013d68ad03fafd7"
+    },
+    {
+      "sha": "7ad2a88be30c0ec4010c01e1990eb68d21071303",
+      "subject": "Morph the password pill into the input and calm the submit button until there's text",
+      "date": "2026-11-02T06:01:51+00:00",
+      "author": "Cursor Agent",
+      "previewUrl": "https://design-portfolio-2xok7b3r4-lydiashanc-2288s-projects.vercel.app",
+      "prUrl": null,
+      "commitUrl": "https://github.com/LydiaShanCode/design-portfolio/commit/7ad2a88be30c0ec4010c01e1990eb68d21071303"
     },
     {
       "sha": "2e7d17a9a046556bdb3abfa96c052788a82f8536",
