@@ -70,34 +70,18 @@ function Resume() {
         <header className="resume-masthead">
           <div>
             <h1 className="resume-name">{profile.name}</h1>
-            <p className="resume-title">{profile.title}</p>          </div>
+            <p className="resume-title">{profile.title}</p>
+          </div>
 
-          <div className="resume-aside">
-            <ul className="resume-contact">
-              {profile.contact.map(({ label, value, href }) => (
-                <li key={label}>
-                  <a
-                    href={href}
-                    className="resume-link resume-contact-link"
-                    data-hoverable
-                    {...(href.startsWith('http') && { target: '_blank', rel: 'noopener noreferrer' })}
-                  >
-                    <span className="resume-contact-label">{label}</span>
-                    <span>{value}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <div className="resume-actions">
-              <a href="/resume.pdf" download="Lydia Shan Resume.pdf" className="resume-button" data-hoverable>
-                <DownloadIcon />
-                Download PDF
-              </a>
-              <button type="button" className="resume-button resume-print" onClick={() => window.print()} data-hoverable>
-                <PrintIcon />
-                Print
-              </button>
-            </div>
+          <div className="resume-actions">
+            <a href="/resume.pdf" download="Lydia Shan Resume.pdf" className="resume-button" data-hoverable>
+              <DownloadIcon />
+              Download PDF
+            </a>
+            <button type="button" className="resume-button resume-print" onClick={() => window.print()} data-hoverable>
+              <PrintIcon />
+              Print
+            </button>
           </div>
         </header>
 
@@ -163,6 +147,21 @@ function Resume() {
             </article>
           ))}
         </Section>
+
+        <ul className="resume-contact">
+          {profile.contact.map(({ label, value, href }) => (
+            <li key={label}>
+              <a
+                href={href}
+                className="resume-link"
+                data-hoverable
+                {...(href.startsWith('http') && { target: '_blank', rel: 'noopener noreferrer' })}
+              >
+                {value}
+              </a>
+            </li>
+          ))}
+        </ul>
       </article>
     </main>
   )

@@ -3846,27 +3846,6 @@ button.work-card {
   margin-top: 6px;
 }
 
-.resume-aside {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  font-size: 13px;
-  letter-spacing: -0.2px;
-}
-
-.resume-contact {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.resume-contact-label {
-  display: none;
-}
-
 .resume-actions {
   display: flex;
   gap: 8px;
@@ -4037,6 +4016,18 @@ button.work-card {
   letter-spacing: -0.2px;
 }
 
+.resume-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 0;
+  padding: 32px 0 0;
+  border-top: var(--resume-rule);
+  list-style: none;
+  font-size: 13px;
+  letter-spacing: -0.2px;
+}
+
 .resume-skills {
   display: flex;
   flex-direction: column;
@@ -4096,54 +4087,25 @@ button.work-card {
   }
 
   .resume-masthead {
-    gap: 28px;
-    padding-bottom: 0;
-    border-bottom: 0;
-  }
-
-  .resume-aside {
-    gap: 0;
-    font-size: 14px;
+    gap: 24px;
+    padding-bottom: 36px;
   }
 
   .resume-contact {
+    flex-direction: column;
     gap: 0;
+    padding-top: 20px;
+    font-size: 14px;
   }
 
-  .resume-contact li {
-    border-top: var(--resume-rule);
-  }
-
-  .resume-contact li:last-child {
-    border-bottom: var(--resume-rule);
-  }
-
-  .resume-actions {
-    margin-top: 20px;
+  .resume-contact .resume-link {
+    display: inline-block;
+    padding: 12px 0;
   }
 
   .resume-button {
     height: 44px;
     padding: 0 18px 0 16px;
-  }
-
-  .resume-contact-link {
-    display: grid;
-    grid-template-columns: 76px minmax(0, 1fr);
-    align-items: center;
-    width: 100%;
-    min-height: 48px;
-    text-align: left;
-    text-decoration: none;
-  }
-
-  .resume-contact-link > span:last-child {
-    overflow-wrap: anywhere;
-  }
-
-  .resume-contact-label {
-    display: block;
-    color: var(--resume-muted);
   }
 
   .resume-print {
@@ -4153,10 +4115,6 @@ button.work-card {
   .resume-section {
     gap: 20px;
     padding: 36px 0;
-  }
-
-  .resume-masthead + .resume-section {
-    padding-top: 44px;
   }
 
   .resume-entry + .resume-entry {
@@ -4261,13 +4219,14 @@ button.work-card {
     padding-bottom: 18px;
   }
 
-  .resume-aside,
   .resume-entry-detail {
     font-size: 10px;
   }
 
   .resume-contact {
-    gap: 2px;
+    gap: 4px 20px;
+    padding-top: 12px;
+    font-size: 10px;
   }
 
   .resume-link {
