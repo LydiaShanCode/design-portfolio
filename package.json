@@ -18,6 +18,7 @@
   "dependencies": {
     "@fontsource/geist": "^5.2.8",
     "@fontsource/geist-mono": "latest",
+    "@fontsource/inter": "^5.3.0",
     "@gsap/react": "^2.1.2",
     "@vercel/analytics": "^2.0.1",
     "agentation": "^3.0.2",
