@@ -3824,8 +3824,41 @@ button.work-card {
 
 .resume-actions {
   display: flex;
-  gap: 16px;
-  margin: 0;
+  gap: 8px;
+}
+
+.resume-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px 0 12px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 28%, transparent);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-primary);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.resume-button:hover {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+}
+
+.resume-button:active {
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+
+.resume-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .resume-link {
@@ -4037,13 +4070,21 @@ button.work-card {
     gap: 0;
   }
 
-  .resume-contact li,
-  .resume-actions {
+  .resume-contact li {
     border-top: var(--resume-rule);
   }
 
-  .resume-actions {
+  .resume-contact li:last-child {
     border-bottom: var(--resume-rule);
+  }
+
+  .resume-actions {
+    margin-top: 20px;
+  }
+
+  .resume-button {
+    height: 44px;
+    padding: 0 18px 0 16px;
   }
 
   .resume-contact-link {
