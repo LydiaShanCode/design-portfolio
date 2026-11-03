@@ -20,7 +20,7 @@ const Play = lazy(() => import('./components/Play'))
 const Resume = lazy(() => import('./components/Resume'))
 const ProjectPage = lazy(() => import('./components/ProjectPage'))
 const About = lazy(() => import('./components/About'))
-const PhishingIndexPage = import.meta.env.DEV ? lazy(() => import('./components/prototypes/PhishingIndexPage')) : null
+const PhishingIndexPage = lazy(() => import('./components/prototypes/PhishingIndexPage'))
 
 function Home() {
   const major = useMajorVersion()
@@ -60,10 +60,9 @@ function ScrollToTopOnNavigate() {
   return null
 }
 
-// Dev-only until the prototype is embedded behind the case study gate
 function PrototypeRoute() {
   const { pathname } = useLocation()
-  if (!PhishingIndexPage || !pathname.endsWith('/prototypes/phishing-index')) return null
+  if (!pathname.endsWith('/prototypes/phishing-index')) return null
   return (
     <Suspense fallback={null}>
       <PhishingIndexPage />
@@ -103,7 +102,7 @@ function App() {
               <Route path="/project/:slug" element={<ProjectPage />} />
               <Route path="/about" element={<About />} />
               <Route path="/resume" element={<Resume />} />
-              {PhishingIndexPage && <Route path="/prototypes/*" element={null} />}
+              <Route path="/prototypes/*" element={null} />
             </Routes>
           </Suspense>
           <Footer />
