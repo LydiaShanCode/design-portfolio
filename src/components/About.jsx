@@ -95,12 +95,12 @@ function About() {
 
         <div className="about-bio">
           <p>
-            Born in Toronto, Canada, I'm currently a product designer at <a href="https://www.shopify.com/ca/editions/winter2026" target="_blank" rel="noopener noreferrer" className="about-link" data-hoverable>Shopify</a>, designing
-            financial experiences that help merchants manage payouts, providers, and local
-            payment methods at scale.
+            I'm currently a product designer based in New York City at <a href="https://www.adaptivesecurity.com" target="_blank" rel="noopener noreferrer" className="about-link" data-hoverable>Adaptive Security</a>.
           </p>
           <p>
-            Previously, I worked in startups building 0–1 products and end-to-end experiences.
+            Previously, I was on the payments team at <a href="https://www.shopify.com/editions/winter2026" target="_blank" rel="noopener noreferrer" className="about-link" data-hoverable>Shopify</a>,
+            designing financial experiences across mobile and desktop. Before that, I worked in
+            startups building 0–1 products and end-to-end experiences.
           </p>
           <p>
             As a designer, I always lead with curiosity. In a world where roles are merging,

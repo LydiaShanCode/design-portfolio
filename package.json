@@ -13,7 +13,8 @@
     "deploy": "npm run build && gh-pages -d dist",
     "deploy:vercel": "vercel --prod",
     "media": "node scripts/encode-media.mjs",
-    "resume:pdf": "node scripts/build-resume-pdf.mjs"
+    "resume:pdf": "node scripts/build-resume-pdf.mjs",
+    "og:video": "node scripts/render-og-video.mjs"
   },
   "dependencies": {
     "@fontsource/geist": "^5.2.8",
