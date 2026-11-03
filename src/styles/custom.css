@@ -3806,7 +3806,7 @@ button.work-card {
 .resume-page {
   --resume-rule: 1px dashed color-mix(in srgb, var(--color-primary) 22%, transparent);
   --resume-muted: color-mix(in srgb, var(--color-primary) 70%, var(--color-bg));
-  --resume-heading-size: 30px;
+  --resume-heading-size: 26px;
   min-height: 100vh;
   padding: 120px 5vw 100px;
   display: flex;
@@ -3924,9 +3924,6 @@ button.work-card {
 }
 
 .resume-section-title {
-  position: sticky;
-  top: 96px;
-  align-self: start;
   font-family: var(--font-serif);
   font-size: var(--resume-heading-size);
   font-weight: 300;
@@ -4065,11 +4062,7 @@ button.work-card {
   }
 
   .resume-page {
-    --resume-heading-size: 26px;
-  }
-
-  .resume-section-title {
-    position: static;
+    --resume-heading-size: 22px;
   }
 }
 
@@ -4233,10 +4226,6 @@ button.work-card {
     grid-template-columns: 140px minmax(0, 1fr);
     gap: 24px;
     padding: 14px 0;
-  }
-
-  .resume-section-title {
-    position: static;
   }
 
   .resume-entry + .resume-entry {
