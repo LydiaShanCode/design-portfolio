@@ -5,6 +5,7 @@ import Markdown from 'react-markdown'
 import projectsFromMd, { featuredProjects } from '../data/projectLoader'
 import IterationsViewer from './IterationsViewer'
 import CaseStudyGate from './CaseStudyGate'
+import PrototypeEmbed from './PrototypeEmbed'
 import Picture from './Picture'
 import Video from './Video'
 import { withProjectAssets, resolveProjectAsset, largestUrl } from '../data/projectAssets'
@@ -257,6 +258,13 @@ function buildMarkdownComponents(slug, project, setLightboxSrc) {
           />
         )
       }
+      if (alt?.startsWith('prototype:')) {
+        return (
+          <figure className="project-page-figure project-page-figure--prototype">
+            <PrototypeEmbed id={alt.slice('prototype:'.length)} />
+          </figure>
+        )
+      }
       const resolved = resolveProjectAsset(src, slug)
       const lightboxSrc = largestUrl(resolved.image) || resolved.src
       return (
@@ -299,6 +307,9 @@ function buildMarkdownComponents(slug, project, setLightboxSrc) {
       const arr = Children.toArray(children)
       const nonEmpty = arr.filter((c) => !(typeof c === 'string' && !c.trim()))
       if (nonEmpty.length === 0) return null
+      if (nonEmpty.length === 1 && isValidElement(nonEmpty[0]) && nonEmpty[0].props?.alt?.startsWith('prototype:')) {
+        return <div className="project-page-image-group project-page-image-group--single">{nonEmpty[0]}</div>
+      }
       const figures = nonEmpty.filter((c) => isValidElement(c) && c.props?.className?.includes('project-page-figure'))
       const caption = nonEmpty.find((c) => isValidElement(c) && c.props?.className === 'project-page-annotation')
       const otherContent = nonEmpty.filter((c) =>

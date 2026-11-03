@@ -91,6 +91,8 @@ In parallel I redesigned the campaign index pages: consolidated cards, progress 
 
 Overdue became a live state. I handed off the specs, and the team later used my designs as the starting point for the cards they built.
 
+![prototype:training-campaigns](prototype)
+
 ## [hidden] Final walkthrough
 
 [TODO: asset — Test Send walkthrough video]
