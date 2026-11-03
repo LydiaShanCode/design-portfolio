@@ -70,9 +70,7 @@ function Resume() {
         <header className="resume-masthead">
           <div>
             <h1 className="resume-name">{profile.name}</h1>
-            <p className="resume-title">{profile.title}</p>
-            <p className="resume-location">Currently in {profile.location}</p>
-          </div>
+            <p className="resume-title">{profile.title}</p>          </div>
 
           <div className="resume-aside">
             <ul className="resume-contact">

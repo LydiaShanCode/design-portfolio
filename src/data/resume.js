@@ -1,7 +1,6 @@
 export const profile = {
   name: 'Lydia Shan',
   title: 'Product Designer',
-  location: 'New York City',
   contact: [
     { label: 'Phone', value: '(646) 541-7791', href: 'tel:+16465417791' },
     { label: 'Email', value: 'lydiashan.c@gmail.com', href: 'mailto:lydiashan.c@gmail.com' },

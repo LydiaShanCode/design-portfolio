@@ -3846,13 +3846,6 @@ button.work-card {
   margin-top: 6px;
 }
 
-.resume-location {
-  margin-top: 6px;
-  font-size: 13px;
-  letter-spacing: -0.2px;
-  color: var(--resume-muted);
-}
-
 .resume-aside {
   display: flex;
   flex-direction: column;
@@ -4268,14 +4261,9 @@ button.work-card {
     padding-bottom: 18px;
   }
 
-  .resume-location,
   .resume-aside,
   .resume-entry-detail {
     font-size: 10px;
-  }
-
-  .resume-location {
-    margin-top: 4px;
   }
 
   .resume-contact {
