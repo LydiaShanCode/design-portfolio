@@ -3,6 +3,8 @@ export const profile = {
   title: 'Product Designer',
   contact: [
     { label: 'Email', value: 'lydiashan.c@gmail.com', href: 'mailto:lydiashan.c@gmail.com' },
+    { label: 'LinkedIn', value: 'linkedin.com/in/lydiashan', href: 'https://www.linkedin.com/in/lydiashan/' },
+    { label: 'X', value: 'x.com/lydia_shann', href: 'https://x.com/lydia_shann' },
     { label: 'GitHub', value: 'github.com/LydiaShanCode', href: 'https://github.com/LydiaShanCode' },
   ],
 }
