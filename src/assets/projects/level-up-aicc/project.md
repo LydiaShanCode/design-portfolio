@@ -15,7 +15,7 @@ highlights:
   - Guidelines for AI
 iconKey: adaptive
 videoKey: aicc
-caseStudyReady: false
+caseStudyReady: true
 team:
   - name: Lydia Shan
     role: DES
@@ -106,6 +106,10 @@ While the bigger direction was still being set, I shipped what I could directly:
 ## Was it a success?
 
 Partly, and I want to be clear about which part. The guided creation flow launched with my polish in it, and the new frame layouts shipped to the content team: 11 merged PRs in two months. The synthesis set hybrid editing as the direction for the bet.
+
+The guided flow is a team launch, so its numbers belong to the team. The flow's brief called generic output that needs heavy editing "the #1 AICC complaint," and the flow answers it by asking admins about their intent before generating. In its first 14 days, admins started 1,105 guided sessions, against 141 in the 18 days before launch, when the flow was live but not announced. The risk with extra questions was that people would quit before generating. The PM's funnel check found they didn't: about 95% of users who submit a prompt still go on to start an outline.
+
+The funnel also shows where the next problem is. About 85% of users start creating a module, but only 77% see a finished one. Early feedback sounded familiar: admins asked to keep prompting after a module was built, and one felt the follow-up questions went in circles. That's the hybrid finding again, people wanting the last word. Nothing measures yet whether the output is less generic, which was the brief's real target.
 
 The rest was still in motion when I left. The quiz feedback work was open, and narration was mid-milestone. We had no usage data on the editor yet. The numbers I'd watch next are how often admins make a manual change after generating, and whether the new "Add block" placement shortens the time to that first change.
 

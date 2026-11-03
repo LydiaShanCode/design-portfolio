@@ -15,7 +15,7 @@ highlights:
   - Shipped in code
 iconKey: adaptive
 videoKey: coreWorkflows
-caseStudyReady: false
+caseStudyReady: true
 team:
   - name: Lydia Shan
     role: DES
@@ -63,7 +63,7 @@ Participants kept inventing workarounds to see what employees would actually rec
 
 > have an easy simulator mode
 
-I wrote the brief and spec for Test Send, with one trade-off up front: optimize for speed, on a foundation that would last. Admins can now send any training or phishing notification to themselves or chosen recipients before launch. The details made the test trustworthy:
+The workaround had a cost beyond time: every throwaway test campaign polluted the org's reporting data. I wrote the brief and spec for Test Send, with one trade-off up front: optimize for speed, on a foundation that would last. Admins can now send any training or phishing notification to themselves or chosen recipients before launch. The details made the test trustworthy:
 
 - **Real due dates** — The test reflects the campaign's selected cadence, so it reads like the real email.
 - **Their language** — Each recipient gets the test in their own language, with matching banner copy.
@@ -77,7 +77,7 @@ One call didn't go my way. I wanted a single recipient picker for training and p
 
 The second problem was a toggle doing two jobs. In testing, admins didn't realize that marking a campaign "compliance" also sent results to their GRC tool. One CISO only found out from our prototype. Engineering confirmed the link was a frontend-only restriction, so the two could be pulled apart.
 
-I sized it first: 93 orgs used only the Vanta postback, 31 only Drata and 24 only BambooHR. Then I split the two settings: the campaign tag became "Mark as Compliance for reporting," and postbacks got their own card with a clear empty state and an info popover. I designed it, wrote both PRs, merged them and wrote the launch post.
+The data backed it up. A teammate's query showed 41.3% of sent training campaigns had compliance turned on, but only 5.4% had any postback. I sized it next: 93 orgs used only the Vanta postback, 31 only Drata and 24 only BambooHR. Then I split the two settings: the campaign tag became "Mark as Compliance for reporting," and postbacks got their own card with a clear empty state and an info popover. I designed it, wrote both PRs, merged them and wrote the launch post.
 
 [TODO: asset — compliance card states]
 
@@ -97,7 +97,15 @@ Overdue became a live state. I handed off the specs, and the team later used my 
 
 ## Was it a success?
 
-Both features shipped. Compliance clarity went out in August, and Test Send followed in September for email, up to 10 recipients per test. Our Head of Design called the compliance change "a valuable UX update." We didn't have usage data for either before I left. The numbers I'd watch are the share of test-named campaigns and support tickets about postbacks.
+Both features shipped. Compliance clarity went out in August, and Test Send followed in September for email, up to 10 recipients per test. Our Head of Design called the compliance change "a valuable UX update." Two months in, here's what the data shows:
+
+- **Test Send gets used** — Admins sent 1,487 training and 594 phishing test sends in the first 60 days, from at least 33 and 25 companies. Weekly training test sends tripled in the first five weeks, from 93 to 295, with no server errors on either endpoint.
+- **Setup confusion dropped** — In the 60 days after launch, customer conversations about how to set up compliance or postbacks fell from 12 to 5, and setup tickets from 4 to 1.
+- **The new toggle reaches people** — In the last 30 days, 365 admins at 326 companies clicked "Mark as Compliance for reporting" 708 times.
+
+None of this is a measured outcome, and I don't want to dress it up as one. Conversation counts show how much people talked about a problem, not how often it happened. Delivery issues like sync failures rose from 7 to 11 in the same window, because a label can't fix an integration. Nobody has re-measured the 45% test-named baseline yet, so I can't claim Test Send ended throwaway campaigns.
+
+Threads asking to see the real inbox held flat, 18 before and 19 after, but they changed shape. Support now answers them by pointing to Test Send, and CSMs demo it on onboarding calls. The feature also surfaced a gap nobody could see before: several admins found the in-product preview didn't match the test they received. A few bugs followed launch too. Auto-Phish test sends failed for five companies until engineering fixed them, and French tests arrived in English. On calls, admins still asked what a "postback" is. Splitting the toggle fixed the structure, but the word is still in the way.
 
 Prototype A's research also fed the team's Triggered/One-time Campaign Clarity launch, where I was credited as a contributor. That's a team outcome rather than mine, but its early numbers moved the right way: auto-enrollment rose from 3.9% to 7.9%, and drafts without a policy dropped from 140 to 5.
 

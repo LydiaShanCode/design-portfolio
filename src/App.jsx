@@ -1,7 +1,5 @@
 import { useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
-// import { DialRoot } from 'dialkit'
-// import 'dialkit/styles.css'
 import Navigation from './components/Navigation'
 import Hero from './components/Hero'
 import ProjectsGrid from './components/ProjectsGrid'
@@ -12,6 +10,7 @@ import PondCanvas from './components/PondCanvas'
 import CustomCursor from './components/CustomCursor'
 import ClickSfx from './components/ClickSfx'
 import HeroPlayground from './components/HeroPlayground'
+import ColumnHome from './components/ColumnHome'
 import { useMajorVersion } from './components/design-versions/DesignVersionProvider'
 import { HERO_PLAYGROUND_KEYS } from './data/designVersions'
 import { Analytics } from '@vercel/analytics/react'
@@ -20,9 +19,11 @@ const Play = lazy(() => import('./components/Play'))
 const Resume = lazy(() => import('./components/Resume'))
 const ProjectPage = lazy(() => import('./components/ProjectPage'))
 const About = lazy(() => import('./components/About'))
+const DevTools = import.meta.env.DEV ? lazy(() => import('./components/DevTools')) : null
 
 function Home() {
   const major = useMajorVersion()
+  if (major === 'column') return <ColumnHome />
   return (
     <>
       {HERO_PLAYGROUND_KEYS.includes(major) ? <HeroPlayground version={major} /> : <Hero />}
@@ -59,27 +60,31 @@ function ScrollToTopOnNavigate() {
   return null
 }
 
+// The column home carries its own name and links, so the shared chrome steps aside there
+function SiteChrome({ children }) {
+  const major = useMajorVersion()
+  const { pathname } = useLocation()
+  return major === 'column' && pathname === '/' ? null : children
+}
+
 function App() {
   const pond = useMajorVersion() === 'pond'
 
   return (
     <Router basename={import.meta.env.BASE_URL}>
-      {/* <DialRoot /> */}
-      {/* Agentation UI hidden
-      {import.meta.env.DEV && (
-        <Agentation
-          endpoint="http://localhost:4747"
-          onSessionCreated={(sessionId) => {
-            console.log('Session started:', sessionId)
-          }}
-        />
-      )} */}
+      {DevTools && (
+        <Suspense fallback={null}>
+          <DevTools />
+        </Suspense>
+      )}
       <Analytics />
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-[var(--color-page)]">
         <CustomCursor />
         <ClickSfx />
-        {pond ? <PondCanvas /> : <WaterCanvas />}
-        <Navigation />
+        <SiteChrome>
+          {pond ? <PondCanvas /> : <WaterCanvas />}
+          <Navigation />
+        </SiteChrome>
         <ScrollToHash />
         <ScrollToTopOnNavigate />
         <div className="relative z-40">
@@ -92,7 +97,9 @@ function App() {
               <Route path="/resume" element={<Resume />} />
             </Routes>
           </Suspense>
-          <Footer />
+          <SiteChrome>
+            <Footer />
+          </SiteChrome>
         </div>
       </div>
     </Router>

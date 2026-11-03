@@ -27,8 +27,9 @@ function ProjectCard({
     cardVideo,
   } = project
 
-  // Desktop keeps the video mounted (hidden) so hover reveals an already-buffered clip
-  const hasVideo = Boolean(cardVideo) && !isMobileStack
+  // The video stays mounted (hidden) so hover or the mobile hand-off reveals an already-buffered clip.
+  // Mobile only mounts it for cards near the front, to keep the rest of the stack off the network.
+  const hasVideo = Boolean(cardVideo) && (!isMobileStack || warmVideo || shouldAutoplay)
   const showVideo = hasVideo && shouldAutoplay
   const videoMedia = useMemo(
     () => (cardVideo && !(warmVideo || shouldAutoplay) ? { ...cardVideo, poster: null } : cardVideo),

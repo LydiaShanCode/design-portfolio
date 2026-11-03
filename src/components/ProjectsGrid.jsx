@@ -97,6 +97,8 @@ const StackCard = forwardRef(function StackCard({
   onDragStart,
   onDragCancel,
   onTap,
+  playing,
+  warm,
 }, ref) {
   const x = useMotionValue(0)
   const fade = useMotionValue(1)
@@ -185,7 +187,13 @@ const StackCard = forwardRef(function StackCard({
         }}
         whileTap={canDrag ? { scale: 0.98 } : undefined}
       >
-        <ProjectCard project={project} stackIndex={stackIndex} isMobileStack />
+        <ProjectCard
+          project={project}
+          stackIndex={stackIndex}
+          isMobileStack
+          shouldAutoplay={playing}
+          warmVideo={warm}
+        />
       </motion.div>
     </motion.div>
   )
@@ -207,7 +215,13 @@ function ProjectsGrid() {
   const [hoverAnchor, setHoverAnchor] = useState(null)
   const [spreadBase, setSpreadBase] = useState(200)
   const [edgeLimit, setEdgeLimit] = useState(0)
-  const [videosWarm, setVideosWarm] = useState(false)
+  // Card clips buffer only around the pointer (hovered ± 1), and stay warm once loaded
+  const [warmCards, setWarmCards] = useState(() => new Set())
+  // Mobile: the card behind the front one starts playing as soon as the front one starts leaving,
+  // and the leaving card keeps playing until it has tucked in at the back
+  const [primeNext, setPrimeNext] = useState(false)
+  const [lingeringIds, setLingeringIds] = useState(() => new Set())
+  const [mobileWarmIds, setMobileWarmIds] = useState(() => new Set())
   const [selectedProject, setSelectedProject] = useState(null)
   const [cardRect, setCardRect] = useState(null)
   const [cardNode, setCardNode] = useState(null)
@@ -312,12 +326,23 @@ function ProjectsGrid() {
     clearAutoCycle()
     setBusy(true)
     setAnimating(true)
-    const sendToBack = () => setOrder((prev) => [...prev.slice(1), prev[0]])
+    setPrimeNext(true)
+    setLingeringIds((prev) => new Set(prev).add(topId))
+    const stopLingering = () => setLingeringIds((prev) => {
+      const next = new Set(prev)
+      next.delete(topId)
+      return next
+    })
+    const sendToBack = () => {
+      setOrder((prev) => [...prev.slice(1), prev[0]])
+      setPrimeNext(false)
+    }
 
     if (reduceMotion) {
       await card.fadeTo(0)
       flushSync(sendToBack)
       card.reset()
+      stopLingering()
       await card.fadeTo(1)
       setAnimating(false)
       setBusy(false)
@@ -331,6 +356,7 @@ function ProjectsGrid() {
     // The new top card is already in place, so it can be swiped while this one returns
     setBusy(false)
     await card.returnHome()
+    stopLingering()
     if (!busyRef.current) setAnimating(false)
   }, [projects, reduceMotion])
 
@@ -362,6 +388,7 @@ function ProjectsGrid() {
     busyRef.current = true
     setIsDragging(true)
     setAnimating(true)
+    setPrimeNext(true)
   }, [])
 
   const handleDragCancel = useCallback(() => {
@@ -470,7 +497,6 @@ function ProjectsGrid() {
   }
 
   const enterStack = () => {
-    setVideosWarm(true)
     preloadCardSfx()
     if (pendingRef.current.index === null) cancelPendingHover()
   }
@@ -497,6 +523,23 @@ function ProjectsGrid() {
     const timer = setTimeout(() => setFrontIndex(hoverIndex), frontDelay ?? FAN_FRONT_DELAY_MS)
     return () => clearTimeout(timer)
   }, [hoverIndex, reduceMotion, frontDelay])
+
+  useEffect(() => {
+    if (hoverIndex === null) return
+    setWarmCards((prev) => {
+      const nearby = [hoverIndex - 1, hoverIndex, hoverIndex + 1].filter((i) => i >= 0 && !prev.has(i))
+      return nearby.length ? new Set([...prev, ...nearby]) : prev
+    })
+  }, [hoverIndex])
+
+  // The front two cards buffer their clips, and stay buffered once loaded
+  useEffect(() => {
+    if (!isMobile) return
+    const upcoming = order.slice(0, 2).map((index) => projects[index]?.id).filter(Boolean)
+    setMobileWarmIds((prev) => (upcoming.every((id) => prev.has(id)) ? prev : new Set([...prev, ...upcoming])))
+  }, [isMobile, order, projects])
+
+  const stackPlaying = inView && pageVisible && !selectedProject
 
   // Cards nearest the front card sit on top of the ones further out
   const fanZ = (index) => 10 - Math.abs(index - frontIndex)
@@ -532,6 +575,8 @@ function ProjectsGrid() {
                     onDragStart={handleDragStart}
                     onDragCancel={handleDragCancel}
                     onTap={(node) => handleSelect(project, node?.getBoundingClientRect(), node?.querySelector('.work-card') ?? node)}
+                    playing={stackPlaying && (depth === 0 || (depth === 1 && primeNext) || lingeringIds.has(project.id))}
+                    warm={mobileWarmIds.has(project.id)}
                   />
                 )
               })
@@ -541,7 +586,7 @@ function ProjectsGrid() {
                   project={project}
                   stackIndex={index}
                   shouldAutoplay={index === hoverIndex}
-                  warmVideo={videosWarm}
+                  warmVideo={warmCards.has(index)}
                   onSelect={handleSelect}
                   pointerTilt={index === hoverIndex ? pointerTilt : 0}
                   motionProps={{

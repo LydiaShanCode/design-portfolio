@@ -15,7 +15,8 @@ const ASSETS = path.resolve('src/assets')
 const VARIANTS = {
   card: { maxW: 720, maxH: 1280, fps: 30, maxSeconds: 30, h264Crf: 28, av1Crf: 42 },
   // maxrate keeps long recordings streamable; sources are already ~1.6 Mbps, so CRF alone barely shrinks them
-  hero: { maxW: 1920, maxH: 1600, fps: 60, maxSeconds: null, h264Crf: 26, av1Crf: 36, maxrate: '3M' },
+  // av1Maxrate (kbps) caps CRF on long, busy recordings, where uncapped AV1 can outgrow the H.264
+  hero: { maxW: 1920, maxH: 1600, fps: 60, maxSeconds: null, h264Crf: 26, av1Crf: 36, maxrate: '3M', av1Maxrate: 1200 },
 }
 
 const SOURCES = [
@@ -47,7 +48,11 @@ const probe = (file) => {
   return { width: out.streams[0].width, height: out.streams[0].height, duration: Number(out.format.duration) }
 }
 
-const isFresh = (out, src) => fs.existsSync(out) && fs.statSync(out).mtimeMs >= fs.statSync(src).mtimeMs
+// An interrupted encode leaves a newer-but-truncated file behind, so freshness also checks length
+const expectedSeconds = (src, v) => Math.min(probe(src).duration, v.maxSeconds ?? Infinity)
+const isComplete = (out, src, v) => Math.abs(probe(out).duration - expectedSeconds(src, v)) < 1
+const isFresh = (out, src, v) => fs.existsSync(out) && fs.statSync(out).mtimeMs >= fs.statSync(src).mtimeMs
+  && (!v || isComplete(out, src, v))
 
 const scaleFilter = ({ maxW, maxH, fps }) => [
   `scale=w='min(${maxW},iw)':h='min(${maxH},ih)':force_original_aspect_ratio=decrease:force_divisible_by=2:flags=lanczos`,
@@ -55,15 +60,20 @@ const scaleFilter = ({ maxW, maxH, fps }) => [
 ].filter(Boolean).join(',')
 
 const encode = (src, out, v, codec) => {
-  if (isFresh(out, src)) return
+  if (isFresh(out, src, v)) return
   const common = ['-y', '-v', 'error', '-i', src, ...(v.maxSeconds ? ['-t', String(v.maxSeconds)] : []),
     '-an', '-vf', scaleFilter(v), '-pix_fmt', 'yuv420p', '-movflags', '+faststart']
   const codecArgs = codec === 'av1'
-    ? ['-c:v', 'libsvtav1', '-preset', '10', '-crf', String(v.av1Crf), '-g', '240']
+    ? ['-c:v', 'libsvtav1', '-preset', '10', '-crf', String(v.av1Crf), '-g', '240',
+        ...(v.av1Maxrate ? ['-svtav1-params', `mbr=${v.av1Maxrate}`] : [])]
     : ['-c:v', 'libx264', '-preset', 'slow', '-crf', String(v.h264Crf), '-profile:v', 'high',
         ...(v.maxrate ? ['-maxrate', v.maxrate, '-bufsize', `${parseInt(v.maxrate) * 2}M`] : [])]
   console.log(`  ${codec.padEnd(4)} ${path.relative(ASSETS, out)}`)
   run('ffmpeg', [...common, ...codecArgs, out])
+  if (!isComplete(out, src, v)) {
+    fs.rmSync(out)
+    throw new Error(`${path.relative(ASSETS, out)} came out shorter than its source; deleted it`)
+  }
 }
 
 const manifest = {}

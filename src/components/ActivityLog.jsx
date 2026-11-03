@@ -169,7 +169,7 @@ function ActivityLog() {
 
   if (loading) {
     return (
-      <section id="activity-log" className="py-20 px-4 bg-white">
+      <section id="activity-log" className="py-20 px-4 bg-[var(--color-page)]">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-center">
             <span className="loader" />
@@ -181,7 +181,7 @@ function ActivityLog() {
 
   if (error) {
     return (
-      <section id="activity-log" className="py-20 px-4 bg-white">
+      <section id="activity-log" className="py-20 px-4 bg-[var(--color-page)]">
         <div className="max-w-6xl mx-auto text-center text-gray-500">
           {error}
         </div>
@@ -231,7 +231,7 @@ function ActivityLog() {
 
       <section
         id="activity-log"
-        className="pt-10 pb-4 lg:py-20 px-4 bg-white overflow-x-hidden"
+        className="pt-10 pb-4 lg:py-20 px-4 bg-[var(--color-page)] overflow-x-hidden"
         onMouseMove={handleMouseMove}
       >
         <div className="max-w-6xl mx-auto w-full">

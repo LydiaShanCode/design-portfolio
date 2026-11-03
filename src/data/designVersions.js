@@ -23,6 +23,13 @@ export const MAJOR_VERSIONS = [
     sinceSha: '7d0b979',
   },
   {
+    key: 'column',
+    label: 'Col',
+    name: 'Column',
+    description: 'Name and links pinned left; one column of cards that roll over a drum as you scroll.',
+    swatch: ['#f8f8fb', '#1c1c1c'],
+  },
+  {
     key: 'pond',
     label: 'Pond',
     name: 'Pond',
