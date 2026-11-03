@@ -46,11 +46,10 @@ const HIDDEN_PREFIX = '[hidden] '
 
 function parseHeadings(content) {
   if (!content) return []
-  return [...content.matchAll(/^## (.+)$/gm)].map(([, raw]) => {
-    const label = raw.trim().startsWith(HIDDEN_PREFIX)
-      ? raw.trim().slice(HIDDEN_PREFIX.length)
-      : raw.trim()
-    return { id: toHeadingId(raw.trim()), label }
+  return [...content.matchAll(/^## (.+)$/gm)].flatMap(([, raw]) => {
+    const label = raw.trim()
+    if (label.startsWith(HIDDEN_PREFIX)) return []
+    return [{ id: toHeadingId(label), label }]
   })
 }
 

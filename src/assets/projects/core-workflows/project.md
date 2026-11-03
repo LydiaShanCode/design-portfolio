@@ -31,7 +31,7 @@ team:
 
 Security admins use Adaptive to run training campaigns: who gets enrolled, which modules, when they're due, and which notifications go out. It's the core workflow of the product, and it made people nervous. At the kickoff for the "Core Workflow Usability" bet, our VP of Product pointed out that "over 80 percent of people are already editing campaigns after they launch." Admins were launching, spotting something off, and patching it live. About 45% of orgs that launched a training campaign created an explicitly test-named one first, just to see what employees would get.
 
-Two weeks after I joined, I was asked to lead a greenfield concept for campaign creation while another designer improved the existing wizard. My concept didn't win. But the research behind it turned into two features I took from brief to launch.
+Two weeks after I joined, I was asked to lead a greenfield concept for campaign creation while another designer improved the existing wizard. My concept didn't win. The research behind it turned into two features I took from brief to launch: Test Send, and a split between the compliance tag and the postback to tools like Drata or Vanta.
 
 - **A wizard that hides the whole picture** — Settings were spread across steps, so admins never saw their campaign as one thing before it went live.
 - **No way to preview the inbox** — Admins could preview a module, but not what the email would feel like in their inbox, so they built fake campaigns to find out.
@@ -83,7 +83,11 @@ I sized it first: 93 orgs used only the Vanta postback, 31 only Drata and 24 onl
 
 ## What "live" really means
 
-In parallel I redesigned the campaign index pages: consolidated cards, progress bars, archive, and markers for recurring campaigns. I led two interviews, with a Director of IT and a senior InfoSec engineering manager, and both pushed back on the same assumption I'd made: that an overdue campaign is finished.
+In parallel I redesigned the campaign index pages: consolidated cards, progress bars, archive, and markers for recurring campaigns.
+
+![Each campaign is one card: status, channel, who it's for, and what's still open.](./campaign-index.png)
+
+I led two interviews, with a Director of IT and a senior InfoSec engineering manager, and both pushed back on the same assumption I'd made: that an overdue campaign is finished.
 
 > It's a compliance thing… we can't just close those out
 
@@ -93,7 +97,7 @@ Overdue became a live state. I handed off the specs, and the team later used my 
 
 ## [hidden] Final walkthrough
 
-[TODO: asset — Test Send walkthrough video]
+![Campaign index](<./Core workflows.mov>)
 
 ## Was it a success?
 

@@ -35,7 +35,7 @@ Adaptive Security sells security awareness training: phishing simulations and sh
 
 I joined the "Level up AICC" bet two months into my time at Adaptive, working with the lead designer, a PM who ran our customer feedback program, and the AICC engineering team. My scope covered interactive blocks, the editing model in the frame builder, layouts and narration. For much of it I worked directly in code.
 
-[TODO: asset — before/after of a generated module]
+What changed in those two months: hybrid editing became the direction, and the layouts plus a guided-creation polish shipped in code. The new editor had not been built yet.
 
 - **Quizzes that never say why** — Quiz blocks marked an answer wrong without ever explaining why, and accessibility (WCAG) had become a procurement gate.
 - **Built for AI or for people, not both** — We didn't know if admins wanted to prompt their way to a finished module, drag boxes around, or something in between.
@@ -53,7 +53,11 @@ The harder problem was that a person isn't writing most of this feedback. The AI
 
 Next, the lead designer and I ran a spike: what if the AI generated frames as HTML instead of filling fixed templates? I ran the prompt iterations, logged every generation run with a quality score from 5 to 9, and co-wrote the frame design rules the model followed, from V10 to V19. I also built a small agent skill that synced those rules to Notion, so the docs never drifted from the prompt.
 
-Branding was the surprise. The model was great at theming a module to a customer's brand. Interactivity was the trap. In customer calls our PM ran, people were clear that training is not a game:
+Branding was the surprise. The model was great at theming a module to a customer's brand.
+
+![The frame builder prototype. This module is already wearing Ramp's brand.](./frame-builder.png)
+
+Interactivity was the trap. In customer calls our PM ran, people were clear that training is not a game:
 
 > If it was all interactive, I think we'd turn off a number of users
 
@@ -69,6 +73,12 @@ This was the biggest open question on the bet. I built a coded prototype of an a
 - **Hybrid** — The AI does the heavy lifting, with a side panel for small manual tweaks.
 - **Full freeform** — A manual canvas where admins can move anything.
 
+In the prototype, the chat sits beside the canvas and writes the module. A follow-up prompt can target the frames you select. "Make the background color pink" updates frames 2 and 3. Add frame, the block toolbar, and narration are direct controls on the canvas.
+
+![A scoped prompt updates frames 2 and 3. The rest of the module stays put.](./scoped-prompt.png)
+
+[TODO: asset — side-by-side of AI-only, hybrid, and freeform]
+
 I led five concept tests with security and training teams at a global manufacturer, an aviation tech company, an automotive software company, an AI company and a large tax-prep company. AI-only lost every time. People liked what the AI made, but they wanted the last word.
 
 > I want AI to give me ideals, but I want control over what I do with those ideals
@@ -77,9 +87,7 @@ I led five concept tests with security and training teams at a global manufactur
 
 > you don't need to prompt for basics
 
-At first I assumed freeform would win once AI-only lost, since direct control was what people kept asking for. But a fully manual canvas brings back the blank-page problem AICC exists to solve. Hybrid was the clear winner: AI for the draft, small direct controls for the fixes.
-
-[TODO: asset — the three editing modes]
+At first I assumed freeform would win once AI-only lost, since direct control was what people kept asking for. A fully manual canvas brings back the blank-page problem AICC exists to solve. Hybrid was the clear winner: AI for the draft, small direct controls for the fixes.
 
 ## "Add block doesn't mean anything"
 
@@ -89,9 +97,9 @@ The other pattern was quieter and more consistent. Admins couldn't figure out ho
 
 For the last session I tested two placements for the entry point, and moving it to the top made it noticeably easier to find. I folded that, the per-frame revert request and the naming feedback into a synthesis I wrote with the lead designer and PM. Its headline: "Hybrid editing (AI + simple manual tweaks) is the right path forward… Templates are still critical."
 
-## Shipping the pieces in code
+## Ship while the bet is still open
 
-While the bigger direction was still being set, I shipped what I could directly:
+The editing model was a recommendation, not a build yet. I didn't want the month to end as a deck, so I shipped the parts that didn't depend on it.
 
 - **Frame layouts** — Nine layout templates in the backend contract and renderer, and six in the layout picker, built for the content team who requested them.
 - **Guided creation polish** — Seven visual polish PRs on the guided AICC creation flow in the days before it launched.
@@ -101,7 +109,7 @@ While the bigger direction was still being set, I shipped what I could directly:
 
 ## [hidden] Final walkthrough
 
-[TODO: asset — frame builder prototype walkthrough video]
+![Frame builder prototype](<./Framebuilder video.mov>)
 
 ## Was it a success?
 
@@ -111,4 +119,4 @@ The rest was still in motion when I left. The quiz feedback work was open, and n
 
 ## Biggest learnings - Control is a feature
 
-At first I treated the editing question like a slider from "all AI" to "all manual," and assumed the answer sat at one end. Customers kept telling us it isn't a slider. They want the AI to do the boring 80% and their own hands on the last 20%. Designing for AI turned out to be mostly about designing the handoff back to the person, and making the thing they reach for impossible to miss.
+At first I treated the editing question like a slider from "all AI" to "all manual," and assumed the answer sat at one end. Customers kept describing a handoff. They want the AI to draft the module, and their own hands on the last pass. Designing for AI turned out to be mostly about designing the handoff back to the person, and making the thing they reach for impossible to miss.
