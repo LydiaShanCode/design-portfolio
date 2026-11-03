@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { imagetools } from 'vite-imagetools'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { designDefaultsApi } from './scripts/vite-design-defaults.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -60,6 +61,7 @@ export default defineConfig(({ command }) => ({
     }),
     react(),
     preloadFonts(),
+    designDefaultsApi(),
   ],
   assetsInclude: ['**/*.MP4', '**/*.MOV', '**/*.mov', '**/*.PNG', '**/*.HEIC', '**/*.heic'],
   resolve: {

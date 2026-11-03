@@ -8,7 +8,12 @@ import ProjectsGrid from './components/ProjectsGrid'
 import ActivityLog from './components/ActivityLog'
 import Footer from './components/Footer'
 import WaterCanvas from './components/WaterCanvas'
+import PondCanvas from './components/PondCanvas'
 import CustomCursor from './components/CustomCursor'
+import ClickSfx from './components/ClickSfx'
+import HeroPlayground from './components/HeroPlayground'
+import { useMajorVersion } from './components/design-versions/DesignVersionProvider'
+import { HERO_PLAYGROUND_KEYS } from './data/designVersions'
 import { Analytics } from '@vercel/analytics/react'
 
 const Play = lazy(() => import('./components/Play'))
@@ -17,9 +22,10 @@ const ProjectPage = lazy(() => import('./components/ProjectPage'))
 const About = lazy(() => import('./components/About'))
 
 function Home() {
+  const major = useMajorVersion()
   return (
     <>
-      <Hero />
+      {HERO_PLAYGROUND_KEYS.includes(major) ? <HeroPlayground version={major} /> : <Hero />}
       <div className="intro-reveal">
         <ProjectsGrid />
         <ActivityLog />
@@ -54,6 +60,8 @@ function ScrollToTopOnNavigate() {
 }
 
 function App() {
+  const pond = useMajorVersion() === 'pond'
+
   return (
     <Router basename={import.meta.env.BASE_URL}>
       {/* <DialRoot /> */}
@@ -69,7 +77,8 @@ function App() {
       <Analytics />
       <div className="min-h-screen bg-white">
         <CustomCursor />
-        <WaterCanvas />
+        <ClickSfx />
+        {pond ? <PondCanvas /> : <WaterCanvas />}
         <Navigation />
         <ScrollToHash />
         <ScrollToTopOnNavigate />

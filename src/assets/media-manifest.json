@@ -90,6 +90,37 @@
       "height": 1100
     }
   },
+  "projects/level-up-aicc/Framebuilder video.mov": {
+    "source": {
+      "width": 3020,
+      "height": 1880,
+      "duration": 19.654333
+    },
+    "card": {
+      "width": 720,
+      "height": 448
+    },
+    "hero": {
+      "width": 1920,
+      "height": 1196,
+      "av1": false
+    }
+  },
+  "projects/core-workflows/Core workflows.mov": {
+    "source": {
+      "width": 2878,
+      "height": 1578,
+      "duration": 5.5275
+    },
+    "card": {
+      "width": 720,
+      "height": 394
+    },
+    "hero": {
+      "width": 1920,
+      "height": 1052
+    }
+  },
   "Playground-page/shader-experiment-one/Shader-experiment-one.mov": {
     "source": {
       "width": 3024,

@@ -1,0 +1,277 @@
+<!--
+  v5 — Type ring.
+  Idea: the verbs leave the typewriter and orbit the koi on a tilted ring, like a planet's rings —
+  passing behind the fish at the back and in front of it at the front. Drag (or arrow keys) to spin it;
+  it carries momentum, wobbles as it settles, and snaps so the front verb completes "LYDIA IS ___".
+  Spin speed bleeds into a chromatic smear of the brand blues. Inspired by the spinning 3D type rings
+  that keep showing up in top-performing portfolio posts on X.
+  Trade-off: turns the list of verbs into the toy itself, and it's keyboard-operable as a slider.
+  But the ring's back half is upside-down and squashed — decorative, not for reading.
+  Reduced motion: no auto-spin, no inertia or wobble — each drag notch or arrow key steps one verb.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v5 — Type ring</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .hero { display: grid; place-items: center; cursor: grab; }
+    .hero-row { gap: 100px; }
+    .hero-subtext { margin-top: 48px; }
+    .hero[data-dragging] { cursor: grabbing; }
+
+    .orbit {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: min(420px, 80vw);
+      height: 300px;
+      perspective: 900px;
+      border-radius: var(--radius-md);
+      outline-offset: 12px;
+    }
+    .orbit .koi { position: relative; z-index: 2; width: 100%; }
+
+    .tilt {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 620px;
+      height: 620px;
+      margin: -310px 0 0 -310px;
+      transform-style: preserve-3d;
+      will-change: transform;
+      pointer-events: none;
+    }
+    .tilt--back { z-index: 1; }
+    .tilt--front { z-index: 3; }
+    .tilt svg { width: 100%; height: 100%; overflow: visible; }
+    .tilt--back svg { clip-path: inset(-10% -10% 50% -10%); }
+    .tilt--front svg { clip-path: inset(50% -10% -10% -10%); }
+
+    .ring-text {
+      font-family: var(--font-serif);
+      font-size: 30px;
+      font-weight: 400;
+      letter-spacing: 3px;
+    }
+    use.ab { mix-blend-mode: multiply; }
+    use.ab--a { fill: var(--color-primary-soft); }
+    use.ab--b { fill: var(--color-primary-faint); }
+    use.main { fill: var(--color-primary); }
+    .tilt--back use.main { opacity: 0.35; }
+    .tilt--back use.ab { opacity: 0.2; }
+
+    [data-verb] { display: inline-block; }
+    [data-verb][data-swap] { animation: verb-in 260ms var(--ease-smooth); }
+    @keyframes verb-in {
+      from { opacity: 0; transform: translateY(0.25em); filter: blur(2px); }
+    }
+
+    @media (max-width: 767px) {
+      .orbit { height: 240px; }
+      .tilt { transform-origin: center; scale: 0.55; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <h1 class="sr-only" data-sr>Lydia is designing</h1>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <path id="ring-path" d="M 310 580 A 270 270 0 1 0 310 40 A 270 270 0 1 0 310 580" fill="none" />
+        <g id="ring" data-ring></g>
+      </defs>
+    </svg>
+    <div class="hero-copy">
+      <div class="hero-row" aria-hidden="true">
+        <div class="hero-word hero-word--left">LYDIA IS</div>
+        <div class="orbit" data-orbit tabindex="0" role="slider" aria-label="What Lydia is doing" aria-valuemin="0" aria-valuemax="5">
+          <div class="tilt tilt--back" data-tilt>
+            <svg viewBox="0 0 620 620"><use class="ab ab--a" href="#ring" /><use class="ab ab--b" href="#ring" /><use class="main" href="#ring" /></svg>
+          </div>
+          <div class="koi"><pre data-koi></pre></div>
+          <div class="tilt tilt--front" data-tilt>
+            <svg viewBox="0 0 620 620"><use class="ab ab--a" href="#ring" /><use class="ab ab--b" href="#ring" /><use class="main" href="#ring" /></svg>
+          </div>
+        </div>
+        <div class="hero-word hero-word--right"><span data-verb></span></div>
+      </div>
+      <p class="hero-subtext" data-subtext></p>
+      <div data-chip></div>
+    </div>
+    <p class="hint" data-hint>Drag to spin the ring · or use ← →</p>
+  </section>
+
+  <script type="module">
+    import { VERBS, loadKoiFrames, playKoi, prefersReduced, subtextHTML, chipHTML, clamp } from './hero.js'
+
+    const reduced = prefersReduced()
+    const hero = document.querySelector('.hero')
+    const orbit = document.querySelector('[data-orbit]')
+    const ring = document.querySelector('[data-ring]')
+    const tilts = [...document.querySelectorAll('[data-tilt]')]
+    const verbEl = document.querySelector('[data-verb]')
+    const sr = document.querySelector('[data-sr]')
+    document.querySelector('[data-subtext]').innerHTML = subtextHTML()
+    document.querySelector('[data-chip]').innerHTML = chipHTML()
+    loadKoiFrames().then((frames) => playKoi(document.querySelector('[data-koi]'), frames, { reduced }))
+    // The orbit sits inside an aria-hidden row; lift it back out for assistive tech.
+    orbit.closest('.hero-row').removeAttribute('aria-hidden')
+    document.querySelectorAll('.hero-word, .koi').forEach((el) => el.setAttribute('aria-hidden', 'true'))
+
+    const N = VERBS.length
+    const SLOT = 360 / N
+    const ns = 'http://www.w3.org/2000/svg'
+    VERBS.forEach((verb, i) => {
+      for (const [label, at] of [[verb, (i + 0.5) / N], ['·', (i + 1) / N]]) {
+        const text = document.createElementNS(ns, 'text')
+        text.setAttribute('class', 'ring-text')
+        text.setAttribute('text-anchor', 'middle')
+        text.setAttribute('dominant-baseline', 'central')
+        const tp = document.createElementNS(ns, 'textPath')
+        tp.setAttribute('href', '#ring-path')
+        tp.setAttribute('startOffset', `${at * 100}%`)
+        tp.textContent = label
+        text.append(tp)
+        ring.append(text)
+      }
+    })
+
+    // Verb i faces front when the ring is rotated to (i + 0.5) slots.
+    const restFor = (i) => SLOT * (i + 0.5)
+    const frontIndex = (r) => (((Math.round(r / SLOT - 0.5)) % N) + N) % N
+
+    let R = restFor(0)
+    let V = 0
+    let target = R
+    let mode = 'rest'
+    let front = -1
+    let idleSince = performance.now()
+    let wobble = 0
+    let wobbleV = 0
+    const lean = { x: 0, y: 0, tx: 0, ty: 0 }
+
+    function setFront(i) {
+      if (i === front) return
+      front = i
+      verbEl.textContent = VERBS[i]
+      verbEl.removeAttribute('data-swap')
+      void verbEl.offsetWidth
+      if (!reduced) verbEl.setAttribute('data-swap', '')
+      orbit.setAttribute('aria-valuenow', String(i))
+      orbit.setAttribute('aria-valuetext', VERBS[i].toLowerCase())
+      sr.textContent = `Lydia is ${VERBS[i].toLowerCase()}`
+    }
+
+    function snapTo(slotTarget) {
+      target = slotTarget
+      mode = 'snap'
+      if (reduced) { R = target; V = 0; mode = 'rest' }
+    }
+    const nearestRest = (r, bias = 0) => restFor(Math.round(r / SLOT - 0.5 + bias))
+
+    // ── Drag ──
+    let drag = null
+    hero.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('a, button')) return
+      hero.setPointerCapture(e.pointerId)
+      hero.dataset.dragging = ''
+      drag = { id: e.pointerId, x: e.clientX, t: e.timeStamp, acc: 0 }
+      mode = 'drag'
+      V = 0
+    })
+    hero.addEventListener('pointermove', (e) => {
+      const r = hero.getBoundingClientRect()
+      lean.tx = ((e.clientX - r.left) / r.width - 0.5) * 2
+      lean.ty = ((e.clientY - r.top) / r.height - 0.5) * 2
+      if (!drag || e.pointerId !== drag.id) return
+      const dx = e.clientX - drag.x
+      const dt = Math.max((e.timeStamp - drag.t) / 1000, 0.001)
+      drag.x = e.clientX
+      drag.t = e.timeStamp
+      if (reduced) {
+        drag.acc += dx
+        while (Math.abs(drag.acc) > 70) {
+          const dir = Math.sign(drag.acc)
+          drag.acc -= dir * 70
+          R += dir * SLOT
+        }
+        return
+      }
+      R += dx * 0.45
+      V = V * 0.6 + (dx * 0.45 / dt) * 0.4
+    })
+    const endDrag = (e) => {
+      if (!drag || e.pointerId !== drag.id) return
+      drag = null
+      delete hero.dataset.dragging
+      idleSince = performance.now()
+      if (reduced) return snapTo(nearestRest(R))
+      V = clamp(V, -1400, 1400)
+      mode = 'coast'
+    }
+    hero.addEventListener('pointerup', endDrag)
+    hero.addEventListener('pointercancel', endDrag)
+    hero.addEventListener('pointerleave', () => { lean.tx = 0; lean.ty = 0 })
+
+    orbit.addEventListener('keydown', (e) => {
+      const step = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key]
+      if (!step) return
+      e.preventDefault()
+      idleSince = performance.now()
+      const base = mode === 'snap' ? target : nearestRest(R)
+      snapTo(base + step * SLOT)
+    })
+
+    // ── Loop ──
+    let prev = performance.now()
+    function frame(now) {
+      const dt = Math.min((now - prev) / 1000, 1 / 30)
+      prev = now
+
+      if (mode === 'coast') {
+        V *= Math.exp(-dt * 1.8)
+        R += V * dt
+        if (Math.abs(V) < 90) snapTo(nearestRest(R, Math.sign(V) * 0.35))
+      } else if (mode === 'snap') {
+        const k = 90
+        const c = 2 * Math.sqrt(k) * 0.72
+        const a = -k * (R - target) - c * V
+        V += a * dt
+        R += V * dt
+        if (Math.abs(R - target) < 0.05 && Math.abs(V) < 1) { R = target; V = 0; mode = 'rest'; idleSince = now }
+      } else if (mode === 'rest' && !reduced && now - idleSince > 3200 && document.activeElement !== orbit) {
+        snapTo(R + SLOT)
+      }
+
+      if (!reduced) {
+        // Underdamped spring chasing spin speed: speeding up leans the ring, stopping makes it wobble.
+        const wTarget = clamp(V * 0.012, -9, 9)
+        wobbleV += (-(wobble - wTarget) * 140 - wobbleV * 7) * dt
+        wobble += wobbleV * dt
+        lean.x += (lean.tx - lean.x) * (1 - Math.exp(-dt * 4))
+        lean.y += (lean.ty - lean.y) * (1 - Math.exp(-dt * 4))
+      }
+
+      const tiltX = 62 + wobble * 0.6 - lean.y * 6
+      const tiltY = lean.x * 10
+      const tiltZ = -wobble * 0.5
+      const t = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) rotateZ(${tiltZ}deg)`
+      for (const el of tilts) el.style.transform = t
+      ring.setAttribute('transform', `rotate(${R} 310 310)`)
+
+      const smear = reduced ? 0 : clamp(V * 0.012, -9, 9)
+      document.querySelectorAll('use.ab--a').forEach((u) => u.setAttribute('transform', `translate(${smear} 0)`))
+      document.querySelectorAll('use.ab--b').forEach((u) => u.setAttribute('transform', `translate(${-smear * 0.7} ${Math.abs(smear) * 0.3})`))
+
+      setFront(frontIndex(R))
+      requestAnimationFrame(frame)
+    }
+    setFront(0)
+    requestAnimationFrame(frame)
+  </script>
+</body>
+</html>

@@ -186,7 +186,8 @@
 }
 
 /* Custom cursor styles — desktop only */
-@media (min-width: 1024px) {
+/* Tablets only get the custom cursor with a mouse or trackpad, so touch users never see a stranded dot */
+@media (min-width: 1024px), (min-width: 768px) and (hover: hover) and (pointer: fine) {
   * {
     cursor: none !important;
   }
@@ -333,6 +334,16 @@ body {
   z-index: 30;
 }
 
+.pond-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 30;
+  background: transparent;
+}
+
 /* Custom cursor — hidden on touch/mobile devices */
 .custom-cursor {
   position: fixed;
@@ -360,7 +371,7 @@ body {
   opacity: 1;
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 767px), (max-width: 1023px) and (not ((hover: hover) and (pointer: fine))) {
   .custom-cursor {
     display: none;
   }
@@ -461,7 +472,8 @@ body {
 
 @media (min-width: 1024px) {
   .hero-section {
-    min-height: 100vh;
+    /* 100px is 1/5 of the 500px card; 10px is the stack's leftover above the card */
+    min-height: calc(100vh - 110px);
   }
 }
 
@@ -479,6 +491,10 @@ body {
   justify-content: center;
 }
 
+.work-stack--entering {
+  pointer-events: none;
+}
+
 .work-card {
   position: absolute;
   width: 340px;
@@ -490,9 +506,17 @@ body {
   background-size: 320px auto;
   box-shadow: var(--shadow-card);
   color: inherit;
-  transition: box-shadow 280ms var(--ease-smooth),
-    filter 280ms var(--ease-smooth);
+  transition: box-shadow 280ms var(--ease-smooth);
   will-change: transform;
+}
+
+.work-card--hovered {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.work-stack--restraint .work-card {
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
 }
 
 .work-card::after {
@@ -544,7 +568,10 @@ body {
   object-fit: contain;
 }
 
+/* Every card's media frame matches the 1216×796 work-card photos, whatever the video's shape */
 .work-card-image {
+  position: relative;
+  aspect-ratio: 1216 / 796;
   border-radius: var(--radius-xs);
   overflow: hidden;
 }
@@ -553,8 +580,21 @@ body {
 .work-card-image video {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: cover;
+}
+
+.work-card-video {
+  position: absolute;
+  inset: 0;
+  /* Tall phone recordings crop from the top, where the screen's content starts */
+  object-position: center top;
+  opacity: 0;
+  transition: opacity 240ms var(--ease-smooth);
+}
+
+.work-card-video--playing {
+  opacity: 1;
 }
 
 /* WebKit's native image drag swallows pointerup and strands the card mid-gesture */
@@ -564,8 +604,15 @@ body {
   user-select: none;
 }
 
-.work-card-image--video {
-  position: relative;
+.work-card-image--placeholder {
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--color-primary) 6%, var(--color-surface));
+  color: color-mix(in srgb, var(--color-primary) 70%, transparent);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .work-card-video-overlay {
@@ -576,6 +623,11 @@ body {
   object-fit: cover;
   pointer-events: none;
   mix-blend-mode: multiply;
+  transition: opacity 280ms var(--ease-smooth);
+}
+
+.work-card-video-overlay--hidden {
+  opacity: 0;
 }
 
 .work-card-meta {
@@ -981,7 +1033,7 @@ body {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 12px rgb(var(--shadow-tint) / 0.06);
   align-self: flex-start;
 }
 
@@ -1019,7 +1071,7 @@ body {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 12px rgb(var(--shadow-tint) / 0.06);
   font-family: 'Geist', system-ui, sans-serif;
   font-size: 13px;
   font-weight: 400;
@@ -1465,6 +1517,12 @@ body {
 @keyframes time-digit-out {
   from { transform: translateY(0); opacity: 1; }
   to { transform: translateY(-100%); opacity: 0; }
+}
+
+@media (max-width: 767px) {
+  .dv-menu {
+    bottom: calc(96px + env(safe-area-inset-bottom));
+  }
 }
 
 .footer-inner {
@@ -2071,6 +2129,76 @@ button.footer-link {
   }
 }
 
+/* Pointer-transparent so backdrop clicks still land on the overlay */
+.project-preview-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.project-preview-stage > .project-preview-card {
+  pointer-events: auto;
+}
+
+.project-preview--motion .project-preview-card {
+  animation: none;
+  will-change: transform, clip-path;
+}
+
+/* clip-path clips box-shadow, so the shadow moves to the stage while the card is shaped */
+.project-preview-stage.is-animating {
+  filter: drop-shadow(0 24px 40px rgb(var(--shadow-tint) / 0.2)) drop-shadow(0 4px 10px rgb(var(--shadow-tint) / 0.08));
+}
+
+.project-preview-stage.is-animating .project-preview-card {
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.project-preview-face {
+  position: absolute;
+  z-index: 20;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.project-preview-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 21;
+  background: rgb(var(--shadow-tint));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.project-preview-cover {
+  position: absolute;
+  pointer-events: none;
+}
+
+.project-preview-hinge {
+  position: absolute;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  transform-origin: left center;
+}
+
+.project-preview-hinge-face {
+  position: absolute;
+  inset: 0;
+}
+
+.project-preview-hinge-back {
+  display: none;
+  background-color: var(--color-bg);
+  background-size: 320px auto;
+}
+
 .project-preview-close {
   position: absolute;
   top: 16px;
@@ -2159,7 +2287,7 @@ button.footer-link {
   overflow: hidden;
 }
 
-.project-preview-video-wrap:hover .project-preview-password-overlay,
+.project-preview-video-wrap[data-pointer-inside] .project-preview-password-overlay,
 .project-preview-password-overlay--active {
   opacity: 1 !important;
   pointer-events: auto;
@@ -2192,7 +2320,7 @@ button.footer-link {
     0 4px 20px rgba(0, 0, 0, 0.10),
     0 1px 4px rgba(0, 0, 0, 0.08);
   white-space: nowrap;
-  pointer-events: auto;
+  pointer-events: inherit;
   will-change: transform;
   transition: background 180ms var(--ease-smooth), box-shadow 180ms var(--ease-smooth);
 }
@@ -3223,7 +3351,7 @@ button.footer-link {
   height: auto;
   border-radius: var(--radius-lg);
   object-fit: contain;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 24px 64px rgb(var(--shadow-tint) / 0.18), 0 2px 8px rgb(var(--shadow-tint) / 0.08);
   background: #fff;
 }
 
@@ -3242,7 +3370,7 @@ button.footer-link {
   justify-content: center;
   cursor: pointer;
   transition: background 150ms ease, color 150ms ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(var(--shadow-tint) / 0.1);
 }
 
 .lightbox-close:hover {
@@ -3451,7 +3579,7 @@ button.footer-link {
   border-radius: var(--radius-sm);
   overflow: hidden;
   background: var(--color-surface);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 32px rgb(var(--shadow-tint) / 0.1), 0 2px 8px rgb(var(--shadow-tint) / 0.06);
 }
 
 .iterations-annotation-strip {
@@ -3732,7 +3860,7 @@ button.work-card {
 .resume-page-card {
   border-radius: 0;
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 24px rgb(var(--shadow-tint) / 0.10), 0 1px 4px rgb(var(--shadow-tint) / 0.06);
 }
 
 .react-pdf__Document {
@@ -3837,7 +3965,7 @@ button.work-card {
   width: 100%;
   background: #ffffff;
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 40px rgb(var(--shadow-tint) / 0.1), 0 2px 8px rgb(var(--shadow-tint) / 0.06);
   padding: 8px 8px 20px;
   display: flex;
   flex-direction: column;

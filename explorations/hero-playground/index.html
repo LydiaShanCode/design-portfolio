@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hero playground — exploration</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    body { overflow: auto; padding: 32px; background: var(--color-surface); color: var(--color-text); }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px 24px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 32px;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+    }
+
+    .controls { display: flex; gap: 20px; font-size: 13px; color: var(--color-text-subdued); }
+    label { cursor: pointer; }
+
+    /* One column so each frame stays above the 768px breakpoint and shows the desktop layout */
+    .grid { display: grid; grid-template-columns: 1fr; gap: 28px; }
+    .grid--mobile { grid-template-columns: repeat(auto-fill, minmax(390px, 1fr)); }
+
+    figure { margin: 0; }
+    figcaption { display: flex; gap: 10px; align-items: baseline; margin-bottom: 10px; font-size: 13px; }
+    figcaption b { font-weight: 600; }
+    figcaption span { color: var(--color-text-subdued); }
+    figcaption a { margin-left: auto; color: var(--color-primary); text-decoration: none; }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 680px;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: #fff;
+      box-shadow: 0 0 0 1px rgba(15, 20, 50, 0.06);
+    }
+    .grid--mobile iframe { width: 390px; height: 780px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Hero playground</h1>
+    <div class="controls">
+      <label><input type="checkbox" id="mobile" /> Mobile width</label>
+      <label><input type="checkbox" id="rm" /> Reduced motion</label>
+    </div>
+  </header>
+  <div class="grid">
+    <figure><figcaption><b>Current</b><span>Typewriter + ASCII koi</span><a href="current.html" target="_blank">Open ↗</a></figcaption><iframe loading="lazy" data-src="current.html"></iframe></figure>
+    <figure><figcaption><b>v1</b><span>Playable 3D island — walk to the signs</span><a href="v1.html" target="_blank">Open ↗</a></figcaption><iframe loading="lazy" data-src="v1.html"></iframe></figure>
+    <figure><figcaption><b>v2</b><span>WebGL ripple over the hero</span><a href="v2.html" target="_blank">Open ↗</a></figcaption><iframe loading="lazy" data-src="v2.html"></iframe></figure>
+    <figure><figcaption><b>v3</b><span>ASCII dolphin school</span><a href="v3.html" target="_blank">Open ↗</a></figcaption><iframe loading="lazy" data-src="v3.html"></iframe></figure>
+    <figure><figcaption><b>v4</b><span>Fling the headline</span><a href="v4.html" target="_blank">Open ↗</a></figcaption><iframe loading="lazy" data-src="v4.html"></iframe></figure>
+    <figure><figcaption><b>v5</b><span>Type ring around the koi</span><a href="v5.html" target="_blank">Open ↗</a></figcaption><iframe loading="lazy" data-src="v5.html"></iframe></figure>
+    <figure><figcaption><b>v6</b><span>X-ray blueprint lens</span><a href="v6.html" target="_blank">Open ↗</a></figcaption><iframe loading="lazy" data-src="v6.html"></iframe></figure>
+  </div>
+  <script>
+    const mobile = document.getElementById('mobile')
+    const rm = document.getElementById('rm')
+    const grid = document.querySelector('.grid')
+    const frames = [...document.querySelectorAll('iframe')]
+    const links = [...document.querySelectorAll('figcaption a')]
+    const load = () => {
+      grid.classList.toggle('grid--mobile', mobile.checked)
+      const q = rm.checked ? '?rm=1' : ''
+      frames.forEach((f) => { f.src = `${f.dataset.src}${q}` })
+      links.forEach((a, i) => { a.href = `${frames[i].dataset.src}${q}` })
+    }
+    mobile.addEventListener('change', load)
+    rm.addEventListener('change', load)
+    load()
+  </script>
+</body>
+</html>

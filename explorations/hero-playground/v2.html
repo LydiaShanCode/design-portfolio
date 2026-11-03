@@ -1,0 +1,360 @@
+<!--
+  v2 — WebGL ripple.
+  Idea: the hero copy sits under a sheet of water. Moving the cursor (or a finger) drags a wake through
+  it, a click or tap drops a stone, and the rings refract the type and koi before settling back to calm.
+  The real DOM stays in place, invisible but selectable and clickable, so links still work.
+  Trade-off: the most "on brand" with the koi and the old water canvas, and readable at rest. But it
+  distorts the copy you're trying to read while you play, and needs half-float render targets.
+  Reduced motion: no simulation — the plain hero over a still, faint water texture.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v2 — WebGL ripple</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .hero { display: grid; place-items: center; cursor: crosshair; }
+    canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .hero-copy { z-index: 2; }
+
+    /* While the GL layer is live the DOM is a hit-target ghost of the same layout */
+    .hero[data-gl] .hero-copy { opacity: 0; }
+    .hero[data-gl] .hero-copy:focus-within { opacity: 1; }
+
+    .still-water {
+      position: absolute;
+      inset: 0;
+      opacity: 0.14;
+      background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1800' height='1100'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='0.005 0.011' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0.11  0 0 0 0 0.85  0 0 0 3 -1.5'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>") center / cover no-repeat;
+      -webkit-mask-image: radial-gradient(70% 60% at 50% 50%, transparent 25%, #000 75%);
+      mask-image: radial-gradient(70% 60% at 50% 50%, transparent 25%, #000 75%);
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <canvas aria-hidden="true"></canvas>
+    <div class="hero-copy" data-copy>
+      <div class="hero-row">
+        <h1 class="hero-word hero-word--left" data-left>LYDIA IS</h1>
+        <div class="koi"><pre data-koi></pre></div>
+        <div class="hero-word hero-word--right" data-right><span data-verb></span><span class="caret" data-caret>|</span></div>
+      </div>
+      <p class="hero-subtext" data-subtext></p>
+      <div data-chip></div>
+    </div>
+    <p class="hint" data-hint>Move through the water · click to drop a stone</p>
+  </section>
+
+  <script type="module">
+    import { typewriter, loadKoiFrames, playKoi, prefersReduced, subtextHTML, chipHTML, SHOPIFY_ICON } from './hero.js'
+
+    const reduced = prefersReduced()
+    const hero = document.querySelector('.hero')
+    const canvas = hero.querySelector('canvas')
+    const koiPre = document.querySelector('[data-koi]')
+    const verbEl = document.querySelector('[data-verb]')
+    document.querySelector('[data-subtext]').innerHTML = subtextHTML()
+    document.querySelector('[data-chip]').innerHTML = chipHTML()
+
+    const frames = await loadKoiFrames()
+    let dirty = true
+    typewriter((t) => { verbEl.textContent = t; dirty = true }, { reduced })
+
+    const gl = !reduced && canvas.getContext('webgl2', { antialias: false, alpha: false })
+    if (!gl || !gl.getExtension('EXT_color_buffer_float')) {
+      canvas.remove()
+      hero.insertAdjacentHTML('afterbegin', '<div class="still-water" aria-hidden="true"></div>')
+      document.querySelector('[data-hint]').textContent = 'Still water'
+      playKoi(koiPre, frames, { reduced: true })
+      throw new Error('ripple disabled: reduced motion or no float targets')
+    }
+
+    hero.dataset.gl = ''
+    let koiFrame = 0
+    koiPre.textContent = frames[0]
+    setInterval(() => { koiFrame = (koiFrame + 1) % frames.length; koiPre.textContent = frames[koiFrame]; dirty = true }, 50)
+
+    await document.fonts.ready
+
+    // ── Content canvas: redraw the DOM hero exactly where it is laid out ──
+    const content = document.createElement('canvas')
+    const cctx = content.getContext('2d')
+    const shopify = new Image()
+    shopify.src = SHOPIFY_ICON
+    shopify.onload = () => { dirty = true }
+    let dpr = 1
+
+    function drawText(el, ctx, origin) {
+      const style = getComputedStyle(el)
+      ctx.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`
+      ctx.fillStyle = '#001dd9'
+      ctx.textBaseline = 'alphabetic'
+      const range = document.createRange()
+      for (const node of el.childNodes) {
+        if (node.nodeType !== Node.TEXT_NODE || !node.textContent.trim()) continue
+        range.selectNodeContents(node)
+        for (const r of range.getClientRects()) {
+          const size = parseFloat(style.fontSize)
+          ctx.fillText(node.textContent.trim(), r.left - origin.left, r.top - origin.top + size * 0.82)
+        }
+      }
+    }
+
+    function drawContent() {
+      const origin = hero.getBoundingClientRect()
+      const ctx = cctx
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      ctx.fillStyle = '#ffffff'
+      ctx.fillRect(0, 0, origin.width, origin.height)
+
+      drawText(document.querySelector('[data-left]'), ctx, origin)
+      drawText(verbEl, ctx, origin)
+      if (verbEl.textContent) drawText(document.querySelector('[data-caret]'), ctx, origin)
+      else {
+        const caret = document.querySelector('[data-caret]').getBoundingClientRect()
+        ctx.fillRect(caret.left - origin.left + 2, caret.top - origin.top + 6, 1.5, caret.height - 12)
+      }
+
+      const pre = koiPre.getBoundingClientRect()
+      const ps = getComputedStyle(koiPre)
+      ctx.font = `${ps.fontWeight} ${ps.fontSize} ${ps.fontFamily}`
+      ctx.globalAlpha = 0.9
+      const lh = parseFloat(ps.lineHeight) || parseFloat(ps.fontSize)
+      koiPre.textContent.split('\n').forEach((line, i) => ctx.fillText(line, pre.left - origin.left, pre.top - origin.top + (i + 0.85) * lh))
+      ctx.globalAlpha = 1
+
+      document.querySelectorAll('[data-subtext] span, [data-subtext] a').forEach((el) => drawText(el, ctx, origin))
+      const icon = document.querySelector('[data-subtext] img')
+      if (icon && shopify.complete) {
+        const r = icon.getBoundingClientRect()
+        ctx.drawImage(shopify, r.left - origin.left, r.top - origin.top + r.height * 0.12, r.width, r.height)
+      }
+
+      const chip = document.querySelector('.chip')
+      const cr = chip.getBoundingClientRect()
+      ctx.save()
+      ctx.setLineDash([1.5, 2])
+      ctx.strokeStyle = '#7b8dff'
+      ctx.beginPath()
+      ctx.roundRect(cr.left - origin.left + 0.5, cr.top - origin.top + 0.5, cr.width - 1, cr.height - 1, cr.height / 2)
+      ctx.stroke()
+      ctx.restore()
+      drawText(chip, ctx, origin)
+      const arrow = chip.querySelector('svg').getBoundingClientRect()
+      ctx.save()
+      ctx.translate(arrow.left - origin.left, arrow.top - origin.top)
+      ctx.scale(arrow.width / 24, arrow.height / 24)
+      ctx.lineWidth = 2
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+      ctx.strokeStyle = '#001dd9'
+      ctx.stroke(new Path2D('m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25'))
+      ctx.restore()
+    }
+
+    // ── GL ──
+    const VERT = `#version 300 es
+      out vec2 vUv;
+      void main() {
+        vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
+        vUv = p;
+        gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
+      }`
+
+    const SIM = `#version 300 es
+      precision highp float;
+      uniform sampler2D uState;
+      uniform vec2 uTexel;
+      uniform vec2 uA;
+      uniform vec2 uB;
+      uniform float uRadius;
+      uniform float uStrength;
+      uniform float uAspect;
+      in vec2 vUv;
+      out vec4 o;
+      float segDist(vec2 p, vec2 a, vec2 b) {
+        vec2 pa = p - a, ba = b - a;
+        float h = clamp(dot(pa, ba) / max(dot(ba, ba), 1e-6), 0.0, 1.0);
+        return length(pa - ba * h);
+      }
+      void main() {
+        vec4 s = texture(uState, vUv);
+        float l = texture(uState, vUv - vec2(uTexel.x, 0.0)).r;
+        float r = texture(uState, vUv + vec2(uTexel.x, 0.0)).r;
+        float d = texture(uState, vUv - vec2(0.0, uTexel.y)).r;
+        float u = texture(uState, vUv + vec2(0.0, uTexel.y)).r;
+        float h = ((l + r + u + d) * 0.5 - s.g) * 0.986;
+        vec2 k = vec2(uAspect, 1.0);
+        float dist = segDist(vUv * k, uA * k, uB * k);
+        h += uStrength * exp(-dist * dist / (uRadius * uRadius));
+        o = vec4(h, s.r, 0.0, 1.0);
+      }`
+
+    const RENDER = `#version 300 es
+      precision highp float;
+      uniform sampler2D uState;
+      uniform sampler2D uContent;
+      uniform vec2 uTexel;
+      in vec2 vUv;
+      out vec4 o;
+      void main() {
+        float h = texture(uState, vUv).r;
+        float dx = texture(uState, vUv + vec2(uTexel.x, 0.0)).r - texture(uState, vUv - vec2(uTexel.x, 0.0)).r;
+        float dy = texture(uState, vUv + vec2(0.0, uTexel.y)).r - texture(uState, vUv - vec2(0.0, uTexel.y)).r;
+        vec3 n = normalize(vec3(-dx, -dy, 0.35));
+        vec2 off = n.xy * 0.06;
+        vec3 col;
+        col.r = texture(uContent, vUv + off * 1.25).r;
+        col.g = texture(uContent, vUv + off).g;
+        col.b = texture(uContent, vUv + off * 0.8).b;
+        float slope = length(n.xy);
+        col = mix(col, vec3(0.88, 0.9, 1.0), clamp(slope * 1.6, 0.0, 0.45));
+        float spec = pow(max(dot(n, normalize(vec3(-0.35, 0.45, 0.82))), 0.0), 48.0);
+        col += vec3(1.0) * spec * 0.55 * smoothstep(0.02, 0.1, slope);
+        col = mix(col, vec3(0.0, 0.114, 0.851), clamp(-dx * 4.0 - dy * 4.0, 0.0, 1.0) * 0.18);
+        o = vec4(col, 1.0);
+      }`
+
+    function program(fs) {
+      const p = gl.createProgram()
+      for (const [type, src] of [[gl.VERTEX_SHADER, VERT], [gl.FRAGMENT_SHADER, fs]]) {
+        const s = gl.createShader(type)
+        gl.shaderSource(s, src)
+        gl.compileShader(s)
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s))
+        gl.attachShader(p, s)
+      }
+      gl.linkProgram(p)
+      const uniforms = {}
+      const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS)
+      for (let i = 0; i < n; i++) {
+        const { name } = gl.getActiveUniform(p, i)
+        uniforms[name] = gl.getUniformLocation(p, name)
+      }
+      return { p, u: uniforms }
+    }
+
+    const sim = program(SIM)
+    const render = program(RENDER)
+
+    function target(w, h) {
+      const tex = gl.createTexture()
+      gl.bindTexture(gl.TEXTURE_2D, tex)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, w, h, 0, gl.RGBA, gl.HALF_FLOAT, null)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+      const fb = gl.createFramebuffer()
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0)
+      gl.clearColor(0, 0, 0, 1)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      return { tex, fb }
+    }
+
+    const contentTex = gl.createTexture()
+    gl.bindTexture(gl.TEXTURE_2D, contentTex)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+
+    let simW = 0
+    let simH = 0
+    let ping
+    let pong
+    let aspect = 1
+
+    function resize() {
+      const { width, height } = hero.getBoundingClientRect()
+      dpr = Math.min(devicePixelRatio, 2)
+      canvas.width = content.width = Math.round(width * dpr)
+      canvas.height = content.height = Math.round(height * dpr)
+      aspect = width / height
+      simW = Math.round(width / 3)
+      simH = Math.round(height / 3)
+      ping = target(simW, simH)
+      pong = target(simW, simH)
+      dirty = true
+    }
+    new ResizeObserver(resize).observe(hero)
+    resize()
+
+    // ── Pointer → drops along the segment travelled since last frame ──
+    const drops = []
+    let last = null
+    const toUv = (e) => {
+      const r = hero.getBoundingClientRect()
+      return [(e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height]
+    }
+    hero.addEventListener('pointermove', (e) => {
+      const p = toUv(e)
+      if (last) {
+        const speed = Math.hypot((p[0] - last[0]) * aspect, p[1] - last[1])
+        if (speed > 0.002) drops.push({ a: last, b: p, radius: 0.018, strength: Math.min(0.06, speed * 1.4) })
+      }
+      last = p
+    })
+    hero.addEventListener('pointerleave', () => { last = null })
+    hero.addEventListener('pointerdown', (e) => {
+      const p = toUv(e)
+      last = p
+      drops.push({ a: p, b: p, radius: 0.035, strength: 0.55 })
+    })
+    setTimeout(() => drops.push({ a: [0.5, 0.56], b: [0.5, 0.56], radius: 0.03, strength: 0.35 }), 400)
+
+    function simStep(drop) {
+      gl.useProgram(sim.p)
+      gl.bindFramebuffer(gl.FRAMEBUFFER, pong.fb)
+      gl.viewport(0, 0, simW, simH)
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, ping.tex)
+      gl.uniform1i(sim.u.uState, 0)
+      gl.uniform2f(sim.u.uTexel, 1 / simW, 1 / simH)
+      gl.uniform1f(sim.u.uAspect, aspect)
+      gl.uniform2fv(sim.u.uA, drop ? drop.a : [-1, -1])
+      gl.uniform2fv(sim.u.uB, drop ? drop.b : [-1, -1])
+      gl.uniform1f(sim.u.uRadius, drop ? drop.radius : 0.01)
+      gl.uniform1f(sim.u.uStrength, drop ? drop.strength : 0)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+      ;[ping, pong] = [pong, ping]
+    }
+
+    const STEP = 1 / 120
+    let acc = 0
+    let prevT = performance.now()
+
+    function frame(now) {
+      acc = Math.min(acc + (now - prevT) / 1000, STEP * 6)
+      prevT = now
+      if (dirty) {
+        drawContent()
+        gl.bindTexture(gl.TEXTURE_2D, contentTex)
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, content)
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
+        dirty = false
+      }
+      for (const d of drops.splice(0, drops.length)) simStep(d)
+      while (acc >= STEP) { simStep(null); acc -= STEP }
+
+      gl.useProgram(render.p)
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, ping.tex)
+      gl.uniform1i(render.u.uState, 0)
+      gl.activeTexture(gl.TEXTURE1)
+      gl.bindTexture(gl.TEXTURE_2D, contentTex)
+      gl.uniform1i(render.u.uContent, 1)
+      gl.uniform2f(render.u.uTexel, 1 / simW, 1 / simH)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+      requestAnimationFrame(frame)
+    }
+    requestAnimationFrame(frame)
+  </script>
+</body>
+</html>

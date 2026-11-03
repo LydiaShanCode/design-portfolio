@@ -2,6 +2,7 @@
 id: 2
 title: Smart Markets
 slug: smart-markets
+featuredOrder: 1
 company: Shopify
 protected: true
 date: "3 weeks · 2025"

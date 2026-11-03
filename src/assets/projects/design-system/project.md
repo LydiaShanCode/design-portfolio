@@ -2,6 +2,7 @@
 id: 1
 title: Design System
 slug: design-system
+archived: true
 company: SearchEye
 date: "1 month · 2023"
 start: "Oct 2023"

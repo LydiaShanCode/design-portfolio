@@ -1,0 +1,560 @@
+<!--
+  v1 — Playable 3D space.
+  Idea: the hero is a tiny paper island. You walk a little blue character around with WASD / arrows,
+  a touch joystick, or by tapping the ground. Each piece of hero copy is a place: the "LYDIA IS ___"
+  billboard, a Shopify bag stand, a DJ booth, and a koi pond. Walking up to one opens its card.
+  Inspired by playable portfolios like Tomjohnville.
+  Trade-off: by far the most delightful and memorable, but heaviest (three.js from a CDN) and the copy
+  is no longer readable at a glance — you have to explore to find it. Reduced motion: a still overview
+  camera with no idle animation; walking still works and moves in plain steps.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v1 — Playable 3D space</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .hero { background: var(--color-bg); outline: none; }
+    canvas { display: block; width: 100%; height: 100%; }
+
+    .card {
+      position: absolute;
+      left: 50%;
+      bottom: 64px;
+      z-index: 10;
+      width: min(360px, calc(100% - 32px));
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      background: var(--glass-bg-chip);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: var(--glass-shadow);
+      opacity: 0;
+      transform: translate(-50%, 12px);
+      pointer-events: none;
+      transition: opacity 220ms var(--ease-smooth), transform 280ms var(--ease-dramatic);
+    }
+
+    .card[data-open] { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+    .card h2 { margin: 0 0 6px; font-family: var(--font-serif); font-size: 28px; font-weight: 400; letter-spacing: -0.5px; line-height: 1; }
+    .card p { margin: 0 0 12px; font-size: 14px; line-height: 1.4; }
+    .card p:last-child { margin: 0; }
+    .card .kicker { margin: 0 0 6px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+
+    .joystick {
+      position: absolute;
+      left: 24px;
+      bottom: 24px;
+      z-index: 15;
+      display: none;
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-chip);
+      touch-action: none;
+    }
+
+    .joystick i {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 44px;
+      height: 44px;
+      margin: -22px 0 0 -22px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      box-shadow: 0 6px 16px rgba(0, 29, 217, 0.35);
+    }
+
+    @media (pointer: coarse) { .joystick { display: block; } .hint { left: auto; right: 16px; transform: none; } }
+
+    .fallback { position: absolute; inset: 0; display: none; place-items: center; }
+    .fallback[data-show] { display: grid; }
+  </style>
+</head>
+<body>
+  <section class="hero" tabindex="0" aria-label="A small island you can walk around. Use WASD or arrow keys.">
+    <canvas aria-hidden="true"></canvas>
+    <div class="card" role="status" aria-live="polite" data-card></div>
+    <div class="joystick" data-joystick aria-hidden="true"><i></i></div>
+    <p class="hint" data-hint>WASD / arrows to walk · tap the ground to go there</p>
+
+    <div class="sr-only">
+      <h1>Lydia is designing, building, deploying, drawing, dancing, making music</h1>
+      <p data-subtext></p>
+      <div data-chip></div>
+    </div>
+
+    <div class="fallback" data-fallback>
+      <div class="hero-copy">
+        <div class="hero-row">
+          <div class="hero-word hero-word--left">LYDIA IS</div>
+          <div class="hero-word hero-word--right"><span data-fb-verb></span><span class="caret">|</span></div>
+        </div>
+        <p class="hero-subtext" data-fb-subtext></p>
+        <div data-fb-chip></div>
+      </div>
+    </div>
+  </section>
+
+  <script type="module">
+    import { VERBS, typewriter, prefersReduced, subtextHTML, chipHTML, SHOPIFY_URL, DJ_URL, clamp } from './hero.js'
+
+    const reduced = prefersReduced()
+    const hero = document.querySelector('.hero')
+    const canvas = hero.querySelector('canvas')
+    const cardEl = document.querySelector('[data-card]')
+    document.querySelector('[data-subtext]').innerHTML = subtextHTML()
+    document.querySelector('[data-chip]').innerHTML = chipHTML()
+
+    function showFallback() {
+      canvas.remove()
+      document.querySelector('[data-hint]').remove()
+      document.querySelector('[data-fallback]').dataset.show = ''
+      document.querySelector('[data-fb-subtext]').innerHTML = subtextHTML()
+      document.querySelector('[data-fb-chip]').innerHTML = chipHTML()
+      const v = document.querySelector('[data-fb-verb]')
+      typewriter((t) => { v.textContent = t })
+    }
+
+    let THREE
+    try {
+      THREE = await import('https://unpkg.com/three@0.170.0/build/three.module.js')
+      const probe = document.createElement('canvas').getContext('webgl2')
+      if (!probe) throw new Error('no webgl')
+    } catch {
+      showFallback()
+      throw new Error('3D unavailable, showing static hero')
+    }
+
+    await Promise.all([
+      document.fonts.load('300 96px "Cormorant Garamond"'),
+      document.fonts.load('500 32px "Geist"'),
+      document.fonts.load('400 24px "Geist Mono"'),
+    ])
+
+    const BLUE = 0x001dd9
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
+    renderer.shadowMap.enabled = true
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    renderer.setClearColor(0xffffff)
+
+    const scene = new THREE.Scene()
+    scene.fog = new THREE.Fog(0xffffff, 30, 52)
+    const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100)
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xdfe4ff, 1.4))
+    const sun = new THREE.DirectionalLight(0xffffff, 1.6)
+    sun.position.set(6, 14, 8)
+    sun.castShadow = true
+    sun.shadow.mapSize.set(2048, 2048)
+    Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 16, bottom: -16 })
+    sun.shadow.radius = 6
+    scene.add(sun, sun.target)
+
+    const mat = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.85, ...extra })
+    const white = mat(0xffffff)
+    const blue = mat(BLUE, { roughness: 0.55 })
+    const pale = mat(0xe6eaff)
+
+    const mesh = (geo, material, { cast = true, receive = true } = {}) => {
+      const m = new THREE.Mesh(geo, material)
+      m.castShadow = cast
+      m.receiveShadow = receive
+      return m
+    }
+
+    // ── Island ──
+    const ISLAND_R = 13
+    const ground = mesh(new THREE.CylinderGeometry(ISLAND_R, ISLAND_R + 0.4, 0.6, 72), mat(0xf8f8fb), { cast: false })
+    ground.position.y = -0.3
+    scene.add(ground)
+    const rim = mesh(new THREE.TorusGeometry(ISLAND_R + 0.05, 0.05, 8, 120), blue, { cast: false })
+    rim.rotation.x = Math.PI / 2
+    scene.add(rim)
+
+    // Pebbles scattered like dotted grid marks
+    const pebbleGeo = new THREE.SphereGeometry(0.08, 8, 6)
+    const pebbles = new THREE.InstancedMesh(pebbleGeo, mat(0xc1c9ff), 220)
+    const tmp = new THREE.Object3D()
+    for (let i = 0; i < 220; i++) {
+      const a = Math.random() * Math.PI * 2
+      const r = 2 + Math.sqrt(Math.random()) * (ISLAND_R - 2.5)
+      tmp.position.set(Math.cos(a) * r, 0.02, Math.sin(a) * r)
+      tmp.scale.setScalar(0.6 + Math.random())
+      tmp.updateMatrix()
+      pebbles.setMatrixAt(i, tmp.matrix)
+    }
+    scene.add(pebbles)
+
+    // ── Canvas-texture signs ──
+    function textTexture(w, h, draw) {
+      const c = document.createElement('canvas')
+      c.width = w
+      c.height = h
+      const tex = new THREE.CanvasTexture(c)
+      tex.colorSpace = THREE.SRGBColorSpace
+      tex.anisotropy = 8
+      const redraw = (...args) => {
+        const ctx = c.getContext('2d')
+        ctx.clearRect(0, 0, w, h)
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, w, h)
+        ctx.fillStyle = '#001dd9'
+        ctx.strokeStyle = '#001dd9'
+        draw(ctx, ...args)
+        tex.needsUpdate = true
+      }
+      return { tex, redraw }
+    }
+
+    function sign({ width, height, texW, texH, draw, postHeight = 1.2 }) {
+      const group = new THREE.Group()
+      const { tex, redraw } = textTexture(texW, texH, draw)
+      const board = mesh(new THREE.BoxGeometry(width, height, 0.12), [white, white, white, white, new THREE.MeshStandardMaterial({ map: tex, roughness: 0.9 }), white])
+      board.position.y = postHeight + height / 2
+      group.add(board)
+      for (const x of [-width / 2 + 0.25, width / 2 - 0.25]) {
+        const post = mesh(new THREE.CylinderGeometry(0.06, 0.06, postHeight + height / 2), blue)
+        post.position.set(x, (postHeight + height / 2) / 2, -0.1)
+        group.add(post)
+      }
+      group.userData.board = board
+      return { group, redraw }
+    }
+
+    const places = []
+    const obstacles = []
+    function addPlace({ x, z, radius, card, object }) {
+      object.position.set(x, 0, z)
+      scene.add(object)
+      const marker = mesh(new THREE.OctahedronGeometry(0.22), blue, { receive: false })
+      marker.position.set(x, 4.3, z)
+      scene.add(marker)
+      places.push({ x, z, card, object, marker, radius: radius + 2.2 })
+      obstacles.push({ x, z, r: radius })
+    }
+
+    // 1. LYDIA IS ___ billboard
+    const title = sign({
+      width: 7.4, height: 2.3, texW: 1480, texH: 460, postHeight: 1.4,
+      draw(ctx, verb = '') {
+        ctx.textBaseline = 'middle'
+        ctx.font = '300 140px "Cormorant Garamond"'
+        ctx.textAlign = 'center'
+        ctx.fillText('LYDIA IS', 740, 140)
+        const w = ctx.measureText(verb).width
+        ctx.textAlign = 'left'
+        ctx.fillText(verb, 740 - w / 2, 320)
+        ctx.fillRect(748 + w / 2, 262, 4, 112)
+      },
+    })
+    title.redraw('')
+    addPlace({
+      x: 0, z: -6.5, radius: 3.4, object: title.group,
+      card: { kicker: 'Billboard', title: 'Lydia is…', body: VERBS.map((v) => v.toLowerCase()).join(', ') + '.' },
+    })
+
+    // 2. Shopify bag stand
+    const bag = new THREE.Group()
+    const bagBody = mesh(new THREE.BoxGeometry(1.5, 1.7, 0.9), blue)
+    bagBody.position.y = 0.85
+    const handle = mesh(new THREE.TorusGeometry(0.42, 0.06, 8, 24, Math.PI), white)
+    handle.position.y = 1.7
+    bag.add(bagBody, handle)
+    const shopSign = sign({
+      width: 3.4, height: 1.1, texW: 900, texH: 290, postHeight: 0.5,
+      draw(ctx) {
+        ctx.textBaseline = 'middle'
+        ctx.textAlign = 'center'
+        ctx.font = '400 44px "Geist Mono"'
+        ctx.fillText('PREV. AT', 450, 100)
+        ctx.font = '300 110px "Cormorant Garamond"'
+        ctx.fillText('Shopify', 450, 190)
+      },
+    })
+    shopSign.redraw()
+    shopSign.group.position.set(0, 0, 1.1)
+    bag.add(shopSign.group)
+    addPlace({
+      x: 6.5, z: 0.5, radius: 1.6, object: bag,
+      card: { kicker: 'Shopify', title: 'Designing and tinkering', body: 'Previously a product designer at Shopify.', href: SHOPIFY_URL, cta: 'Shopify Editions ↗' },
+    })
+
+    // 3. DJ booth
+    const booth = new THREE.Group()
+    const table = mesh(new THREE.BoxGeometry(3, 1, 1.4), white)
+    table.position.y = 0.5
+    const front = mesh(new THREE.BoxGeometry(3.02, 0.25, 1.42), blue)
+    front.position.y = 0.88
+    booth.add(table, front)
+    const records = []
+    for (const x of [-0.75, 0.75]) {
+      const deck = mesh(new THREE.CylinderGeometry(0.52, 0.52, 0.06, 40), mat(0x1c1c1c, { roughness: 0.4 }))
+      deck.position.set(x, 1.04, 0)
+      const label = mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.07, 24), blue)
+      label.position.y = 0.01
+      const groove = mesh(new THREE.BoxGeometry(0.42, 0.072, 0.03), mat(0x3d3d3d))
+      groove.position.x = 0.25
+      deck.add(label, groove)
+      booth.add(deck)
+      records.push(deck)
+    }
+    const djSign = sign({
+      width: 3.6, height: 1.0, texW: 960, texH: 266, postHeight: 1.35,
+      draw(ctx) {
+        ctx.textBaseline = 'middle'
+        ctx.textAlign = 'center'
+        ctx.font = '400 40px "Geist Mono"'
+        ctx.fillText('RECENTLY', 480, 86)
+        ctx.font = '300 92px "Cormorant Garamond"'
+        ctx.fillText('building a dj app', 480, 170)
+      },
+    })
+    djSign.redraw()
+    djSign.group.position.z = -0.75
+    booth.add(djSign.group)
+    addPlace({
+      x: 0, z: 5.5, radius: 1.9, object: booth,
+      card: { kicker: 'Now playing', title: 'Recently: building a dj app', body: 'A DJ visualizer app, designed and engineered end to end.', href: DJ_URL, cta: 'Open djae ↗' },
+    })
+
+    // 4. Koi pond
+    const pond = new THREE.Group()
+    const water = mesh(new THREE.CylinderGeometry(2.2, 2.2, 0.05, 56), mat(0xdfe4ff, { roughness: 0.15, metalness: 0.1 }), { cast: false })
+    water.position.y = 0.02
+    const stones = mesh(new THREE.TorusGeometry(2.25, 0.18, 10, 56), white)
+    stones.rotation.x = Math.PI / 2
+    stones.position.y = 0.08
+    pond.add(water, stones)
+    const koi = []
+    for (let i = 0; i < 3; i++) {
+      const fish = new THREE.Group()
+      const body = mesh(new THREE.CapsuleGeometry(0.13, 0.42, 4, 10), i === 1 ? blue : white, { receive: false })
+      body.rotation.z = Math.PI / 2
+      const spot = mesh(new THREE.SphereGeometry(0.09, 10, 8), i === 1 ? white : blue, { receive: false })
+      spot.position.set(0.12, 0.08, 0)
+      const tail = mesh(new THREE.ConeGeometry(0.14, 0.28, 3), i === 1 ? blue : white, { receive: false })
+      tail.rotation.z = Math.PI / 2
+      tail.position.x = -0.42
+      fish.add(body, spot, tail)
+      fish.position.y = 0.12
+      fish.userData = { r: 0.8 + i * 0.45, speed: 0.6 - i * 0.12, phase: i * 2.1 }
+      pond.add(fish)
+      koi.push(fish)
+    }
+    addPlace({
+      x: -6.5, z: 0.5, radius: 2.4, object: pond,
+      card: { kicker: 'Easter egg', title: 'The koi pond', body: 'The hero koi is 198 hand-tuned ASCII frames. These ones are a little rounder.' },
+    })
+
+    // ── Character ──
+    const hero3d = new THREE.Group()
+    const body = mesh(new THREE.CapsuleGeometry(0.34, 0.5, 6, 16), blue)
+    body.position.y = 0.6
+    const head = mesh(new THREE.SphereGeometry(0.32, 24, 18), white)
+    head.position.y = 1.35
+    const eyeGeo = new THREE.SphereGeometry(0.045, 10, 8)
+    const eyeMat = mat(0x1c1c1c, { roughness: 0.3 })
+    for (const x of [-0.11, 0.11]) {
+      const eye = new THREE.Mesh(eyeGeo, eyeMat)
+      eye.position.set(x, 1.38, 0.28)
+      hero3d.add(eye)
+    }
+    hero3d.add(body, head)
+    hero3d.position.set(0, 0, 0.5)
+    scene.add(hero3d)
+
+    // ── Input ──
+    const keys = new Set()
+    const stick = { x: 0, y: 0 }
+    let target = null
+    const KEYMAP = { KeyW: [0, -1], ArrowUp: [0, -1], KeyS: [0, 1], ArrowDown: [0, 1], KeyA: [-1, 0], ArrowLeft: [-1, 0], KeyD: [1, 0], ArrowRight: [1, 0] }
+
+    hero.addEventListener('keydown', (e) => {
+      if (e.code in KEYMAP) {
+        e.preventDefault()
+        keys.add(e.code)
+        target = null
+      }
+      if (e.code === 'Enter' && activePlace?.card.href) open(activePlace.card.href, '_blank', 'noreferrer')
+    })
+    hero.addEventListener('keyup', (e) => keys.delete(e.code))
+    hero.addEventListener('blur', () => keys.clear())
+
+    const raycaster = new THREE.Raycaster()
+    const floor = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)
+    canvas.addEventListener('pointerdown', (e) => {
+      hero.focus({ preventScroll: true })
+      const rect = canvas.getBoundingClientRect()
+      const ndc = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1)
+      raycaster.setFromCamera(ndc, camera)
+      const hit = new THREE.Vector3()
+      if (raycaster.ray.intersectPlane(floor, hit)) target = hit
+    })
+
+    const joy = document.querySelector('[data-joystick]')
+    const knob = joy.querySelector('i')
+    let joyId = null
+    const moveStick = (e) => {
+      const r = joy.getBoundingClientRect()
+      let dx = e.clientX - (r.left + r.width / 2)
+      let dy = e.clientY - (r.top + r.height / 2)
+      const len = Math.hypot(dx, dy)
+      const max = r.width / 2 - 14
+      if (len > max) { dx = (dx / len) * max; dy = (dy / len) * max }
+      stick.x = dx / max
+      stick.y = dy / max
+      knob.style.transform = `translate(${dx}px, ${dy}px)`
+    }
+    joy.addEventListener('pointerdown', (e) => {
+      joyId = e.pointerId
+      joy.setPointerCapture(joyId)
+      target = null
+      moveStick(e)
+    })
+    joy.addEventListener('pointermove', (e) => { if (e.pointerId === joyId) moveStick(e) })
+    const endStick = () => {
+      joyId = null
+      stick.x = stick.y = 0
+      knob.style.transform = ''
+    }
+    joy.addEventListener('pointerup', endStick)
+    joy.addEventListener('pointercancel', endStick)
+
+    // ── Card ──
+    let activePlace = null
+    function showCard(place) {
+      if (place === activePlace) return
+      activePlace = place
+      if (!place) {
+        delete cardEl.dataset.open
+        return
+      }
+      const { kicker, title, body, href, cta } = place.card
+      cardEl.innerHTML = `<p class="kicker">${kicker}</p><h2>${title}</h2><p>${body}</p>${href ? `<p><a class="chip" href="${href}" target="_blank" rel="noreferrer">${cta}</a></p>` : ''}`
+      cardEl.dataset.open = ''
+    }
+
+    // ── Loop ──
+    const SPEED = 4.2
+    const vel = new THREE.Vector2()
+    const camOffset = new THREE.Vector3(0, 9.5, 13)
+    const camTarget = new THREE.Vector3()
+    const overview = new THREE.Vector3(0, 21, 25)
+    let walkPhase = 0
+    let facing = 0
+
+    function resize() {
+      const { clientWidth: w, clientHeight: h } = hero
+      renderer.setSize(w, h, false)
+      camera.aspect = w / h
+      camera.fov = w < 640 ? 46 : 34
+      camera.updateProjectionMatrix()
+    }
+    new ResizeObserver(resize).observe(hero)
+    resize()
+
+    if (reduced) {
+      camera.position.copy(overview)
+      camera.lookAt(0, 0, 0)
+    } else {
+      camera.position.copy(hero3d.position).add(camOffset).add(new THREE.Vector3(0, 6, 6))
+    }
+
+    typewriter((t) => title.redraw(t), { reduced })
+
+    const clock = new THREE.Clock()
+    requestAnimationFrame(function loop() {
+      requestAnimationFrame(loop)
+      const dt = Math.min(clock.getDelta(), 1 / 20)
+      const t = clock.elapsedTime
+
+      let ix = stick.x
+      let iz = stick.y
+      for (const code of keys) { ix += KEYMAP[code][0]; iz += KEYMAP[code][1] }
+      if (target && !ix && !iz) {
+        const dx = target.x - hero3d.position.x
+        const dz = target.z - hero3d.position.z
+        const d = Math.hypot(dx, dz)
+        if (d < 0.15) target = null
+        else { ix = dx / d; iz = dz / d }
+      }
+      const len = Math.hypot(ix, iz)
+      if (len > 1) { ix /= len; iz /= len }
+
+      const blend = reduced ? 1 : 1 - Math.exp(-dt * 12)
+      vel.x += (ix * SPEED - vel.x) * blend
+      vel.y += (iz * SPEED - vel.y) * blend
+      const p = hero3d.position
+      p.x += vel.x * dt
+      p.z += vel.y * dt
+
+      for (const o of obstacles) {
+        const dx = p.x - o.x
+        const dz = p.z - o.z
+        const d = Math.hypot(dx, dz)
+        const min = o.r + 0.45
+        if (d < min && d > 0) { p.x = o.x + (dx / d) * min; p.z = o.z + (dz / d) * min }
+      }
+      const fromCenter = Math.hypot(p.x, p.z)
+      if (fromCenter > ISLAND_R - 0.8) { p.x *= (ISLAND_R - 0.8) / fromCenter; p.z *= (ISLAND_R - 0.8) / fromCenter }
+
+      const moving = vel.length() > 0.2
+      if (moving) {
+        const want = Math.atan2(vel.x, vel.y)
+        let diff = want - facing
+        diff = Math.atan2(Math.sin(diff), Math.cos(diff))
+        facing += reduced ? diff : diff * (1 - Math.exp(-dt * 14))
+        hero3d.rotation.y = facing
+      }
+      if (!reduced) {
+        walkPhase += moving ? dt * 14 : 0
+        const bob = moving ? Math.abs(Math.sin(walkPhase)) * 0.12 : Math.sin(t * 2) * 0.02
+        body.position.y = 0.6 + bob
+        head.position.y = 1.35 + bob * 1.2
+        body.rotation.z = moving ? Math.sin(walkPhase) * 0.06 : 0
+
+        records.forEach((r) => { r.rotation.y += dt * 3.5 })
+        koi.forEach((f) => {
+          const { r, speed, phase } = f.userData
+          const a = t * speed + phase
+          f.position.x = Math.cos(a) * r
+          f.position.z = Math.sin(a) * r
+          f.rotation.y = -a - Math.PI
+          f.children[2].rotation.y = Math.sin(t * 9 + phase) * 0.5
+        })
+      }
+
+      let nearest = null
+      let nearestD = Infinity
+      for (const place of places) {
+        const d = Math.hypot(p.x - place.x, p.z - place.z)
+        if (d < place.radius && d < nearestD) { nearest = place; nearestD = d }
+        const lift = place === nearest ? 0.25 : 0
+        place.marker.position.y = 4.3 + lift + (reduced ? 0 : Math.sin(t * 2 + place.x) * 0.12)
+        if (!reduced) place.marker.rotation.y += dt * 1.6
+      }
+      showCard(nearest)
+
+      if (!reduced) {
+        camTarget.copy(p).add(camOffset)
+        camera.position.lerp(camTarget, 1 - Math.exp(-dt * 3))
+        camera.lookAt(p.x, p.y + 1.2, p.z - 1.5)
+      }
+      sun.position.set(p.x + 6, 14, p.z + 8)
+      sun.target.position.copy(p)
+
+      renderer.render(scene, camera)
+    })
+
+    hero.focus({ preventScroll: true })
+  </script>
+</body>
+</html>

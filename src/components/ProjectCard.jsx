@@ -5,8 +5,6 @@ import Video from './Video'
 import cardboardTexture from '../assets/cardboard texture blue.webp'
 import videoOverlay from '../assets/projects/work card overlay 3 .png?responsive&w=480;960'
 
-const HIDDEN = { display: 'none' }
-
 function ProjectCard({
   project,
   stackIndex = 0,
@@ -23,8 +21,8 @@ function ProjectCard({
     company,
     start,
     highlights = [],
-    image,
-    imagePlaceholder,
+    cardImage: image,
+    cardImagePlaceholder: imagePlaceholder,
     icon,
     cardVideo,
   } = project
@@ -41,14 +39,14 @@ function ProjectCard({
     if (!onSelect) return
     e.preventDefault()
     const rect = cardRef.current?.getBoundingClientRect()
-    onSelect(project, rect)
+    onSelect(project, rect, cardRef.current)
   }
 
   return (
     <motion.button
       ref={cardRef}
       type="button"
-      className={`work-card ${isMobileStack ? 'work-card--mobile' : ''} group relative block overflow-hidden ${stackClassName}`}
+      className={`work-card ${isMobileStack ? 'work-card--mobile' : ''} ${!isMobileStack && shouldAutoplay ? 'work-card--hovered' : ''} group relative block overflow-hidden ${stackClassName}`}
       {...motionProps}
       style={{
         backgroundImage: `url(${cardboardTexture})`,
@@ -66,33 +64,33 @@ function ProjectCard({
           ) : null}
         </div>
         {image || hasVideo ? (
-          <div className={`work-card-image ${showVideo ? 'work-card-image--video' : ''}`}>
-            {hasVideo ? (
-              <>
-                <Video
-                  media={videoMedia}
-                  playing={showVideo}
-                  preload={warmVideo || showVideo ? 'auto' : 'none'}
-                  style={showVideo ? undefined : HIDDEN}
-                />
-                <Picture
-                  image={videoOverlay}
-                  sizes="316px"
-                  aria-hidden="true"
-                  className="work-card-video-overlay"
-                  style={showVideo ? undefined : HIDDEN}
-                />
-              </>
-            ) : null}
+          <div className="work-card-image">
             <Picture
               image={image}
               placeholder={imagePlaceholder}
               sizes="316px"
               alt={`${title} preview`}
-              style={showVideo ? HIDDEN : undefined}
+            />
+            {hasVideo ? (
+              <Video
+                media={videoMedia}
+                playing={showVideo}
+                preload={warmVideo || showVideo ? 'auto' : 'none'}
+                className={`work-card-video ${showVideo ? 'work-card-video--playing' : ''}`}
+              />
+            ) : null}
+            <Picture
+              image={videoOverlay}
+              sizes="316px"
+              aria-hidden="true"
+              className={`work-card-video-overlay ${showVideo ? 'work-card-video-overlay--hidden' : ''}`}
             />
           </div>
-        ) : null}
+        ) : (
+          <div className="work-card-image work-card-image--placeholder" aria-hidden="true">
+            <span>Preview coming soon</span>
+          </div>
+        )}
         <div className="work-card-meta">
           <span>{company}</span>
           {start ? <span className="work-card-meta-date">{start}</span> : null}

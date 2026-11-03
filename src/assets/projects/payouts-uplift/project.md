@@ -2,6 +2,7 @@
 id: 3
 title: Payouts Uplift
 slug: payouts-uplift
+featuredOrder: 4
 company: Shopify
 protected: true
 date: "3 weeks · 2025"

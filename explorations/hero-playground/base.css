@@ -1,0 +1,182 @@
+/* Copied read-only from src/styles/index.css + the hero shell in custom.css */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap');
+
+:root {
+  --color-primary: #001dd9;
+  --color-primary-soft: #7b8dff;
+  --color-primary-faint: #c1c9ff;
+  --color-bg: #ffffff;
+  --color-surface: #f8f8fb;
+  --color-text: #1c1c1c;
+  --color-text-subdued: #6f6f6f;
+  --color-badge-border: #7b8dff;
+  --color-hairline: rgba(15, 20, 50, 0.12);
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-bg-chip: rgba(255, 255, 255, 0.72);
+  --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.16), 0 1px 4px rgba(0, 0, 0, 0.08);
+  --shadow-chip: 0 0 0 0.5px rgba(15, 20, 50, 0.08), 0 4px 16px rgba(15, 20, 50, 0.08);
+  --radius-xs: 4px;
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-full: 9999px;
+  --ease-smooth: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-dramatic: cubic-bezier(0.12, 0.8, 0.2, 1);
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-mono: 'Geist Mono', monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+button { font: inherit; color: inherit; }
+
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }
+
+/* ── Hero shell ── */
+.hero {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 560px;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.hero-copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.hero-word {
+  width: 220px;
+  font-family: var(--font-serif);
+  font-size: 48px;
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+}
+
+.hero-word--left { text-align: right; }
+.hero-word--right { text-align: left; }
+
+.caret { animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+.koi {
+  display: grid;
+  place-items: center;
+  width: min(420px, 80vw);
+  height: 300px;
+  overflow: hidden;
+}
+
+.koi pre {
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 7px;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.hero-subtext {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0 6px;
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.hero-subtext a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.hero-subtext a:hover { text-decoration: underline; }
+.hero-subtext img { width: 0.95em; height: 0.95em; transform: translateY(0.12em); }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px dotted var(--color-badge-border);
+  border-radius: var(--radius-full);
+  background: var(--glass-bg-chip);
+  box-shadow: var(--shadow-chip);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-primary);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 200ms var(--ease-smooth), background 200ms var(--ease-smooth);
+}
+
+.chip:hover { background: #fff; }
+.chip:active { transform: scale(0.97); }
+
+/* Small instruction pill, bottom-centre of each exploration */
+.hint {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  z-index: 20;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-chip);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .hero-row { flex-direction: column; gap: 4px; }
+  .hero-word { width: auto; font-size: 36px; text-align: center !important; }
+  .koi { height: 220px; }
+  .koi pre { font-size: 5px; }
+  .hero-subtext { font-size: 14px; padding: 0 16px; }
+}

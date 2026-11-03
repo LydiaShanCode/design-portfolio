@@ -1,0 +1,37 @@
+<!--
+  Current — the hero as it ships today: "LYDIA IS" + typed verb either side of the ASCII koi,
+  subtext, and the dj app chip. Static; the only motion is the typewriter and the koi loop.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Current hero</title>
+  <link rel="stylesheet" href="base.css" />
+  <style>
+    .hero { display: grid; place-items: center; touch-action: auto; }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="hero-row">
+        <h1 class="hero-word hero-word--left">LYDIA IS</h1>
+        <div class="koi"><pre data-koi></pre></div>
+        <div class="hero-word hero-word--right"><span data-verb></span><span class="caret">|</span></div>
+      </div>
+      <p class="hero-subtext" data-subtext></p>
+      <div data-chip></div>
+    </div>
+  </section>
+  <script type="module">
+    import { typewriter, loadKoiFrames, playKoi, subtextHTML, chipHTML } from './hero.js'
+    document.querySelector('[data-subtext]').innerHTML = subtextHTML()
+    document.querySelector('[data-chip]').innerHTML = chipHTML()
+    const verb = document.querySelector('[data-verb]')
+    typewriter((t) => { verb.textContent = t })
+    playKoi(document.querySelector('[data-koi]'), await loadKoiFrames())
+  </script>
+</body>
+</html>

@@ -22,4 +22,8 @@ const projects = Object.values(modules)
   })
   .sort((a, b) => a.id - b.id)
 
+// The home fan is built for exactly five cards; slot 2 is the top card on both desktop and mobile
+export const featuredProjects = projects
+  .filter((project) => !project.archived)
+  .sort((a, b) => (a.featuredOrder ?? a.id) - (b.featuredOrder ?? b.id))
 export default projects

@@ -51,19 +51,21 @@
     --glass-bg-hover: rgba(255, 255, 255, 0.82);
     --glass-border: rgba(0, 0, 0, 0.12);
     --glass-blur: blur(16px);
-    --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.16), 0 1px 4px rgba(0, 0, 0, 0.08);
-    --glass-shadow-hover: 0 6px 24px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.10);
+    --glass-shadow: 0 4px 20px rgb(var(--shadow-tint) / 0.16), 0 1px 4px rgb(var(--shadow-tint) / 0.08);
+    --glass-shadow-hover: 0 6px 24px rgb(var(--shadow-tint) / 0.2), 0 2px 6px rgb(var(--shadow-tint) / 0.10);
     --glass-bg-chip: rgba(255, 255, 255, 0.72);
-    --shadow-chip: 0 0 0 0.5px rgba(15, 20, 50, 0.08), 0 4px 16px rgba(15, 20, 50, 0.08);
+    --shadow-chip: 0 0 0 0.5px rgb(var(--shadow-tint) / 0.08), 0 4px 16px rgb(var(--shadow-tint) / 0.08);
     --color-hairline: rgba(15, 20, 50, 0.12);
 
-    /* Shadows */
-    --shadow-card: 0 10px 30px rgba(44, 47, 67, 0.15);
-    --shadow-modal: 0 40px 80px rgba(6, 14, 35, 0.25);
-    --shadow-hover: 0 4px 32px rgba(15, 20, 50, 0.039);
-    --shadow-postcard: 0 4px 20px rgba(0, 0, 0, 0.08);
-    --shadow-postcard-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
-    --shadow-postcard-drag: 0 12px 40px rgba(0, 0, 0, 0.15);
+    /* Shadows — near-black nudged toward --color-primary */
+    --shadow-tint: 18 26 78;
+    --shadow-card: 0 10px 30px rgb(var(--shadow-tint) / 0.15);
+    --shadow-card-hover: 0 28px 56px rgb(var(--shadow-tint) / 0.22), 0 8px 18px rgb(var(--shadow-tint) / 0.1);
+    --shadow-modal: 0 40px 80px rgb(var(--shadow-tint) / 0.25);
+    --shadow-hover: 0 4px 32px rgb(var(--shadow-tint) / 0.039);
+    --shadow-postcard: 0 4px 20px rgb(var(--shadow-tint) / 0.08);
+    --shadow-postcard-hover: 0 8px 30px rgb(var(--shadow-tint) / 0.12);
+    --shadow-postcard-drag: 0 12px 40px rgb(var(--shadow-tint) / 0.15);
     --shadow-send-hover: 0 6px 16px rgba(0, 29, 217, 0.35);
 
     /* Radii */
@@ -83,6 +85,26 @@
     --max-w-content: 1200px;
     --max-w-modal: 1100px;
     --max-w-postcard: 520px;
+
+    /* Design version switcher (dev / ?versions=1 only) */
+    --dv-accent: var(--color-primary, #001dd9);
+    --dv-on-accent: var(--color-bg, #ffffff);
+    --dv-bg: var(--glass-bg-chip, rgba(255, 255, 255, 0.72));
+    --dv-panel-bg: rgba(255, 255, 255, 0.9);
+    --dv-text: var(--color-text, #1c1c1c);
+    --dv-muted: var(--color-text-subdued, #6f6f6f);
+    --dv-border: var(--color-hairline, rgba(15, 20, 50, 0.12));
+    --dv-track: color-mix(in srgb, var(--color-primary, #001dd9) 6%, transparent);
+    --dv-shadow: var(--glass-shadow, 0 4px 20px rgba(0, 0, 0, 0.16));
+    --dv-font: var(--font-sans, 'Geist', system-ui, sans-serif);
+    --dv-mono: var(--font-mono, 'Geist Mono', monospace);
+    --dv-serif: var(--font-serif, 'Cormorant Garamond', serif);
+    --dv-radius: var(--radius-md, 18px);
+    --dv-panel-radius: var(--radius-2xl, 28px);
+    --dv-card-radius: var(--radius-sm, 12px);
+    --dv-ease: var(--ease-smooth, cubic-bezier(0.22, 0.61, 0.36, 1));
+    /* Above modals (2000) and the lightbox (9000), below the custom cursor (9999) */
+    --dv-z: 9100;
   }
 
   html,

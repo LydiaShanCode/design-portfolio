@@ -2,6 +2,7 @@
 id: 4
 title: Shop Balance
 slug: shop-balance
+featuredOrder: 5
 company: Shopify
 protected: true
 date: "2 weeks · 2026"
