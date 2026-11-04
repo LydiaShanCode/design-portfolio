@@ -4,6 +4,7 @@ import postcardBg from '../assets/postcard.png?responsive&w=480;960;1824'
 
 const CONTACT_EMAIL = 'lydiashan.c@gmail.com'
 const SUBJECT = 'Hello from your portfolio!'
+const DELIVERY_URL = 'https://form.taxi/s/79dyvnox'
 const DELIVERY_TIMEOUT_MS = 10000
 
 function sentPageUrl() {
@@ -57,9 +58,7 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
     if (honeyRef.current) honeyRef.current.value = ''
   }, [])
 
-  // FormSubmit answers a hidden frame with X-Frame-Options and a Cloudflare
-  // challenge, so the note never arrives. A fetch can read the JSON result.
-  // If that is blocked, the form navigates for real so the challenge can finish.
+  // A blocked fetch still posts the form in this tab. Form.taxi follows _next back.
   const openMailbox = () => {
     const form = formRef.current
     if (!form) return
@@ -87,7 +86,7 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
     sendingRef.current = true
     setIsSending(true)
     setSendError(false)
-    deliverRef.current = fetch(`https://formsubmit.co/ajax/${CONTACT_EMAIL}`, {
+    deliverRef.current = fetch(DELIVERY_URL, {
       method: 'POST',
       headers: { Accept: 'application/json' },
       body: data,
@@ -292,7 +291,7 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
         <form
           ref={formRef}
           className="postcard-content"
-          action={`https://formsubmit.co/${CONTACT_EMAIL}`}
+          action={DELIVERY_URL}
           method="POST"
           referrerPolicy="no-referrer-when-downgrade"
           onSubmit={handleSubmit}
@@ -364,14 +363,12 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
             )}
           </div>
           <input type="hidden" name="_subject" value={SUBJECT} />
-          <input type="hidden" name="_template" value="box" />
-          <input type="hidden" name="_captcha" value="false" />
           <input type="hidden" name="_replyto" defaultValue="" />
           <input type="hidden" name="_next" defaultValue="" />
           <input
             ref={honeyRef}
             type="text"
-            name="_honey"
+            name="_gotcha"
             className="postcard-sr"
             tabIndex={-1}
             autoComplete="off"
