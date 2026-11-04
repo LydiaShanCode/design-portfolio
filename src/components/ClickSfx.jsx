@@ -13,7 +13,8 @@ function ClickSfx() {
   useEffect(() => initClickSfx(), [])
 
   useEffect(() => {
-    const isClickable = (target) => target instanceof Element && target.closest(CLICKABLE)
+    const isClickable = (target) =>
+      target instanceof Element && target.closest(CLICKABLE) && !target.closest('[data-no-sfx]')
     // Pointer presses sound on pointerdown so the drop lands with the finger, not on release
     const onPointerDown = (e) => {
       if (e.button === 0 && isClickable(e.target)) playClickSfx(versionRef.current)

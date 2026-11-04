@@ -38,7 +38,7 @@ export default function CampaignPrototypeEmbed() {
   }, [expanded, modalOpen, collapse])
 
   return (
-    <figure className="cp-embed">
+    <figure className="cp-embed" data-no-sfx>
       <div className="cp-embed__frame">
         {expanded ? (
           <div className="cp-embed__placeholder">
@@ -67,7 +67,7 @@ export default function CampaignPrototypeEmbed() {
 
       {expanded
         ? createPortal(
-            <div className="cp-fullscreen" role="dialog" aria-modal="true" aria-label="Training campaign prototype">
+            <div className="cp-fullscreen" role="dialog" aria-modal="true" aria-label="Training campaign prototype" data-no-sfx>
               <div className="cp-fullscreen__backdrop" onPointerDown={() => !modalOpen && collapse()} />
               <div className="cp-fullscreen__panel">
                 <ScaledStage store={store} mode="fit" />

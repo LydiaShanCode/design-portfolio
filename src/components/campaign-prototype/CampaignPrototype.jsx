@@ -31,7 +31,7 @@ export default function CampaignPrototype({ store, className = '' }) {
   const modalOpen = state.dialog || state.contentModal
 
   return (
-    <div className={`cp ${modalOpen ? 'cp--modal-open' : ''} ${className}`.trim()} data-hide-cursor>
+    <div className={`cp ${modalOpen ? 'cp--modal-open' : ''} ${className}`.trim()} data-hide-cursor data-no-sfx>
       <AppShell onNavigate={actions.backToList}>
         {state.view === 'list' ? (
           <CampaignList onNew={actions.openDialog} onOpenNew={actions.openCampaign} newCampaign={newCampaign} />
@@ -42,17 +42,19 @@ export default function CampaignPrototype({ store, className = '' }) {
 
       <AnimatePresence>
         {state.dialog ? (
-          <motion.div key="dialog" className="cp-layer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2, ease: EASE }}>
+          <motion.div key="dialog" className="cp-layer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.16, ease: EASE } }} transition={{ duration: 0.2, ease: EASE }}>
             <CreateDialog initial={DEFAULT_CAMPAIGN} onCancel={actions.closeDialog} onCreate={actions.createCampaign} />
           </motion.div>
         ) : null}
       </AnimatePresence>
 
-      {state.contentModal ? (
-        <div className="cp-layer">
-          <ContentModal initialItems={state.items} initialOptions={state.options} onSave={actions.saveContent} onClose={actions.closeContent} />
-        </div>
-      ) : null}
+      <AnimatePresence>
+        {state.contentModal ? (
+          <motion.div key="content" className="cp-layer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.16, ease: EASE } }} transition={{ duration: 0.2, ease: EASE }}>
+            <ContentModal initialItems={state.items} initialOptions={state.options} onSave={actions.saveContent} onClose={actions.closeContent} />
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   )
 }

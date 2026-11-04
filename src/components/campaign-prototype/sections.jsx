@@ -544,7 +544,11 @@ export function AdvancedCard({ advanced, onChange }) {
             onChange={(vanta) => onChange({ vanta })}
           />
           <SettingRow
-            logo={<img className="cp-setting__logo" src={assets.drata} alt="" width="24" height="24" draggable={false} />}
+            logo={
+              <span className="cp-setting__logo cp-setting__logo--drata">
+                <img src={assets.drataC} alt="" draggable={false} />
+              </span>
+            }
             title="Send Proof of Completion to Drata"
             description="Add Completed Security Training Evidence to Drata in a PDF format."
             checked={advanced.drata}

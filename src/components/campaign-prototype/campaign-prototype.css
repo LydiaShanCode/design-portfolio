@@ -51,6 +51,12 @@
   text-align: left;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  user-select: none;
+}
+
+.cp input,
+.cp textarea {
+  user-select: text;
 }
 
 .cp,
@@ -103,6 +109,7 @@
 :where(.cp) ul {
   margin: 0;
   padding: 0;
+  font-family: inherit;
 }
 
 :where(.cp) ul {
@@ -779,7 +786,6 @@
   align-items: center;
   justify-content: center;
   background: rgba(30, 35, 36, 0.2);
-  animation: cp-fade 220ms var(--cp-ease) both;
 }
 
 .cp-dialog {
@@ -1844,6 +1850,11 @@
   color: var(--cp-text-4);
 }
 
+.cp-datefield--disabled .cp-datefield__button,
+.cp-timefield--disabled .cp-timefield__button {
+  opacity: 0.4;
+}
+
 .cp-datefield--disabled *,
 .cp-timefield--disabled * {
   cursor: not-allowed !important;
@@ -2047,6 +2058,7 @@
   position: relative;
   display: flex;
   flex: none;
+  align-items: flex-start;
   justify-content: center;
   width: 16px;
   color: var(--cp-text-3);
@@ -2255,6 +2267,18 @@
   width: 24px;
   height: 24px;
   border-radius: 6px;
+}
+
+.cp-setting__logo--drata {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1c2541;
+}
+
+.cp-setting__logo--drata img {
+  width: 13px;
+  height: auto;
 }
 
 .cp-setting__logo--bamboo {
@@ -2572,12 +2596,14 @@
   background: var(--cp-bg);
   text-align: left;
   transition:
+    background-color var(--cp-base) var(--cp-ease),
     border-color var(--cp-base) var(--cp-ease),
     box-shadow var(--cp-base) var(--cp-ease),
     transform var(--cp-base) var(--cp-ease);
 }
 
 .cp-stat:hover {
+  background: var(--cp-bg-2);
   border-color: var(--cp-border-strong);
   box-shadow: var(--cp-shadow-xs);
 }
@@ -3009,7 +3035,8 @@
   font-family: var(--cp-font-display);
   font-size: 18px;
   font-weight: 500;
-  line-height: 20px;
+  line-height: 22px;
+  text-wrap: balance;
 }
 
 .cp-folder__chips {
@@ -3882,4 +3909,8 @@
   inset: 0;
   z-index: 9500;
   background: #f6f6f6;
+}
+
+.cp-reminder--manager .cp-reminder__rail {
+  align-items: center;
 }
