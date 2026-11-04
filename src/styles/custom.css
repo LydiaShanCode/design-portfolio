@@ -1470,6 +1470,27 @@ body {
   opacity: 0.5;
 }
 
+.footer-index {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-left: 16px;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 1;
+  transition: color 200ms var(--ease-smooth);
+}
+
+.footer-index:hover,
+.footer-index:focus-visible {
+  color: var(--color-primary);
+}
+
+.footer-index:active {
+  opacity: 0.6;
+}
+
 /* Helvetica Neue LT Pro is a licensed webfont; until it's self-hosted this falls back to the system Helvetica Neue */
 .local-time {
   display: inline-flex;

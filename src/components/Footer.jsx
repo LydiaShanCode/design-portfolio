@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Postcard from './Postcard'
 import LocalTime from './LocalTime'
 import { afterLoadIdle } from '../lib/afterLoad'
+import { siteIndexHref } from '../lib/siteIndex'
 import arenaIcon from '../assets/arena-icon.webp'
 
 const CONTACT_EMAIL = 'lydiashan.c@gmail.com'
@@ -165,7 +166,10 @@ function Footer() {
         </div>
       </div>
       <div className="footer-colophon">
-        <p className="footer-copyright">© 2026 — coded by me and Claude Code</p>
+        <p className="footer-copyright">
+          © 2026 — coded by me and Claude Code
+          <a href={siteIndexHref} className="footer-index" data-hoverable>index.md</a>
+        </p>
         <LocalTime />
       </div>
     </footer>

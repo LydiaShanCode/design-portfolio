@@ -114,6 +114,7 @@ Write to `src/assets/projects/<slug>/project.md`. Follow `src/assets/projects/_c
 - [ ] Learning is a principle she earned, framed in first person
 - [ ] Reads aloud like Lydia: plain, candid, a little playful
 - [ ] Banned words and generic process labels are gone
+- [ ] public/index.md mentions the project, and the site-index skill was followed
 ```
 
 After writing the file, give Lydia the three-sentence spine, the headline sequence, and the list of TODOs and questions still open.
