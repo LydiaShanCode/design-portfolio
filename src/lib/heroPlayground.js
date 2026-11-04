@@ -3,12 +3,10 @@
 import * as heroKit from '../../explorations/hero-playground/hero.js'
 import baseCss from '../../explorations/hero-playground/base.css?raw'
 
+// Island (v1), dolphins (v3), fling (v4) and the type ring (v5) stay in
+// explorations/hero-playground. They are not mounted.
 const PAGES = {
-  island: () => import('../../explorations/hero-playground/v1.html?raw'),
   ripple: () => import('../../explorations/hero-playground/v2.html?raw'),
-  dolphins: () => import('../../explorations/hero-playground/v3.html?raw'),
-  fling: () => import('../../explorations/hero-playground/v4.html?raw'),
-  ring: () => import('../../explorations/hero-playground/v5.html?raw'),
   xray: () => import('../../explorations/hero-playground/v6.html?raw'),
 }
 

@@ -1,7 +1,7 @@
 export const ONE_PAGER_BIO =
   'Product designer in New York City, currently at Adaptive Security. Before that I was on the payments team at Shopify, designing financial experiences across mobile and desktop, and before that in startups building 0–1 products.'
 
-export const ONE_PAGER_LEAD = 'Selected work, with what each one changed. Open a case study for the full story.'
+export const ONE_PAGER_LEAD = 'What changed, then the case study.'
 
 // Every figure comes from the project's case study or resume.js. `note` keeps caveats attached to the numbers.
 export const ONE_PAGER_WORK = {

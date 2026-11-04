@@ -28,7 +28,11 @@ function WallCard({ project, index, onOpen }) {
             {project.title}
           </span>
           <span className="wf-wall-meta">{project.company} · {yearOf(project)}</span>
-          <span className="wf-wall-tags">{project.highlights.slice(0, 3).join(' / ')}</span>
+          <span className="wf-tags">
+            {project.highlights.slice(0, 2).map((item) => (
+              <span key={item} className="wf-tag">{item}</span>
+            ))}
+          </span>
         </span>
       </button>
     </li>
