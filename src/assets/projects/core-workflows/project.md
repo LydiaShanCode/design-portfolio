@@ -1,6 +1,6 @@
 ---
 id: 7
-title: Core Workflows
+title: Campaign Creation
 slug: core-workflows
 featuredOrder: 2
 company: Adaptive Security
@@ -9,10 +9,9 @@ date: "2 months · 2026"
 start: "Jul 2026"
 timeline: Jul 2026 – Sep 2026
 highlights:
-  - Admin workflows
-  - Concept testing
-  - Brief to launch
-  - Shipped in code
+  - 2,000+ test sends in 60 days
+  - Setup confusion cut by more than half
+  - 2 features, brief to launch
 iconKey: adaptive
 videoKey: coreWorkflows
 caseStudyReady: true
@@ -27,69 +26,69 @@ team:
     role: ENG
 ---
 
-## Launching a campaign shouldn't feel risky
+## Admins launched campaigns they weren't sure about
 
-Security admins use Adaptive to run training campaigns: who gets enrolled, which modules, when they're due, and which notifications go out. It's the core workflow of the product, and it made people nervous. At the kickoff for the "Core Workflow Usability" bet, our VP of Product pointed out that "over 80 percent of people are already editing campaigns after they launch." Admins were launching, spotting something off, and patching it live. About 45% of orgs that launched a training campaign created an explicitly test-named one first, just to see what employees would get.
+Adaptive Security sells security awareness training. Admins build campaigns: who gets enrolled, which modules, when they're due, which emails go out. Two weeks after I joined, our VP of Product flagged that over 80% of admins edit a campaign after launching it. About 45% created a throwaway test campaign first, just to see what employees would receive. Those test campaigns polluted their reporting data.
 
-Two weeks after I joined, I was asked to lead a greenfield concept for campaign creation while another designer improved the existing wizard. My concept didn't win. But the research behind it turned into two features I took from brief to launch.
+I was asked to explore a greenfield concept for campaign creation while another designer improved the existing wizard. My concept didn't ship. The research behind it did: two features I took from finding to launch.
 
-- **A wizard that hides the whole picture** — Settings were spread across steps, so admins never saw their campaign as one thing before it went live.
-- **No way to preview the inbox** — Admins could preview a module, but not what the email would feel like in their inbox, so they built fake campaigns to find out.
-- **One toggle, two jobs** — The "compliance" toggle quietly controlled whether results were posted to tools like Drata or Vanta, and that setting stayed hidden until the toggle was on.
+- **No preview of the inbox** — Admins could preview a module, not the email. So they built fake campaigns to find out.
+- **One toggle, two jobs** — "Compliance" quietly controlled whether results were posted to tools like Drata or Vanta. Admins couldn't tell.
+- **The whole picture, hidden** — Settings were spread across wizard steps, so nothing showed the campaign as one thing before it went live.
 
-## One page vs. a better wizard
+## A single page, tested against a better wizard
 
-At the design review we split the bet into two prototypes. Mine, Prototype A, dropped admins onto an empty campaign page: a "single pane of glass" where every setting is visible and editable in place. Prototype B kept the stepper and fixed its rough edges. I explored a two-column layout, an improved wizard and a flat single page before landing on A, then built it as a coded prototype so participants could click through a real flow instead of a click-through mock.
+At design review we split the bet in two. My prototype dropped admins onto an empty campaign page where every setting is visible and editable in place. The other kept the stepper and fixed its rough edges. I built mine as a coded prototype, about 20,000 lines, so participants clicked through a real flow.
 
-I asked engineering whether build cost should shape which direction I pushed. The answer was no, not for early prototypes. That freed me to test the boldest version.
+I asked engineering whether build cost should shape the direction. The answer was no, not for discovery prototypes. So I tested the boldest version.
 
 [TODO: asset — Prototype A walkthrough]
 
-## A tie goes to the wizard
+## The concept won. The wizard shipped.
 
-We ran concept tests with customers and internal security staff. I led the session with an engineering firm's InfoSec lead, who rated Prototype A an 8 to 9 for ease:
+We tested both with customers and internal security staff. I ran the session with an engineering firm's InfoSec lead.
 
 > I'm… a fan of the one pager
 
-The full synthesis was blunt, though: "Both flows tested well… There isn't a definitely better approach." A had real weaknesses. "Mark done" was hard to discover, and some settings fell below the fold. With no clear winner, the team kept the stepper, the lower-risk change to a workflow customers already knew. The single page's strengths moved into the review and details pages instead.
+Three sessions rated the single page 4, 8–9 and 8 for ease, and all three praised having everything on one scrollable page. It had real weaknesses too: "mark done" was hard to find, and some settings fell below the fold.
 
-It stung a little. But the sessions surfaced two problems neither prototype solved, and they became my next two projects.
+The team kept the wizard, the lower-risk change to a flow customers already knew, and moved the single page's strengths into its review step. That stung a little. But the sessions surfaced two problems neither prototype solved, and both became projects I owned.
 
-## "Just send me a test"
+## Send yourself the real email
 
-Participants kept inventing workarounds to see what employees would actually receive. An internal security tester sent a full campaign to himself to check it, and a CISO asked for exactly what we were missing:
+Participants kept inventing workarounds to see what employees would receive. A CISO described the missing feature as one of his favorites. I wrote the brief and the spec for Test Send, with the trade-off stated up front: ship fast, on a foundation that lasts.
 
-> loved that feature that was one of my favorites
+The details are what make a test trustworthy, so I grounded each one in the code:
 
-> have an easy simulator mode
-
-The workaround had a cost beyond time: every throwaway test campaign polluted the org's reporting data. I wrote the brief and spec for Test Send, with one trade-off up front: optimize for speed, on a foundation that would last. Admins can now send any training or phishing notification to themselves or chosen recipients before launch. The details made the test trustworthy:
-
-- **Real due dates** — The test reflects the campaign's selected cadence, so it reads like the real email.
-- **Their language** — Each recipient gets the test in their own language, with matching banner copy.
+- **Real due dates** — The test follows the campaign's cadence, so it reads like the email employees get.
+- **Their language** — Each recipient gets it in their own language. A language picker would have been redundant.
 - **One source of truth** — I documented every notification macro so engineering and support worked from the same list.
 
-One call didn't go my way. I wanted a single recipient picker for training and phishing. Engineering pushed back on the migration cost, so we shipped two pickers and logged the consolidation to the design system backlog. That was right for speed, and I'd rather name the debt than hide it. Engineering built production while I prototyped, ran QA, and wrote the help article, the Loom and the launch post.
+One call didn't go my way. I wanted one recipient picker for training and phishing. Engineering said the migration was costly, so I asked why, accepted the answer, and logged the consolidation to the backlog instead of dropping it.
+
+Engineering wrote the production code. I wrote the prototype, ran QA, and wrote the help article, the Loom, the sales and support notes, and the launch post.
 
 [TODO: asset — Test Send modal and entry points]
 
-## Untangling compliance from postbacks
+## A toggle that did two things
 
-The second problem was a toggle doing two jobs. In testing, admins didn't realize that marking a campaign "compliance" also sent results to their GRC tool. One CISO only found out from our prototype. Engineering confirmed the link was a frontend-only restriction, so the two could be pulled apart.
+In testing, admins didn't realize that marking a campaign "compliance" also sent results to their GRC tool. One CISO only found out from our prototype. A teammate's query showed why it mattered: 41.3% of sent training campaigns had compliance on, but only 5.4% had any postback. Engineering confirmed the link was a frontend-only restriction, so the two could be separated.
 
-The data backed it up. A teammate's query showed 41.3% of sent training campaigns had compliance turned on, but only 5.4% had any postback. I sized it next: 93 orgs used only the Vanta postback, 31 only Drata and 24 only BambooHR. Then I split the two settings: the campaign tag became "Mark as Compliance for reporting," and postbacks got their own card with a clear empty state and an info popover. I designed it, wrote both PRs, merged them and wrote the launch post.
+I sized the install base first. 93 orgs used only Vanta, 31 only Drata, 24 only BambooHR, and almost nobody ran more than one. That became the rule: suggest a postback only when it's useful, and hide the other vendors once one is connected.
+
+Then I split the settings. The campaign tag became "Mark as Compliance for reporting." Postbacks got their own card, with an empty state and an info popover. I designed it, wrote both production PRs, merged them, and wrote the launch post.
 
 [TODO: asset — compliance card states]
 
-## What "live" really means
+## Overdue isn't finished
 
-In parallel I redesigned the campaign index pages: consolidated cards, progress bars, archive, and markers for recurring campaigns. I led two interviews, with a Director of IT and a senior InfoSec engineering manager, and both pushed back on the same assumption I'd made: that an overdue campaign is finished.
+In parallel I redesigned the campaign index: one list instead of two dense tables, with progress, archive, and markers for recurring campaigns. I ran two interviews, with a Director of IT and a senior InfoSec manager. Both pushed back on the same assumption I'd made, that an overdue campaign is finished.
 
 > It's a compliance thing… we can't just close those out
 
 > We would still treat it as a live campaign
 
-Overdue became a live state. I handed off the specs, and the team later used my designs as the starting point for the cards they built.
+Overdue became a live state. Engineering picked the project up in October and built from these designs.
 
 ## [hidden] Final walkthrough
 
@@ -97,18 +96,20 @@ Overdue became a live state. I handed off the specs, and the team later used my 
 
 ## Was it a success?
 
-Both features shipped. Compliance clarity went out in August, and Test Send followed in September for email, up to 10 recipients per test. Our Head of Design called the compliance change "a valuable UX update." Two months in, here's what the data shows:
+Both features shipped. Compliance clarity went out in August, and Test Send followed in September, for training and phishing email, up to 10 recipients per test. Two months later:
 
-- **Test Send gets used** — Admins sent 1,487 training and 594 phishing test sends in the first 60 days, from at least 33 and 25 companies. Weekly training test sends tripled in the first five weeks, from 93 to 295, with no server errors on either endpoint.
-- **Setup confusion dropped** — In the 60 days after launch, customer conversations about how to set up compliance or postbacks fell from 12 to 5, and setup tickets from 4 to 1.
-- **The new toggle reaches people** — In the last 30 days, 365 admins at 326 companies clicked "Mark as Compliance for reporting" 708 times.
+- **Test Send gets used** — 1,487 training and 594 phishing test sends in 60 days, from at least 33 and 25 companies. Weekly training sends tripled in the first five weeks, 93 to 295, with no server errors on either endpoint.
+- **Setup confusion dropped** — Customer conversations about setting up compliance or postbacks fell from 12 to 5, and setup tickets from 4 to 1.
+- **The renamed toggle reaches people** — 365 admins at 326 companies clicked "Mark as Compliance for reporting" 708 times in 30 days.
 
-None of this is a measured outcome, and I don't want to dress it up as one. Conversation counts show how much people talked about a problem, not how often it happened. Delivery issues like sync failures rose from 7 to 11 in the same window, because a label can't fix an integration. Nobody has re-measured the 45% test-named baseline yet, so I can't claim Test Send ended throwaway campaigns.
+These are usage counts, not measured outcomes. Conversation counts show how much people talked about a problem, not how often it happened. Delivery issues like sync failures rose from 7 to 11 in the same window, because a label can't fix an integration. And nobody has re-measured the 45% test-campaign baseline, so I can't claim Test Send ended the workaround.
 
-Threads asking to see the real inbox held flat, 18 before and 19 after, but they changed shape. Support now answers them by pointing to Test Send, and CSMs demo it on onboarding calls. The feature also surfaced a gap nobody could see before: several admins found the in-product preview didn't match the test they received. A few bugs followed launch too. Auto-Phish test sends failed for five companies until engineering fixed them, and French tests arrived in English. On calls, admins still asked what a "postback" is. Splitting the toggle fixed the structure, but the word is still in the way.
+The requests to "see the real inbox" held flat, 18 before and 19 after, but they changed shape. Support now answers them by pointing at Test Send. The feature also exposed a gap nobody could see before: several admins found the in-product preview didn't match the test they received. A few bugs shipped with it too. Auto-Phish test sends failed for five companies until engineering fixed them, and French tests arrived in English.
 
-Prototype A's research also fed the team's Triggered/One-time Campaign Clarity launch, where I was credited as a contributor. That's a team outcome rather than mine, but its early numbers moved the right way: auto-enrollment rose from 3.9% to 7.9%, and drafts without a policy dropped from 140 to 5.
+On calls, admins still ask what a "postback" is. Splitting the toggle fixed the structure. The word is still in the way.
 
-## Biggest learnings - A losing prototype can still win
+## Biggest learnings
 
-At first I treated Prototype A like something I needed to win. Looking back, its job was to make people say what they needed out loud, and it did. "Send me a test" and "what does this toggle do?" only came up because participants were clicking through something real. Now I judge a bold prototype less by whether it ships and more by what it makes people tell you.
+I treated the single-page prototype like something I had to win. Its job was to make people say what they needed out loud, and it did. "Send me a test" and "what does this toggle do?" only came up because participants were clicking through something real.
+
+The other lesson came from engineering. Some of my screens didn't match the live app, and an early draft reused nothing that already existed. I design against the live product now, before the file.

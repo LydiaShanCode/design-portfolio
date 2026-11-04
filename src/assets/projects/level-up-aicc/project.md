@@ -1,6 +1,6 @@
 ---
 id: 6
-title: Level up AICC
+title: Creating Security Awareness Training with AI
 slug: level-up-aicc
 featuredOrder: 3
 company: Adaptive Security
@@ -9,13 +9,26 @@ date: "2 months · 2026"
 start: "Sep 2026"
 timeline: Sep 2026 – Oct 2026
 highlights:
-  - AI-native editing
-  - Customer concept testing
-  - Shipped in code
-  - Guidelines for AI
+  - Set hybrid AI editing as the direction
+  - No drop-off from the new intake
+  - 11 PRs shipped in code
 iconKey: adaptive
 videoKey: aicc
 caseStudyReady: true
+showcase:
+  - file: prompt.jpg
+    wide: true
+    alt: The creation prompt, asking what training to build
+  - file: questions.jpg
+    alt: Follow-up questions that gather intent before generating
+  - file: style.jpg
+    alt: Visual style options, from photo-realistic to custom
+  - file: layouts.jpg
+    alt: New frame layouts in the content picker
+  - file: quiz.jpg
+    alt: A branded quiz frame with feedback on the answer
+  - file: editor.jpg
+    alt: The frame editor, with AI edits and manual fixes side by side
 team:
   - name: Lydia Shan
     role: DES
@@ -29,47 +42,57 @@ team:
     role: ENG
 ---
 
-## Training people don't want to skip
+## AI drafts the training. Admins can't finish it.
 
-Adaptive Security sells security awareness training: phishing simulations and short training modules that every employee has to complete. The AI content creator (AICC) lets security admins generate those modules from a prompt instead of picking from a library. The pitch is speed. The catch is control. Once the AI hands back a module, an admin has to make it theirs: fix a frame, add a quiz, match the brand, all without a design background.
+Adaptive Security is most known for offering security awareness training for compliance. A refresh on the training's interactivity and editing was needed to stay competitive. I led the design of a new editor experience that lets customers revise their training slides with AI.
 
-I joined the "Level up AICC" bet two months into my time at Adaptive, working with the lead designer, a PM who ran our customer feedback program, and the AICC engineering team. My scope covered interactive blocks, the editing model in the frame builder, layouts and narration. For much of it I worked directly in code.
+I started broad and prototyped two formats. One used a timeline for a video-like lesson. The other kept the familiar slide format. When the models fell short of the video output we wanted, we moved forward with slides.
+
+I then tested three editing approaches: prompt-only editing, AI with simple manual controls, and a freeform canvas where customers could drag and resize anything. For everyday editing, most preferred a mix of AI and direct controls. They wanted to pick a layout, move an element and have it snap into place, or ask the AI to make a bigger change. Templates and suggested prompts came up more often than prompting from scratch.
+
+Prompting directly on the slide element felt the most intuitive. Keeping the chat history on the left held onto the context from the first prompt and the follow-up questions, showed the latest edit by default, and let customers undo it if they preferred the original. I designed a visual take on versioning: customers toggle between AI edits, the modified version is selected by default, and each request can be undone on its own.
+
+The concept tests gave us a direction for the editor and a clearer sense of which manual controls mattered. The new layouts gave the content team something they could use right away.
+
+In an early funnel check, about 85% of users started generating a module and 77% saw a finished one. Some admins also asked to keep prompting after their module was built. Once the new editor ships, I'd look at what customers do with that first draft, including how often they prompt again and which changes they make by hand.
 
 [TODO: asset — before/after of a generated module]
 
-- **Quizzes that never say why** — Quiz blocks marked an answer wrong without ever explaining why, and accessibility (WCAG) had become a procurement gate.
-- **Built for AI or for people, not both** — We didn't know if admins wanted to prompt their way to a finished module, drag boxes around, or something in between.
-- **Hidden building blocks** — The way to add new content was easy to miss, so admins stalled right after the first draft.
+- **No guardrails on the prompt** — The creation flow didn't ask what it needed to know, so the AI guessed, and admins spent the rest of their time correcting it.
+- **No way to make small fixes** — Once a module existed, every change meant regenerating it. Admins wanted the last word on a single frame.
+- **Hidden building blocks** — The control for adding content was easy to miss, so people stalled right after the first draft.
 
-## Quizzes that explain themselves
+## More layouts, shipped carefully
 
-My first piece was the quiz. I designed flippable cards, a graded quiz and a card "quizlet," then compared two ways to show feedback: a "Chin" that drops below the card, and a "Blur card" that blurs the question and lays the explanation on top. I pushed for the blur. The chin competed with the next question, while the blur kept the eye on one thing.
+The content team asked for more frame layouts, and I built them: nine in the backend contract and renderer, six in the layout picker. I shipped the reader before the picker, so older clients could still open saved frames. Both PRs merged.
 
-The harder problem was that a person isn't writing most of this feedback. The AI is. So I wrote guidelines meant for both designers and the model: about 30 words of feedback for immediate blocks and 50 for submitted ones, 3 to 6 options, no modals, and confetti only on a correct submitted answer. Our Head of Design called them "opinionated but still flexible," and our eng lead's first reaction was that they should become an LLM system prompt. That was the point.
+When an image placeholder overflowed, I proposed a fix and engineering shipped a narrower one. Theirs was right. Mine touched more than the bug did.
 
-[TODO: asset — Blur card vs Chin comparison]
+[TODO: asset — new frame layouts in the picker]
 
-## Letting the AI wear the brand
+## Rules the model can follow
 
-Next, the lead designer and I ran a spike: what if the AI generated frames as HTML instead of filling fixed templates? I ran the prompt iterations, logged every generation run with a quality score from 5 to 9, and co-wrote the frame design rules the model followed, from V10 to V19. I also built a small agent skill that synced those rules to Notion, so the docs never drifted from the prompt.
+The lead designer and I ran a spike: what if the AI generated frames as HTML instead of filling fixed templates? I ran the prompt iterations, scored every generation from 5 to 9, and turned each critique into a numbered design rule, versioned from V4 to V19. I also built a small tool that syncs those rules to our docs, so the page never drifts from the prompt.
 
-Branding was the surprise. The model was great at theming a module to a customer's brand. Interactivity was the trap. In customer calls our PM ran, people were clear that training is not a game:
+Engineering's reaction was that the rules should become a system prompt. That was the point of writing them as rules instead of a critique.
+
+Branding was the surprise. The model themes a module to a customer's brand remarkably well. Interactivity was the trap. In customer calls, people were clear that training is not a game:
 
 > If it was all interactive, I think we'd turn off a number of users
 
 > the training is to educate the user and not punish them
 
-The takeaway we carried forward: brand freely, interact sparingly.
+So the rules say: brand freely, interact sparingly.
 
-## How much should AI drive?
+## How much should the AI drive?
 
-This was the biggest open question on the bet. I built a coded prototype of an agent-first frame builder and tested three editing modes side by side:
+This was the open question on the bet. I built a coded prototype of an AI-first editor and tested three modes side by side:
 
 - **AI-only** — Every change goes through a prompt.
-- **Hybrid** — The AI does the heavy lifting, with a side panel for small manual tweaks.
-- **Full freeform** — A manual canvas where admins can move anything.
+- **Hybrid** — The AI drafts, and a side panel handles small manual fixes.
+- **Freeform** — A manual canvas where anything can move.
 
-I led five concept tests with security and training teams at a global manufacturer, an aviation tech company, an automotive software company, an AI company and a large tax-prep company. AI-only lost every time. People liked what the AI made, but they wanted the last word.
+I ran five concept tests in two weeks, with security and training teams at a global manufacturer, an aviation company, an automotive software company, an AI company, and a large tax-prep company. The PM opened each session. I ran the prototype and the questions. AI-only lost every time.
 
 > I want AI to give me ideals, but I want control over what I do with those ideals
 
@@ -77,27 +100,21 @@ I led five concept tests with security and training teams at a global manufactur
 
 > you don't need to prompt for basics
 
-At first I assumed freeform would win once AI-only lost, since direct control was what people kept asking for. But a fully manual canvas brings back the blank-page problem AICC exists to solve. Hybrid was the clear winner: AI for the draft, small direct controls for the fixes.
+I'd assumed freeform would win once AI-only lost, since direct control was what people kept asking for. But a blank canvas brings back the problem the feature exists to solve. Hybrid won: AI for the draft, small direct controls for the fixes.
 
-[TODO: asset — the three editing modes]
-
-## "Add block doesn't mean anything"
-
-The other pattern was quieter and more consistent. Admins couldn't figure out how to add new content. Finding "Add block" was the main friction point in 7 of 9 sessions.
+The same sessions found a quieter problem. Finding "Add block" was the main friction in 7 of 9 sessions.
 
 > add block doesn't mean anything… Maybe add content
 
-For the last session I tested two placements for the entry point, and moving it to the top made it noticeably easier to find. I folded that, the per-frame revert request and the naming feedback into a synthesis I wrote with the lead designer and PM. Its headline: "Hybrid editing (AI + simple manual tweaks) is the right path forward… Templates are still critical."
+After four sessions I moved the entry point and tested the new version with the last customer. Top placement was noticeably easier to find. I wrote the synthesis with the lead designer and PM. Its headline: hybrid editing is the direction, and templates still matter.
 
-## Shipping the pieces in code
+[TODO: asset — the three editing modes]
 
-While the bigger direction was still being set, I shipped what I could directly:
+## Polish on the guided flow
 
-- **Frame layouts** — Nine layout templates in the backend contract and renderer, and six in the layout picker, built for the content team who requested them.
-- **Guided creation polish** — Seven visual polish PRs on the guided AICC creation flow in the days before it launched.
-- **Narration quick wins** — Wireframes, a journey map and coded prototypes that scoped narration's first milestone to the frame builder and settings.
+The lead designer owned the guided creation flow, which asks admins about their intent before generating. I contributed the visual polish: seven merged PRs in the days before launch, including the loading state, revised through two rounds of notes. I also argued for the background treatment that shipped, and for where the learning objectives sit.
 
-[TODO: asset — new frame layouts in the picker]
+The flow launched in October. Its first 14 days showed the risk of extra questions didn't materialize: about 95% of people who submit a prompt still go on to start an outline. The drop-off is later. About 85% start creating a module, and only 77% see a finished one.
 
 ## [hidden] Final walkthrough
 
@@ -105,14 +122,14 @@ While the bigger direction was still being set, I shipped what I could directly:
 
 ## Was it a success?
 
-Partly, and I want to be clear about which part. The guided creation flow launched with my polish in it, and the new frame layouts shipped to the content team: 11 merged PRs in two months. The synthesis set hybrid editing as the direction for the bet.
+The parts I owned shipped. Nine layouts in production, seven polish PRs on the guided flow, and a rule set that engineering adopted as candidate instructions for the model. The synthesis set hybrid editing as the bet's direction.
 
-The guided flow is a team launch, so its numbers belong to the team. The flow's brief called generic output that needs heavy editing "the #1 AICC complaint," and the flow answers it by asking admins about their intent before generating. In its first 14 days, admins started 1,105 guided sessions, against 141 in the 18 days before launch, when the flow was live but not announced. The risk with extra questions was that people would quit before generating. The PM's funnel check found they didn't: about 95% of users who submit a prompt still go on to start an outline.
+What I can't claim: that the output got less generic. That was the brief's real target, and nothing measures it yet. The usage numbers above belong to the team's launch, not to my polish.
 
-The funnel also shows where the next problem is. About 85% of users start creating a module, but only 77% see a finished one. Early feedback sounded familiar: admins asked to keep prompting after a module was built, and one felt the follow-up questions went in circles. That's the hybrid finding again, people wanting the last word. Nothing measures yet whether the output is less generic, which was the brief's real target.
+The rest was still in motion when I left. The quiz feedback pattern I'd designed was in the engineering backlog, and narration was mid-scoping. The number I'd watch next is how often admins edit a frame by hand after generating, since that's the behavior hybrid editing is supposed to unlock.
 
-The rest was still in motion when I left. The quiz feedback work was open, and narration was mid-milestone. We had no usage data on the editor yet. The numbers I'd watch next are how often admins make a manual change after generating, and whether the new "Add block" placement shortens the time to that first change.
+## Biggest learnings
 
-## Biggest learnings - Control is a feature
+I treated the editing question like a slider from all-AI to all-manual, and assumed the answer sat at one end. Customers kept saying it isn't a slider. They want the AI to do the boring 80% and their own hands on the last 20%.
 
-At first I treated the editing question like a slider from "all AI" to "all manual," and assumed the answer sat at one end. Customers kept telling us it isn't a slider. They want the AI to do the boring 80% and their own hands on the last 20%. Designing for AI turned out to be mostly about designing the handoff back to the person, and making the thing they reach for impossible to miss.
+Designing for AI turned out to be mostly about the handoff back to the person: making the control they reach for impossible to miss, and writing the rules clearly enough that the model follows them too.

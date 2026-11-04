@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Markdown from 'react-markdown'
 import projectsFromMd, { featuredProjects } from '../data/projectLoader'
+import { useDesignVersion } from './design-versions/DesignVersionProvider'
+import ProjectShowcase from './ProjectShowcase'
 import IterationsViewer from './IterationsViewer'
 import CaseStudyGate from './CaseStudyGate'
 import Picture from './Picture'
@@ -63,9 +65,9 @@ function childrenToText(children) {
 
 const SPRING = { type: 'spring', stiffness: 380, damping: 28, mass: 1.1 }
 const BAR_SPRING = { type: 'spring', stiffness: 160, damping: 26, mass: 1 }
-const ACTIVE_WIDTH = 48
-const DECAY = 0.62
-const MIN_WIDTH = 6
+const ACTIVE_WIDTH = 24
+const DECAY = 0.7
+const MIN_WIDTH = 5
 const COLOR_ACTIVE = '#001dd9'
 const COLOR_REST = '#1C1C1C'
 
@@ -74,7 +76,7 @@ function barWidth(distance) {
 }
 
 function barOpacity(distance) {
-  return Math.max(0.12, 0.32 * Math.pow(0.78, distance - 1))
+  return Math.max(0.08, 0.2 * Math.pow(0.8, distance - 1))
 }
 
 const NON_NOUN_WORDS = new Set([
@@ -144,7 +146,7 @@ function ProjectSideNav({ headings, visible }) {
                 className="project-page-sidenav-bar"
                 animate={{
                   width: isActive ? ACTIVE_WIDTH : barWidth(distance),
-                  opacity: isActive ? 1 : barOpacity(distance),
+                  opacity: isActive ? 0.7 : barOpacity(distance),
                   backgroundColor: isActive ? COLOR_ACTIVE : COLOR_REST,
                 }}
                 transition={{
@@ -408,8 +410,17 @@ function renderProjectContent(content, components, iterationsElement) {
   })
 }
 
+const CASE_STUDY_LAYOUTS = [
+  { key: 'article', name: 'Article', description: 'Hero video, then the full write-up.' },
+  { key: 'showcase', name: 'Showcase', description: 'A short intro beside a grid of the work. The hero plays on hover.' },
+]
+
 function ProjectPage() {
   const { slug } = useParams()
+  const layout = useDesignVersion('case-study-layout', CASE_STUDY_LAYOUTS, {
+    label: 'Case study layout',
+    scope: 'global',
+  })
   const [unlocked, setUnlocked] = useState(false)
   const [lightboxSrc, setLightboxSrc] = useState(null)
   const closeLightbox = useCallback(() => setLightboxSrc(null), [])
@@ -481,7 +492,7 @@ function ProjectPage() {
     </AnimatePresence>
     <main className="project-page">
       <div className="project-page-inner">
-        <div className="project-page-hero">
+        <div className={`project-page-hero${layout === 'showcase' && project.showcase ? ' project-page-hero--hidden' : ''}`}>
           {project.video ? (
             <Video media={project.video} preload="auto" className="project-page-video" />
           ) : project.image ? (
@@ -496,6 +507,8 @@ function ProjectPage() {
           ) : null}
         </div>
 
+        {layout === 'showcase' && project.showcase ? null : (
+        <>
         <h1 className="project-page-title">{project.title}</h1>
 
         <div className="project-page-meta-row">
@@ -555,8 +568,12 @@ function ProjectPage() {
             {project.timeline ? <span className="project-page-meta-label">{project.timeline}</span> : null}
           </div>
         </div>
+        </>
+        )}
 
-        {!hasContent ? (
+        {layout === 'showcase' && project.showcase ? (
+          <ProjectShowcase project={project} slug={slug} onOpen={setLightboxSrc} />
+        ) : !hasContent ? (
           <div className="project-page-coming-soon">
             <p className="project-page-coming-soon-label">Coming soon</p>
             <p className="project-page-coming-soon-text">

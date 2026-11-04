@@ -105,19 +105,19 @@
       "av1": false
     }
   },
-  "projects/core-workflows/Core workflows.mov": {
+  "projects/core-workflows/phishing index page.mov": {
     "source": {
-      "width": 2878,
-      "height": 1578,
-      "duration": 5.5275
+      "width": 2964,
+      "height": 1830,
+      "duration": 11.8985
     },
     "card": {
       "width": 720,
-      "height": 394
+      "height": 444
     },
     "hero": {
       "width": 1920,
-      "height": 1052
+      "height": 1186
     }
   },
   "Playground-page/shader-experiment-one/Shader-experiment-one.mov": {

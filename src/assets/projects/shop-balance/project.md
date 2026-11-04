@@ -9,10 +9,9 @@ date: "2 weeks · 2026"
 start: "Jan 2026"
 timeline: Jan. 2026
 highlights:
-  - Mobile design
-  - End to end design
-  - 0-1 product vision
-  - Fintech & Digital Wallets
+  - Turned "fun money" into a wallet
+  - 5 core flows in 2 weeks
+  - Sole designer, 0 → 1
 imageKey: shopBalance
 iconKey: shopify
 ribbonKey: current

@@ -9,10 +9,9 @@ date: "3 weeks · 2025"
 start: "Jan 2025"
 timeline: Jan 2025 – Mar 2025
 highlights:
-  - B2B Fintech
-  - Legacy redesign
-  - Multi-currency scalability
-  - Trust design
+  - Payout holds down 43%
+  - One home for every payout error
+  - Built to scale across currencies
 imageKey: flowOfFunds
 iconKey: shopify
 ribbonKey: current

@@ -9,10 +9,9 @@ date: "3 weeks · 2025"
 start: "Dec 2025"
 timeline: Dec 2025
 highlights:
-  - Contextual AI Design
-  - Localization & compliance UX
-  - 0-1 product design
-  - Coded Prototype
+  - Fewer cross-border support tickets
+  - More accurate product metadata
+  - AI explains every restriction
 imageKey: internationalCommerce
 iconKey: shopify
 ribbonKey: current

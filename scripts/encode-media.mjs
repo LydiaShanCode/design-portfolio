@@ -27,7 +27,7 @@ const SOURCES = [
   { file: 'projects/shop-balance/Shop Balance final video.MP4', variants: ['card', 'hero'] },
   { file: 'projects/Listening Room/Listening Room final video.MP4', variants: ['card', 'hero'] },
   { file: 'projects/level-up-aicc/Framebuilder video.mov', variants: ['card', 'hero'] },
-  { file: 'projects/core-workflows/Core workflows.mov', variants: ['card', 'hero'] },
+  { file: 'projects/core-workflows/phishing index page.mov', variants: ['card', 'hero'] },
   { file: 'Playground-page/shader-experiment-one/Shader-experiment-one.mov', variants: ['card', 'hero'] },
   { file: 'projects/shop-balance/Video 1.mov', variants: ['hero'] },
   { file: 'projects/shop-balance/video 2.MOV', variants: ['hero'] },

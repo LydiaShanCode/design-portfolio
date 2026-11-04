@@ -29,7 +29,7 @@ const videoSources = {
   shopBalance: 'projects/shop-balance/Shop Balance final video.MP4',
   listeningRoom: 'projects/Listening Room/Listening Room final video.MP4',
   aicc: 'projects/level-up-aicc/Framebuilder video.mov',
-  coreWorkflows: 'projects/core-workflows/Core workflows.mov',
+  coreWorkflows: 'projects/core-workflows/phishing index page.mov',
 }
 
 const ribbons = { current: currentRibbon }
