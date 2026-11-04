@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import {
-  MODULES,
+  getModules,
   STATUS_LABELS,
   audienceLabel,
   formatDate,
@@ -9,6 +9,7 @@ import {
   percent,
 } from '../../../data/trainingCampaigns'
 import Icon from './Icon'
+import ModuleIcon from './ModuleIcon'
 import ProgressRing from './ProgressRing'
 
 const TYPE_LABELS = { 'one-time': 'One-time', 'auto-enroll': 'Auto-enroll', fixed: 'Fixed dates' }
@@ -35,6 +36,7 @@ export default function DetailsDialog({ campaign, onClose }) {
   }
 
   const showMetrics = hasMetrics(campaign)
+  const modules = getModules(campaign)
 
   return (
     <div className="tc-dialog" onKeyDown={onKeyDown}>
@@ -78,11 +80,11 @@ export default function DetailsDialog({ campaign, onClose }) {
         ) : null}
 
         <div className="tc-dialog__modules">
-          <h3>{MODULES.length} modules</h3>
+          <h3>{modules.length} modules</h3>
           <ul>
-            {MODULES.map((module) => (
+            {modules.map((module) => (
               <li key={module.id}>
-                <img src={module.image} alt="" width="21" height="21" />
+                <ModuleIcon id={module.id} size={21} />
                 {module.title}
               </li>
             ))}

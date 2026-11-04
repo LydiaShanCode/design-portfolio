@@ -5,6 +5,7 @@ import {
   formatDate,
   formatRange,
   getEndingSoonDays,
+  getModules,
   getStartingSoonDays,
   hasMetrics,
   percent,
@@ -171,8 +172,7 @@ export default function CampaignCard({
       style={{ '--tc-index': index }}
     >
       <CampaignThumbnail
-        slide={campaign.slide}
-        count={campaign.stackCount}
+        modules={getModules(campaign)}
         title={campaign.title}
         onOpen={onOpenDetails}
       />

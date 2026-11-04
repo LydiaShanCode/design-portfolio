@@ -1,13 +1,3 @@
-import slideWorkingSecurely from '../assets/prototypes/training-campaigns/img/slide-working-securely.webp'
-import slideDeepfakeQuiz from '../assets/prototypes/training-campaigns/img/slide-deepfake-quiz.webp'
-import slideVoicePhishing from '../assets/prototypes/training-campaigns/img/slide-voice-phishing.webp'
-import slideFakeItSupport from '../assets/prototypes/training-campaigns/img/slide-fake-it-support.webp'
-import slideEmailPhishing from '../assets/prototypes/training-campaigns/img/slide-email-phishing.webp'
-import module1 from '../assets/prototypes/training-campaigns/img/module-1.webp'
-import module2 from '../assets/prototypes/training-campaigns/img/module-2.webp'
-import module3 from '../assets/prototypes/training-campaigns/img/module-3.webp'
-import module4 from '../assets/prototypes/training-campaigns/img/module-4.webp'
-import module5 from '../assets/prototypes/training-campaigns/img/module-5.webp'
 
 export const PAGE_SIZE = 8
 export const TOTAL_PAGES = 36
@@ -31,22 +21,28 @@ export const STATUS_LABELS = {
 }
 
 export const MODULES = [
-  { id: 'phi', title: 'Protecting PHI', image: module1 },
-  { id: 'eu-ai', title: 'EU AI Act', image: module2 },
-  { id: 'deepfake', title: 'Deepfake attacks', image: module3 },
-  { id: 'it-support', title: 'Fake IT Support', image: module4 },
-  { id: 'think-click', title: 'Think Before You Click', image: module5 },
-  { id: 'password', title: 'Your Password Is Not Enough', image: module1 },
-  { id: 'reporting', title: 'Reporting Suspicious Activity', image: module4 },
-  { id: 'mfa', title: 'Multi-factor Fatigue', image: module5 },
+  { id: 'phi', title: 'Protecting PHI', minutes: 2 },
+  { id: 'eu-ai', title: 'EU AI Act', minutes: 2 },
+  { id: 'deepfake', title: 'Deepfake attacks', minutes: 1 },
+  { id: 'it-support', title: 'Fake IT Support', minutes: 1 },
+  { id: 'think-click', title: 'Think Before You Click', minutes: 1 },
+  { id: 'password', title: 'Your Password Is Not Enough', minutes: 1 },
+  { id: 'reporting', title: 'Reporting Suspicious Activity', minutes: 1 },
+  { id: 'mfa', title: 'Multi-factor Fatigue', minutes: 1 },
 ]
 
-const SLIDES = {
-  workingSecurely: slideWorkingSecurely,
-  deepfakeQuiz: slideDeepfakeQuiz,
-  voicePhishing: slideVoicePhishing,
-  fakeItSupport: slideFakeItSupport,
-  emailPhishing: slideEmailPhishing,
+const MODULES_BY_ID = Object.fromEntries(MODULES.map((module) => [module.id, module]))
+
+export const getModules = (campaign) => (campaign.modules || []).map((id) => MODULES_BY_ID[id]).filter(Boolean)
+
+export const totalMinutes = (modules) => modules.reduce((sum, module) => sum + module.minutes, 0)
+
+const MODULE_SETS = {
+  workingSecurely: ['it-support', 'phi', 'eu-ai', 'password', 'mfa'],
+  deepfakeQuiz: ['deepfake', 'think-click', 'reporting', 'password', 'mfa'],
+  fakeItSupport: ['it-support', 'mfa', 'password', 'reporting', 'think-click'],
+  voicePhishing: ['reporting', 'deepfake', 'it-support', 'think-click', 'phi'],
+  emailPhishing: ['think-click', 'reporting', 'password', 'mfa', 'eu-ai'],
 }
 
 const TITLE = 'Annual training for 2026 New designers'
@@ -65,8 +61,7 @@ export const SEED_CAMPAIGNS = [
     title: TITLE,
     status: 'live',
     type: 'one-time',
-    slide: SLIDES.workingSecurely,
-    stackCount: 5,
+    modules: MODULE_SETS.workingSecurely,
     start: '2026-06-01',
     end: '2026-06-22',
     dateIcon: 'clock',
@@ -80,8 +75,7 @@ export const SEED_CAMPAIGNS = [
     title: TITLE,
     status: 'live',
     type: 'fixed',
-    slide: SLIDES.deepfakeQuiz,
-    stackCount: 5,
+    modules: MODULE_SETS.deepfakeQuiz,
     start: '2026-08-01',
     end: '2026-09-01',
     audience: NEW_HIRES,
@@ -94,8 +88,7 @@ export const SEED_CAMPAIGNS = [
     title: TITLE,
     status: 'scheduled',
     type: 'auto-enroll',
-    slide: SLIDES.fakeItSupport,
-    stackCount: 5,
+    modules: MODULE_SETS.fakeItSupport,
     start: '2026-08-17',
     durationDays: 14,
     startsInDays: 2,
@@ -106,8 +99,7 @@ export const SEED_CAMPAIGNS = [
     title: TITLE,
     status: 'past-due',
     type: 'fixed',
-    slide: SLIDES.voicePhishing,
-    stackCount: 5,
+    modules: MODULE_SETS.voicePhishing,
     start: '2025-08-01',
     end: '2026-08-01',
     audience: NEW_HIRES,
@@ -120,8 +112,7 @@ export const SEED_CAMPAIGNS = [
     title: TITLE,
     status: 'past-due',
     type: 'fixed',
-    slide: SLIDES.voicePhishing,
-    stackCount: 5,
+    modules: MODULE_SETS.fakeItSupport,
     start: '2025-08-01',
     end: '2026-08-01',
     audience: NEW_HIRES,
@@ -134,8 +125,7 @@ export const SEED_CAMPAIGNS = [
     title: TITLE,
     status: 'ended',
     type: 'auto-enroll',
-    slide: SLIDES.emailPhishing,
-    stackCount: 5,
+    modules: MODULE_SETS.emailPhishing,
     start: '2025-07-26',
     end: '2026-07-27',
     audience: NEW_HIRES,
@@ -148,8 +138,7 @@ export const SEED_CAMPAIGNS = [
     title: TITLE,
     status: 'ended',
     type: 'fixed',
-    slide: SLIDES.voicePhishing,
-    stackCount: 5,
+    modules: MODULE_SETS.deepfakeQuiz,
     start: '2025-04-26',
     end: '2026-04-27',
     audience: NEW_HIRES,
@@ -162,8 +151,7 @@ export const SEED_CAMPAIGNS = [
     title: TITLE,
     status: 'draft',
     type: 'fixed',
-    slide: SLIDES.workingSecurely,
-    stackCount: 5,
+    modules: MODULE_SETS.workingSecurely,
     createdAt: '2026-08-10',
   },
 ]
@@ -189,7 +177,7 @@ const ARCHIVE_AUDIENCES = [
   { kind: 'group', label: 'Customer support', enrolled: 86 },
   { kind: 'people', names: ['Lydia Shan', 'Kelley Nguyen'], extra: 3, enrolled: 5 },
 ]
-const ARCHIVE_SLIDES = Object.values(SLIDES)
+const MODULE_IDS = MODULES.map((module) => module.id)
 const ARCHIVE_TYPES = ['fixed', 'auto-enroll', 'one-time', 'fixed']
 
 const MS_PER_DAY = 86_400_000
@@ -214,8 +202,7 @@ function buildArchive(count) {
       status: 'ended',
       archived: true,
       type: ARCHIVE_TYPES[i % ARCHIVE_TYPES.length],
-      slide: ARCHIVE_SLIDES[i % ARCHIVE_SLIDES.length],
-      stackCount: 3 + (i % 4),
+      modules: Array.from({ length: 3 + (i % 4) }, (_, j) => MODULE_IDS[(i * 3 + j) % MODULE_IDS.length]),
       start: toIso(endMs - durationDays * MS_PER_DAY),
       end: toIso(endMs),
       audience: { ...ARCHIVE_AUDIENCES[i % ARCHIVE_AUDIENCES.length], enrolled: total },
@@ -318,8 +305,7 @@ export function createDraft(overrides = {}) {
     title: 'Untitled campaign',
     status: 'draft',
     type: 'fixed',
-    slide: SLIDES.workingSecurely,
-    stackCount: 5,
+    modules: MODULE_SETS.workingSecurely,
     createdAt: PROTOTYPE_TODAY,
     ...overrides,
   }
@@ -329,8 +315,7 @@ export function duplicateCampaign(campaign) {
   return createDraft({
     title: `${campaign.title} (copy)`,
     type: campaign.type,
-    slide: campaign.slide,
-    stackCount: campaign.stackCount,
+    modules: campaign.modules,
     audience: campaign.audience,
   })
 }

@@ -1,17 +1,29 @@
 import { useCallback, useRef, useState } from 'react'
-import slideBack from '../../../assets/prototypes/training-campaigns/img/slide-back.webp'
-import slideMid from '../../../assets/prototypes/training-campaigns/img/slide-mid.webp'
+import { motion, useReducedMotion } from 'framer-motion'
+import ModuleIcon from './ModuleIcon'
 import ModulePopover from './ModulePopover'
 import { shouldFlip } from './placement'
 
 const HOVER_INTENT_MS = 120
 const POPOVER_HEIGHT = 290
+const VISIBLE_ICONS = 3
+const ICON_SIZE = 44
+const ICON_STEP = 22
+const SPREAD = 6
+const LIFT = -9
+const SPRING = { type: 'spring', stiffness: 380, damping: 28, mass: 1.1 }
 
-export default function CampaignThumbnail({ slide, count, title, onOpen }) {
+export default function CampaignThumbnail({ modules, title, onOpen }) {
   const [open, setOpen] = useState(false)
   const [flip, setFlip] = useState(false)
+  const [activeId, setActiveId] = useState(null)
   const timer = useRef(0)
   const ref = useRef(null)
+  const reduceMotion = useReducedMotion()
+
+  const visible = modules.slice(0, VISIBLE_ICONS)
+  const spread = open && !reduceMotion
+  const transition = reduceMotion ? { duration: 0 } : SPRING
 
   const show = useCallback(() => {
     window.clearTimeout(timer.current)
@@ -24,6 +36,7 @@ export default function CampaignThumbnail({ slide, count, title, onOpen }) {
   const hide = useCallback(() => {
     window.clearTimeout(timer.current)
     setOpen(false)
+    setActiveId(null)
   }, [])
 
   const onKeyDown = (event) => {
@@ -38,6 +51,8 @@ export default function CampaignThumbnail({ slide, count, title, onOpen }) {
     }
   }
 
+  const lastIndex = visible.length - 1
+
   return (
     <div
       ref={ref}
@@ -51,25 +66,42 @@ export default function CampaignThumbnail({ slide, count, title, onOpen }) {
       onClick={onOpen}
       tabIndex={0}
       role="button"
-      aria-label={`${title}: ${count} modules. Open details`}
+      aria-label={`${title}: ${modules.length} modules. Open details`}
       aria-describedby={open ? 'tc-module-popover' : undefined}
     >
       <div className="tc-thumb__stack" aria-hidden="true">
-        <span className="tc-thumb__layer tc-thumb__layer--4">
-          <img src={slideBack} alt="" />
-        </span>
-        <span className="tc-thumb__layer tc-thumb__layer--3">
-          <img src={slideBack} alt="" />
-        </span>
-        <span className="tc-thumb__layer tc-thumb__layer--2">
-          <img src={slideMid} alt="" />
-        </span>
-        <span className="tc-thumb__layer tc-thumb__layer--1">
-          <img src={slide} alt="" />
-        </span>
-        <span className="tc-thumb__count">{count}</span>
+        {visible.map((module, index) => {
+          const active = module.id === activeId
+          return (
+            <motion.span
+              key={module.id}
+              className="tc-thumb__icon"
+              data-active={active || undefined}
+              style={{ left: index * ICON_STEP, zIndex: active ? VISIBLE_ICONS + 1 : VISIBLE_ICONS - index }}
+              initial={false}
+              animate={{
+                x: spread ? index * SPREAD : 0,
+                y: active && !reduceMotion ? LIFT : 0,
+                scale: active && !reduceMotion ? 1.08 : 1,
+              }}
+              transition={transition}
+              onPointerEnter={() => setActiveId(module.id)}
+            >
+              <ModuleIcon id={module.id} size={ICON_SIZE} />
+            </motion.span>
+          )
+        })}
+        <motion.span
+          className="tc-thumb__count"
+          style={{ left: lastIndex * ICON_STEP + ICON_SIZE - 12 }}
+          initial={false}
+          animate={{ x: spread ? lastIndex * SPREAD : 0 }}
+          transition={transition}
+        >
+          {modules.length}
+        </motion.span>
       </div>
-      {open ? <ModulePopover placement={flip ? 'above' : 'below'} /> : null}
+      {open ? <ModulePopover modules={modules} activeId={activeId} placement={flip ? 'above' : 'below'} /> : null}
     </div>
   )
 }
