@@ -1,0 +1,9 @@
+---
+description: Conventions for pull requests opened against this repo
+alwaysApply: true
+---
+
+# Pull Requests
+
+- Always include the Vercel preview link in the description of every PR you create or update. Use the branch alias URL from Vercel's bot comment on the PR (the "Preview" link in its deployment table). Vercel posts that comment shortly after the first push, so check for it with `gh pr view <number> --json comments` and add the link with an `update_pr` call if it was not available at creation time.
+- Place it near the top of the body as `Preview: <url>`.
