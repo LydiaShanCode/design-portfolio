@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import WorkBar from './WorkBar'
-import WorkFooter from './WorkFooter'
-import WorkMedia from './WorkMedia'
-import WorkShell from './WorkShell'
-import { pad, useMediaQuery, useWorkPreview, useWorkProjects, yearOf } from './workFirst'
+import WorkBar from '../../components/work-first/WorkBar'
+import WorkFooter from '../../components/work-first/WorkFooter'
+import WorkMedia from '../../components/work-first/WorkMedia'
+import WorkShell from '../../components/work-first/WorkShell'
+import { pad, useMediaQuery, useWorkPreview, useWorkProjects, yearOf } from '../../components/work-first/workFirst'
 
 const INTENT_MS = 90
 

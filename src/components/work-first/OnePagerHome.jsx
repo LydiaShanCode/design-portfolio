@@ -92,9 +92,11 @@ function OnePagerHome() {
                 {label}
               </a>
             ))}
-            {WORK_LINKS.map(({ label, to }) => (
-              <Link key={label} to={to} className="wf-link wf-one-link--page" data-hoverable>{label}</Link>
-            ))}
+            <span className="wf-one-pages">
+              {WORK_LINKS.map(({ label, to }) => (
+                <Link key={label} to={to} className="wf-link" data-hoverable>{label}</Link>
+              ))}
+            </span>
           </nav>
         </section>
 

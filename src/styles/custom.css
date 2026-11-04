@@ -473,8 +473,8 @@ body {
 
 @media (min-width: 1024px) {
   .hero-section {
-    /* 100px is 1/5 of the 500px card; 10px is the stack's leftover above the card */
-    min-height: calc(100vh - 110px);
+    /* Leaves the card title and most of the image in the first viewport */
+    min-height: calc(100vh - 300px);
   }
 }
 
@@ -558,9 +558,9 @@ body {
 
 .work-card-title {
   text-transform: uppercase;
-  letter-spacing: -0.5px;
+  letter-spacing: 0.06em;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .work-card-icon {
@@ -4652,7 +4652,7 @@ button.work-card {
    Fixed name block on the left, one column of cards rolling over a drum.
    ColumnHome.jsx writes each item's transform on scroll. */
 .column-home {
-  --column-card-w: clamp(240px, 22vw, 340px);
+  --column-card-w: clamp(300px, 32vw, 460px);
   min-height: 100vh;
   background: var(--color-surface);
 }
@@ -4723,25 +4723,27 @@ button.work-card {
 
 .column-item-tab {
   position: absolute;
-  left: 22%;
-  right: 22%;
-  top: -40px;
-  height: 64px;
+  left: 18px;
+  top: -26px;
+  max-width: calc(100% - 48px);
+  height: 30px;
+  padding: 6px 14px 0;
   overflow: hidden;
+  border: 1px solid var(--color-hairline);
+  border-bottom: 0;
   border-radius: var(--radius-xs) var(--radius-xs) 0 0;
-  background: var(--color-surface-dark);
-}
-
-.column-item-tab img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
-  filter: brightness(0.55) saturate(0.8);
+  background: var(--color-bg);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--color-text-subdued);
 }
 
 .column-card {
   position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   overflow: hidden;
@@ -4784,9 +4786,25 @@ button.work-card {
 }
 
 .column-item-caption {
-  margin: 8px 0 0 -16px;
-  font-size: 11px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 14px 2px 0;
+}
+
+.column-item-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
   color: var(--color-text-main);
+}
+
+.column-item-year {
+  font-size: 13px;
+  font-variant-numeric: lining-nums;
+  color: var(--color-text-subdued);
 }
 
 @media (max-width: 767px) {

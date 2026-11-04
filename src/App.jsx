@@ -6,7 +6,6 @@ import ProjectsGrid from './components/ProjectsGrid'
 import ActivityLog from './components/ActivityLog'
 import Footer from './components/Footer'
 import WaterCanvas from './components/WaterCanvas'
-import PondCanvas from './components/PondCanvas'
 import CustomCursor from './components/CustomCursor'
 import ClickSfx from './components/ClickSfx'
 import HeroPlayground from './components/HeroPlayground'
@@ -71,8 +70,6 @@ function SiteChrome({ children }) {
 }
 
 function App() {
-  const pond = useMajorVersion() === 'pond'
-
   return (
     <Router basename={import.meta.env.BASE_URL}>
       {DevTools && (
@@ -85,7 +82,7 @@ function App() {
         <CustomCursor />
         <ClickSfx />
         <SiteChrome>
-          {pond ? <PondCanvas /> : <WaterCanvas />}
+          <WaterCanvas />
           <Navigation />
         </SiteChrome>
         <ScrollToHash />

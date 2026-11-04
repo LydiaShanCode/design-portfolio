@@ -10,7 +10,7 @@ function BentoHome() {
 
   return (
     <WorkShell layout="bento" selected={selected} onClose={close}>
-      <WorkBar />
+      <WorkBar tagline={WORK_TAGLINE} />
       <main id="work" className="wf-bento" aria-label="Selected work">
         <p className="wf-bento-intro">{WORK_TAGLINE}</p>
         <BentoGrid projects={projects} onOpen={open} />

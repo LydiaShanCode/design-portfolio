@@ -27,14 +27,13 @@ const SOCIALS = [
 const yearOf = (project) => project.start?.match(/\d{4}/)?.[0] ?? project.timeline?.match(/\d{4}/)?.[0]
 
 function ColumnCard({ project, playing, onSelect, register }) {
-  const { title, company, cardImage, cardImagePlaceholder, image, cardVideo } = project
-  const ratio = cardVideo ? `${cardVideo.width} / ${cardVideo.height}` : '4 / 3'
+  const { title, company, cardImage, cardImagePlaceholder, cardVideo } = project
+  const portrait = cardVideo && cardVideo.height > cardVideo.width
+  const ratio = portrait ? '4 / 5' : cardVideo ? `${cardVideo.width} / ${cardVideo.height}` : '4 / 3'
 
   return (
     <li className="column-item" ref={register}>
-      <div className="column-item-tab" aria-hidden="true">
-        <Picture image={image || cardImage} sizes="200px" />
-      </div>
+      <div className="column-item-tab" aria-hidden="true">{company}</div>
       <button
         type="button"
         className={`column-card${playing ? ' column-card--playing' : ''}`}
@@ -55,7 +54,8 @@ function ColumnCard({ project, playing, onSelect, register }) {
         ) : null}
       </button>
       <p className="column-item-caption">
-        {title} <span aria-hidden="true">–</span> {yearOf(project)}
+        <span className="column-item-title">{title}</span>
+        <span className="column-item-year">{yearOf(project)}</span>
       </p>
     </li>
   )
