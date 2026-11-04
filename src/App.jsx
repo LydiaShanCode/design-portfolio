@@ -20,6 +20,7 @@ const Play = lazy(() => import('./components/Play'))
 const Resume = lazy(() => import('./components/Resume'))
 const ProjectPage = lazy(() => import('./components/ProjectPage'))
 const About = lazy(() => import('./components/About'))
+const CampaignPrototypePage = lazy(() => import('./components/campaign-prototype/CampaignPrototypePage'))
 
 function Home() {
   const major = useMajorVersion()
@@ -90,6 +91,7 @@ function App() {
               <Route path="/project/:slug" element={<ProjectPage />} />
               <Route path="/about" element={<About />} />
               <Route path="/resume" element={<Resume />} />
+              <Route path="/prototype/campaign" element={<CampaignPrototypePage />} />
             </Routes>
           </Suspense>
           <Footer />

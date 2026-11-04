@@ -3876,3 +3876,10 @@
 .cp-modal__title .cp-heading--card {
   font-size: 16px;
 }
+
+.cp-standalone {
+  position: fixed;
+  inset: 0;
+  z-index: 9500;
+  background: #f6f6f6;
+}

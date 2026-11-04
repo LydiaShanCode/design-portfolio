@@ -43,7 +43,7 @@ At the design review we split the bet into two prototypes. Mine, Prototype A, dr
 
 I asked engineering whether build cost should shape which direction I pushed. The answer was no, not for early prototypes. That freed me to test the boldest version.
 
-{{campaign-prototype}}
+[TODO: asset — Prototype A walkthrough]
 
 ## A tie goes to the wizard
 
