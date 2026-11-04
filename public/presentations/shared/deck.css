@@ -99,52 +99,6 @@
       display: block;
     }
 
-    .bars {
-      position: fixed;
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 8;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .bars button {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 8px;
-      padding: 0;
-    }
-    .bars i {
-      display: block;
-      height: 2px;
-      border-radius: var(--radius-full);
-      background: var(--color-text);
-      opacity: 0.16;
-      transition: width 220ms var(--ease), background-color 160ms var(--ease), opacity 160ms var(--ease);
-    }
-    .bars button.is-on i {
-      background: var(--color-primary);
-      opacity: 1;
-    }
-    .bars span {
-      font-size: 12px;
-      line-height: 16px;
-      font-weight: 500;
-      color: var(--color-primary);
-      white-space: nowrap;
-      opacity: 0;
-      transform: translateX(-4px);
-      transition: opacity 160ms var(--ease), transform 160ms var(--ease);
-    }
-    .bars button.is-on span,
-    .bars button:hover span,
-    .bars button:focus-visible span {
-      opacity: 1;
-      transform: none;
-    }
-
     .foot {
       position: fixed;
       right: var(--pad-x);
@@ -192,7 +146,7 @@
       inset: 0;
       display: flex;
       align-items: center;
-      padding: var(--pad-y) var(--pad-x) var(--pad-y) clamp(64px, 8vw, 120px);
+      padding: var(--pad-y) var(--pad-x);
       opacity: 0;
       visibility: hidden;
       transform: translateY(8px);
@@ -844,9 +798,7 @@
     .notes.is-on { display: block; }
 
     @media (max-width: 1024px) {
-      .bars { display: none; }
       .slide {
-        padding-left: var(--pad-x);
         align-items: flex-start;
         overflow-y: auto;
       }
@@ -884,7 +836,7 @@
     @media print {
       @page { size: landscape; margin: 0; }
       html, body { overflow: visible; height: auto; background: #fff; }
-      .top, .bars, .foot, .help, .overview, .notes, .skip, .stepper { display: none !important; }
+      .top, .foot, .help, .overview, .notes, .skip, .stepper { display: none !important; }
       .deck { height: auto; }
       .slide {
         position: relative;
