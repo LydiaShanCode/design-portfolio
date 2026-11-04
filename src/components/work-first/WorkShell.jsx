@@ -6,9 +6,9 @@ import { WORK_LINKS } from './workFirst'
  * Wraps a work-first layout: scopes its styles, adds the bottom-reachable dock on small
  * screens, and hosts the project preview the cards open into.
  */
-function WorkShell({ layout, selected, onClose, children }) {
+function WorkShell({ layout, chatOpen = false, selected, onClose, children }) {
   return (
-    <div className={`wf-home wf-home--${layout}`}>
+    <div className={`wf-home wf-home--${layout}${chatOpen ? ' wf-home--chat-open' : ''}`}>
       {children}
       <nav className="wf-dock" aria-label="Quick links">
         {WORK_LINKS.map(({ label, to }) => (

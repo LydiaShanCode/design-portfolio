@@ -7,6 +7,7 @@ const LAYOUTS = {
   scenes: lazy(() => import('./ScenesHome')),
   gallery: lazy(() => import('./GalleryHome')),
   bento: lazy(() => import('./BentoHome')),
+  agent: lazy(() => import('./AgentHome')),
 }
 
 function WorkFirstHome({ layout }) {

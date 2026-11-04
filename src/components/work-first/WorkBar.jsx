@@ -4,9 +4,10 @@ import { WORK_LINKS, WORK_SOCIALS } from './workFirst'
 const isExternal = (href) => href.startsWith('http')
 
 /** Identity and links. `bar` is a slim top row; `rail` stacks the same content for a side column. */
-function WorkBar({ layout = 'bar', tagline = null }) {
+function WorkBar({ layout = 'bar', tagline = null, leading = null }) {
   return (
     <header className={`wf-bar wf-bar--${layout}`}>
+      {leading}
       <div className="wf-bar-id">
         <h1 className="wf-name">Lydia Shan</h1>
         <p className="wf-role">Product designer</p>
