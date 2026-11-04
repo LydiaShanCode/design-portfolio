@@ -20,6 +20,7 @@ const Play = lazy(() => import('./components/Play'))
 const Resume = lazy(() => import('./components/Resume'))
 const ProjectPage = lazy(() => import('./components/ProjectPage'))
 const About = lazy(() => import('./components/About'))
+const PrototypePage = lazy(() => import('./components/PrototypePage'))
 
 function Home() {
   const major = useMajorVersion()
@@ -59,6 +60,44 @@ function ScrollToTopOnNavigate() {
   return null
 }
 
+function SiteShell({ pond }) {
+  const { pathname } = useLocation()
+  const standalone = pathname.startsWith('/prototype/')
+
+  if (standalone) {
+    return (
+      <Suspense fallback={<div className="route-fallback" aria-hidden="true" />}>
+        <Routes>
+          <Route path="/prototype/:id" element={<PrototypePage />} />
+        </Routes>
+      </Suspense>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-white">
+      <CustomCursor />
+      <ClickSfx />
+      {pond ? <PondCanvas /> : <WaterCanvas />}
+      <Navigation />
+      <ScrollToHash />
+      <ScrollToTopOnNavigate />
+      <div className="relative z-40">
+        <Suspense fallback={<div className="route-fallback" aria-hidden="true" />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/play" element={<Play />} />
+            <Route path="/project/:slug" element={<ProjectPage />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/resume" element={<Resume />} />
+          </Routes>
+        </Suspense>
+        <Footer />
+      </div>
+    </div>
+  )
+}
+
 function App() {
   const pond = useMajorVersion() === 'pond'
 
@@ -75,26 +114,7 @@ function App() {
         />
       )} */}
       <Analytics />
-      <div className="min-h-screen bg-white">
-        <CustomCursor />
-        <ClickSfx />
-        {pond ? <PondCanvas /> : <WaterCanvas />}
-        <Navigation />
-        <ScrollToHash />
-        <ScrollToTopOnNavigate />
-        <div className="relative z-40">
-          <Suspense fallback={<div className="route-fallback" aria-hidden="true" />}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/play" element={<Play />} />
-              <Route path="/project/:slug" element={<ProjectPage />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/resume" element={<Resume />} />
-            </Routes>
-          </Suspense>
-          <Footer />
-        </div>
-      </div>
+      <SiteShell pond={pond} />
     </Router>
   )
 }

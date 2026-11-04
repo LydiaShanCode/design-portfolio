@@ -59,6 +59,7 @@
   font-size: 13px;
   line-height: 1.5;
   text-align: left;
+  text-transform: none;
   letter-spacing: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

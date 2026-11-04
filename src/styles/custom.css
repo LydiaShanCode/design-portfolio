@@ -4944,3 +4944,10 @@ button.work-card {
 .project-page-image-group:has(.project-page-figure--prototype) {
   margin: 48px 0;
 }
+
+.prototype-page {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--color-bg);
+}
