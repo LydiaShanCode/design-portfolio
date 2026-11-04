@@ -25,16 +25,12 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
   const textareaRef = useRef(null)
   const postcardRef = useRef(null)
   const formRef = useRef(null)
-  const iframeRef = useRef(null)
   const honeyRef = useRef(null)
   const messageRef = useRef(message)
   const fromEmailRef = useRef(fromEmail)
   const motionPhaseRef = useRef('idle')
   const sendingRef = useRef(false)
-  const postedRef = useRef(false)
-  const deliveryRef = useRef(null)
-  const deliveryResolveRef = useRef(null)
-  const deliveryTimerRef = useRef(null)
+  const deliverRef = useRef(null)
   const timersRef = useRef([])
   const onFishCatchRef = useRef(onFishCatch)
   const onSendFailRef = useRef(onSendFail)
@@ -45,17 +41,6 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
   fromEmailRef.current = fromEmail
   onFishCatchRef.current = onFishCatch
   onSendFailRef.current = onSendFail
-
-  const resolveDelivery = useCallback((status) => {
-    const resolve = deliveryResolveRef.current
-    if (!resolve) return
-    deliveryResolveRef.current = null
-    if (deliveryTimerRef.current) {
-      window.clearTimeout(deliveryTimerRef.current)
-      deliveryTimerRef.current = null
-    }
-    resolve(status)
-  }, [])
 
   const resetPostcard = useCallback(() => {
     setMessage('')
@@ -68,52 +53,21 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
     motionPhaseRef.current = 'idle'
     sendingRef.current = false
     hasSentRef.current = false
-    postedRef.current = false
+    deliverRef.current = null
     if (honeyRef.current) honeyRef.current.value = ''
-    if (iframeRef.current) iframeRef.current.src = 'about:blank'
   }, [])
 
-  useEffect(() => {
-    const frame = iframeRef.current
-    if (!frame) return undefined
-    const onLoad = () => {
-      if (!postedRef.current) return
-      let href = ''
-      try {
-        href = frame.contentWindow?.location?.href || ''
-      } catch {
-        // A finished cross-origin document never came back to postcard-sent.html.
-        resolveDelivery('error')
-        return
-      }
-      if (href.includes('postcard-sent.html')) resolveDelivery('ok')
-    }
-    frame.addEventListener('load', onLoad)
-    return () => frame.removeEventListener('load', onLoad)
-  }, [resolveDelivery])
-
-  // Posted into a hidden frame so the page never opens a mail app.
-  // The frame only comes back to this site when the note is accepted.
-  const postForm = useCallback(() => {
+  // FormSubmit answers a hidden frame with X-Frame-Options and a Cloudflare
+  // challenge, so the note never arrives. A fetch can read the JSON result.
+  // If that is blocked, the form navigates for real so the challenge can finish.
+  const openMailbox = () => {
     const form = formRef.current
-    if (!form) return false
-    const reply = form.elements.namedItem('_replyto')
+    if (!form) return
     const next = form.elements.namedItem('_next')
-    if (reply) reply.value = fromEmailRef.current.trim()
     if (next) next.value = sentPageUrl()
-    postedRef.current = true
-    deliveryRef.current = new Promise((resolve) => {
-      deliveryResolveRef.current = resolve
-    })
-    deliveryTimerRef.current = window.setTimeout(() => resolveDelivery('error'), DELIVERY_TIMEOUT_MS)
-    try {
-      form.submit()
-    } catch {
-      resolveDelivery('error')
-      return false
-    }
-    return true
-  }, [resolveDelivery])
+    form.target = '_self'
+    form.submit()
+  }
 
   beginSendRef.current = () => {
     if (sendingRef.current) return false
@@ -124,34 +78,36 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
       resetPostcard()
       return false
     }
+    const form = formRef.current
+    if (!form) return false
+    const reply = form.elements.namedItem('_replyto')
+    if (reply) reply.value = nextFrom
+    const data = new FormData(form)
+    data.delete('_next')
     sendingRef.current = true
     setIsSending(true)
     setSendError(false)
-    const posted = postForm()
-    if (!posted) {
-      sendingRef.current = false
-      setIsSending(false)
-      return false
-    }
+    deliverRef.current = fetch(`https://formsubmit.co/ajax/${CONTACT_EMAIL}`, {
+      method: 'POST',
+      headers: { Accept: 'application/json' },
+      body: data,
+      referrerPolicy: 'no-referrer-when-downgrade',
+      signal: AbortSignal.timeout(DELIVERY_TIMEOUT_MS),
+    }).then(async (response) => {
+      const payload = await response.json().catch(() => null)
+      const success = payload?.success === true || payload?.success === 'true'
+      if (!response.ok || !success) throw new Error('not accepted')
+    })
     return true
   }
 
   finishSendRef.current = async () => {
-    const result = deliveryRef.current ? await deliveryRef.current : 'error'
-    if (result === 'ok') {
+    try {
+      await deliverRef.current
       resetPostcard()
-      return
+    } catch {
+      openMailbox()
     }
-    postedRef.current = false
-    sendingRef.current = false
-    hasSentRef.current = false
-    motionPhaseRef.current = 'idle'
-    setIsSending(false)
-    setSendError(true)
-    setIsDragging(false)
-    setMotionPhase('idle')
-    setPosition({ x: 0, y: 0 })
-    onSendFailRef.current?.()
   }
 
   const handleCopyEmail = async () => {
@@ -310,22 +266,12 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
         window.clearTimeout(copyResetTimeoutRef.current)
       }
       timers.forEach((id) => window.clearTimeout(id))
-      if (deliveryTimerRef.current) window.clearTimeout(deliveryTimerRef.current)
     }
   }, [])
 
   const sendLabel = sendError ? 'Try again' : isSending && motionPhase === 'idle' ? 'Sending' : 'Send'
 
   return (
-    <>
-      <iframe
-        ref={iframeRef}
-        name="postcard-delivery"
-        title="Contact form delivery"
-        className="postcard-delivery"
-        tabIndex={-1}
-        aria-hidden="true"
-      />
       <div
         ref={postcardRef}
         className={`postcard ${isDragging ? 'postcard-dragging' : ''}`}
@@ -348,7 +294,6 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
           className="postcard-content"
           action={`https://formsubmit.co/${CONTACT_EMAIL}`}
           method="POST"
-          target="postcard-delivery"
           referrerPolicy="no-referrer-when-downgrade"
           onSubmit={handleSubmit}
         >
@@ -438,7 +383,6 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
           </p>
         </form>
       </div>
-    </>
   )
 }
 
