@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Postcard from './Postcard'
 import LocalTime from './LocalTime'
 import { afterLoadIdle } from '../lib/afterLoad'
@@ -12,6 +12,7 @@ const loadFishSvg = () => import('../assets/fish open.web.svg?raw').then((module
 function Footer() {
   const [showSwimFish, setShowSwimFish] = useState(false)
   const [fishDiving, setFishDiving] = useState(false)
+  const [fishRun, setFishRun] = useState(0)
   const fishRef = useRef(null)
   const mouthAnchorRef = useRef(null)
 
@@ -46,6 +47,11 @@ function Footer() {
       setFishDiving(false)
     }
   }
+
+  const handleSendFail = useCallback(() => {
+    setFishDiving(false)
+    setFishRun((run) => run + 1)
+  }, [])
 
   const copyEmail = async () => {
     try {
@@ -107,7 +113,7 @@ function Footer() {
       return
     }
     mouthAnchorRef.current = fishRef.current.querySelector('#fish-mouth-anchor')
-  }, [showSwimFish, fishSvgWithAnchor])
+  }, [showSwimFish, fishSvgWithAnchor, fishRun])
 
   return (
     <footer className="footer-section intro-reveal">
@@ -151,10 +157,12 @@ function Footer() {
               fishRef={fishRef}
               mouthAnchorRef={mouthAnchorRef}
               onFishCatch={() => setFishDiving(true)}
+              onSendFail={handleSendFail}
             />
           </div>
           {showSwimFish && fishSvgWithAnchor && (
             <div
+              key={fishRun}
               ref={fishRef}
               role="img"
               aria-hidden="true"
