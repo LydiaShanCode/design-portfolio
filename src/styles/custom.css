@@ -1643,16 +1643,6 @@ button.footer-link {
   margin: 0;
 }
 
-.postcard-delivery {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  border: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-
 .postcard-sr {
   position: absolute;
   width: 1px;
