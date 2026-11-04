@@ -15,7 +15,7 @@ highlights:
   - Guidelines for AI
 iconKey: adaptive
 videoKey: aicc
-caseStudyReady: true
+caseStudyReady: false
 team:
   - name: Lydia Shan
     role: DES
