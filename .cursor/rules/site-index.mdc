@@ -1,0 +1,10 @@
+---
+description: Keep the public markdown map of the site in sync when content changes.
+alwaysApply: true
+---
+
+# Site index
+
+`public/index.md` is the plain-text map of the site, linked from the footer. When a change adds, removes, or rewrites something a visitor would learn (projects, case studies, about copy, resume, roles, dates, metrics, or public links), update `public/index.md` in the same change. Read and follow `.cursor/skills/site-index/SKILL.md`.
+
+Visual work does not need an update. Before you finish, tell Lydia in one sentence whether `index.md` changed and why, or that it did not need a change.

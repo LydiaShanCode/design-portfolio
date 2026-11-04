@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { siteIndexHref } from '../../lib/siteIndex'
 import { WORK_LINKS, WORK_SOCIALS } from './workFirst'
 
 const isExternal = (href) => href.startsWith('http')
@@ -30,6 +31,7 @@ function WorkBar({ layout = 'bar', tagline = null, leading = null }) {
             {label}
           </a>
         ))}
+        <a href={siteIndexHref} className="wf-link" data-hoverable>index.md</a>
       </nav>
     </header>
   )

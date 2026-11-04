@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import WorkBar from './WorkBar'
+import WorkFooter from './WorkFooter'
 import WorkMedia from './WorkMedia'
 import WorkShell from './WorkShell'
 import { WORK_TAGLINE, pad, useWorkPreview, useWorkProjects, yearOf } from './workFirst'
@@ -57,6 +58,7 @@ function WallHome() {
           </ol>
         </main>
       </div>
+      <WorkFooter mobileOnly />
     </WorkShell>
   )
 }

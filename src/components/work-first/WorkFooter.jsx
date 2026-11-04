@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { siteIndexHref } from '../../lib/siteIndex'
 import { WORK_LINKS, WORK_SOCIALS } from './workFirst'
 
 function WorkFooter({ mobileOnly = false }) {
@@ -25,6 +26,7 @@ function WorkFooter({ mobileOnly = false }) {
         {WORK_LINKS.map(({ label, to }) => (
           <Link key={label} to={to} className="wf-link" data-hoverable>{label}</Link>
         ))}
+        <a href={siteIndexHref} className="wf-link" data-hoverable>index.md</a>
       </nav>
     </footer>
   )

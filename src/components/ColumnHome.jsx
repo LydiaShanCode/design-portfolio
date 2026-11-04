@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Picture from './Picture'
 import Video from './Video'
 import ProjectPreview from './ProjectPreview'
+import { siteIndexHref } from '../lib/siteIndex'
 import { featuredProjects } from '../data/projectLoader'
 import { withProjectAssets } from '../data/projectAssets'
 
@@ -147,6 +148,7 @@ function ColumnHome() {
               {label}
             </a>
           ))}
+          <a href={siteIndexHref} className="column-link" data-hoverable>index.md</a>
         </nav>
       </header>
 
