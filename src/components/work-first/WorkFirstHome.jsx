@@ -8,6 +8,7 @@ const LAYOUTS = {
   gallery: lazy(() => import('./GalleryHome')),
   bento: lazy(() => import('./BentoHome')),
   agent: lazy(() => import('./AgentHome')),
+  onepager: lazy(() => import('./OnePagerHome')),
 }
 
 function WorkFirstHome({ layout }) {

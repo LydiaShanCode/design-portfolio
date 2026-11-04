@@ -20,6 +20,7 @@ const WORK_FIRST = [
   { key: 'gallery', label: 'Reel', name: 'Work first · Reel', description: 'A horizontal gallery of tall cards. Scroll, drag, or use the arrows.' },
   { key: 'bento', label: 'Bento', name: 'Work first · Bento', description: 'A mosaic with one large lead, a tall cell for the mobile project, and the rest tiled underneath.' },
   { key: 'agent', label: 'AI', name: 'Work first · Agent', description: 'The bento work grid, with the spinning logo as an AI agent. Click it to ask about any project, the numbers, or the CV; the page picks out what it mentions.' },
+  { key: 'onepager', label: 'One', name: 'Work first · One-pager', description: 'A small photo and a short bio, then straight into five projects, each with the results it moved. Reads top to bottom in about five minutes.' },
 ]
 
 export const WORK_FIRST_KEYS = WORK_FIRST.map((v) => v.key)

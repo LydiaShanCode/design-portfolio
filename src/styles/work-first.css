@@ -1937,6 +1937,245 @@
   }
 }
 
+/* ── One-pager: short hero, then results-first project entries ── */
+.wf-one {
+  width: min(100% - var(--wf-pad) * 2, 720px);
+  margin: 0 auto;
+  padding: clamp(48px, 9vh, 96px) 0 clamp(48px, 8vh, 80px);
+}
+
+.wf-one-hero {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  align-items: center;
+  gap: 16px 20px;
+}
+
+.wf-one-photo {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.wf-one-photo-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wf-one-name {
+  font-family: var(--font-serif);
+  font-size: clamp(30px, 4vw, 40px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.5px;
+}
+
+.wf-one-title {
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--color-text-subdued);
+}
+
+.wf-one-bio {
+  grid-column: 1 / -1;
+  max-width: 58ch;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-text-main);
+}
+
+.wf-one-links {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+}
+
+.wf-one-links .wf-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  .wf-one-links {
+    gap: 0 20px;
+  }
+
+  .wf-one-links .wf-link {
+    min-height: 32px;
+  }
+}
+
+.wf-one-work {
+  margin-top: clamp(48px, 8vh, 80px);
+  padding-top: 24px;
+  border-top: 1px solid var(--color-hairline);
+}
+
+.wf-one-work-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+}
+
+.wf-one-work-head .wf-eyebrow {
+  font-family: var(--font-sans);
+}
+
+.wf-one-lead {
+  font-size: 14px;
+  color: var(--color-text-subdued);
+}
+
+.wf-one-list {
+  list-style: none;
+}
+
+.wf-one-entry {
+  padding: clamp(32px, 6vh, 56px) 0;
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+.wf-one-entry:last-child {
+  border-bottom: 0;
+}
+
+.wf-one-entry-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+
+.wf-one-entry-title {
+  font-family: var(--font-serif);
+  font-size: clamp(30px, 4vw, 40px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.5px;
+}
+
+.wf-one-entry-meta {
+  font-size: 13px;
+  color: var(--color-text-subdued);
+}
+
+.wf-one-entry-role {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-secondary);
+}
+
+.wf-one-media {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: transform 250ms var(--ease-smooth), box-shadow 250ms var(--ease-smooth);
+}
+
+.wf-one-media:hover {
+  transform: translateY(-2px);
+}
+
+.wf-one-media:active {
+  transform: scale(0.995);
+}
+
+.wf-one-media .wf-media {
+  aspect-ratio: 16 / 10;
+  height: auto;
+}
+
+.wf-one-summary {
+  max-width: 56ch;
+  margin-top: 24px;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--color-text-main);
+}
+
+.wf-one-results {
+  margin-top: 20px;
+  list-style: none;
+  border-top: 1px solid var(--color-hairline);
+}
+
+.wf-one-result {
+  display: grid;
+  grid-template-columns: minmax(84px, 128px) 1fr;
+  align-items: baseline;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+.wf-one-figure {
+  font-family: var(--font-serif);
+  font-size: clamp(26px, 3.4vw, 32px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.5px;
+  font-variant-numeric: lining-nums;
+  color: var(--color-primary);
+}
+
+.wf-one-result-text {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-text-main);
+}
+
+.wf-one-note {
+  max-width: 60ch;
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-subdued);
+}
+
+.wf-one-cta {
+  margin-top: 24px;
+  min-height: 44px;
+}
+
+.wf-home--onepager .wf-footer {
+  width: min(100% - var(--wf-pad) * 2, 720px);
+  margin: 0 auto;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+@media (max-width: 479px) {
+  .wf-one-result {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .wf-one-hero,
+  .wf-one-entry {
+    animation: wf-rise 360ms var(--ease-smooth) both;
+    animation-delay: calc(var(--i, 0) * 60ms);
+  }
+}
+
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   .wf-home *,
