@@ -161,9 +161,9 @@ export const EMPLOYEES = Array.from({ length: 100 }, (_, i) => {
 })
 
 export const SIDEBAR_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'navDashboard', active: true, children: ['Reports', 'Boards', 'Leaderboard'] },
+  { id: 'dashboard', label: 'Dashboard', icon: 'navDashboard', children: ['Reports', 'Boards', 'Leaderboard'] },
   { id: 'employees', label: 'Employees', icon: 'navEmployees' },
-  { id: 'training', label: 'Training', icon: 'navTraining' },
+  { id: 'training', label: 'Training', icon: 'navTraining', active: true, children: ['Content Library', 'Policies'] },
   { id: 'phishing', label: 'Phishing', icon: 'navPhishing' },
   { id: 'triage', label: 'Phish Triage', icon: 'navPhishTriage', count: 13 },
   { id: 'email', label: 'Email Security', icon: 'navEmail', locked: true },
@@ -172,18 +172,4 @@ export const SIDEBAR_ITEMS = [
   { id: 'risk', label: 'Risk', icon: 'navRisk' },
   { id: 'personas', label: 'AI Personas', icon: 'navPersonas' },
   { id: 'feature', label: 'Feature Preview', icon: 'navFeature' },
-]
-
-export const LIST_TRIGGERED = [
-  { id: 't1', title: 'Security Essentials Campaign', status: 'live', enrolled: '239', overdue: '23', activated: 'Jun 12', length: '7 days' },
-  { id: 't2', title: 'Security Essentials Campaign', status: 'draft', enrolled: '-', overdue: '-', activated: '-', length: '-' },
-  { id: 't3', title: 'Security Essentials Campaign', status: 'ended', enrolled: '98', overdue: '7', activated: 'Dec. 24, 2023', length: '14 days' },
-]
-
-export const LIST_SCHEDULED = [
-  { id: 's1', title: 'Annual Training 2024', status: 'overdue', completion: '10%', start: 'Jan. 5', due: 'Apr. 26' },
-  { id: 's2', title: 'Security Essentials Campaign', status: 'live', completion: '10%', start: 'Jan. 5', due: 'Apr. 26' },
-  { id: 's3', title: '2024 Core Program', status: 'scheduled', completion: '95%', start: 'Apri. 26', due: 'Mar. 1' },
-  { id: 's4', title: 'New Hire Onboarding Campaign (2)', status: 'draft', completion: '-', start: 'Jan. 2', due: '-' },
-  { id: 's5', title: 'Security Essentials', status: 'ended', completion: '100%', start: 'Aug. 24, 2023', due: 'Dec. 24, 2023' },
 ]

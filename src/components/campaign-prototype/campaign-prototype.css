@@ -473,46 +473,6 @@
   height: auto;
 }
 
-.cp-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 22px;
-  padding: 0 8px;
-  border-radius: var(--cp-radius-sm);
-  font-size: 12px;
-  font-weight: 500;
-  background: var(--cp-bg-subtle);
-  color: var(--cp-text-2);
-}
-
-.cp-status__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-.cp-status--live {
-  background: var(--cp-success-subtle);
-  color: var(--cp-success);
-}
-
-.cp-status--overdue {
-  background: var(--cp-danger-subtle);
-  color: var(--cp-danger);
-}
-
-.cp-status--paused {
-  background: var(--cp-pending-subtle);
-  color: var(--cp-pending);
-}
-
-.cp-status--scheduled {
-  background: #e9f3fb;
-  color: #1f5f93;
-}
-
 /* ── Shell ── */
 .cp-shell {
   display: flex;
@@ -695,81 +655,6 @@
   border-radius: var(--cp-radius-lg);
   scrollbar-width: thin;
   scrollbar-color: var(--cp-border-strong) transparent;
-}
-
-/* ── Campaign list ── */
-.cp-list {
-  padding: 40px 76px 56px;
-  animation: cp-enter 320ms var(--cp-ease) both;
-}
-
-.cp-list__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 36px;
-}
-
-.cp-list__section + .cp-list__section {
-  margin-top: 40px;
-}
-
-.cp-list__section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.cp-list__section-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.cp-list__section-title h2 {
-  font-family: var(--cp-font-display);
-  font-size: 15px;
-  font-weight: 500;
-}
-
-.cp-table {
-  font-size: 13px;
-}
-
-.cp-table__head,
-.cp-table__row {
-  display: grid;
-  align-items: center;
-  column-gap: 16px;
-  padding: 0 12px;
-}
-
-.cp-table__head {
-  height: 36px;
-  color: var(--cp-text-3);
-  font-size: 12px;
-  font-weight: 500;
-  border-bottom: 1px solid var(--cp-border);
-}
-
-.cp-table__row {
-  height: 56px;
-  border-bottom: 1px solid var(--cp-border);
-  transition: background-color var(--cp-fast) var(--cp-ease);
-  animation: cp-enter 280ms var(--cp-ease) both;
-}
-
-.cp-table__row:hover {
-  background: var(--cp-bg-2);
-}
-
-.cp-table__row--link:focus-visible {
-  outline-offset: -2px;
-}
-
-.cp-table__title {
-  font-weight: 500;
 }
 
 /* ── Overlays ── */

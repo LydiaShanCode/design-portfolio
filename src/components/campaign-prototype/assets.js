@@ -86,14 +86,11 @@ import modalX from './assets/modalX.svg'
 import modalPlus from './assets/modalPlus.svg'
 import modalToggleRight from './assets/modalToggleRight.svg'
 import modalChartLine from './assets/modalChartLine.svg'
-import listTriggered from './assets/listTriggered.webp'
-import listScheduled from './assets/listScheduled.webp'
 import listChevron from './assets/listChevron.svg'
 import listIcon from './assets/listIcon.svg'
 import listEllipsis from './assets/listEllipsis.svg'
 import listTooltip from './assets/listTooltip.svg'
 import listPlus from './assets/listPlus.svg'
-import listChevronDown from './assets/listChevronDown.svg'
 import resEllipsis from './assets/resEllipsis.svg'
 import resUserPlus from './assets/resUserPlus.svg'
 import resPending from './assets/resPending.svg'
@@ -205,14 +202,11 @@ const assets = {
   modalPlus,
   modalToggleRight,
   modalChartLine,
-  listTriggered,
-  listScheduled,
   listChevron,
   listIcon,
   listEllipsis,
   listTooltip,
   listPlus,
-  listChevronDown,
   resEllipsis,
   resUserPlus,
   resPending,

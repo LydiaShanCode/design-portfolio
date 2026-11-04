@@ -16,6 +16,7 @@
     "og:video": "node scripts/render-og-video.mjs"
   },
   "dependencies": {
+    "@fontsource/dm-mono": "^5.3.0",
     "@fontsource/geist": "^5.2.8",
     "@fontsource/geist-mono": "latest",
     "@fontsource/inter": "^5.3.0",

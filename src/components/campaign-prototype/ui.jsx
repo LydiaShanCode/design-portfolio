@@ -85,12 +85,3 @@ export function EmailThumb() {
   )
 }
 
-export function ToneStatus({ status }) {
-  const labels = { live: 'Live', draft: 'Draft', ended: 'Ended', overdue: 'Overdue', scheduled: 'Scheduled', paused: 'Paused' }
-  return (
-    <span className={`cp-status cp-status--${status}`}>
-      {status === 'draft' || status === 'ended' ? null : <span className="cp-status__dot" />}
-      {labels[status]}
-    </span>
-  )
-}

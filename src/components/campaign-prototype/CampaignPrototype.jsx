@@ -1,40 +1,54 @@
 import { useMemo } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import TrainingCampaigns from '../prototypes/training-campaigns/TrainingCampaigns'
+import { MODULES as INDEX_MODULES } from '../../data/trainingCampaigns'
 import AppShell from './AppShell'
-import CampaignList from './CampaignList'
 import CampaignPage from './CampaignPage'
 import CreateDialog from './CreateDialog'
 import ContentModal from './ContentModal'
-import { formatDate, parseDate } from './dates'
 import { DEFAULT_CAMPAIGN } from './store'
 import './campaign-prototype.css'
 
 const EASE = [0.22, 0.61, 0.36, 1]
+const ENROLLED = 100
+const INDEX_STATUS = { draft: 'draft', launched: 'live', paused: 'paused' }
 
-function listRow(state, startDate, endDate) {
+function indexCampaign(state, startDate, endDate) {
   if (!state.created) return null
-  const short = (iso) => formatDate(parseDate(iso), 'short').replace(/^(\w{3})\w*/, '$1.')
+  const { audience, items, status } = state
   return {
     id: 'new-campaign',
-    openable: true,
     title: state.campaign.name || 'Untitled campaign',
-    status: state.status === 'draft' ? 'draft' : state.status === 'paused' ? 'paused' : 'live',
-    completion: state.status === 'draft' ? '-' : '0%',
-    start: short(startDate),
-    due: state.status === 'draft' ? '-' : short(endDate),
+    status: INDEX_STATUS[status],
+    type: 'fixed',
+    modules: items.map((item, index) => ({
+      id: `new-${item.id}`,
+      title: item.title,
+      minutes: item.minutes,
+      icon: INDEX_MODULES[index % INDEX_MODULES.length].id,
+    })),
+    start: startDate,
+    end: endDate,
+    audience:
+      audience.type === 'all'
+        ? { kind: 'all', label: 'All employees', enrolled: ENROLLED }
+        : { kind: 'group', label: audience.group, enrolled: ENROLLED },
+    completed: status === 'draft' ? 0 : ENROLLED / 2,
+    overdue: 0,
+    total: ENROLLED,
   }
 }
 
 export default function CampaignPrototype({ store, className = '' }) {
   const { state, actions, startDate, endDate } = store
-  const newCampaign = useMemo(() => listRow(state, startDate, endDate), [state, startDate, endDate])
+  const pinned = useMemo(() => indexCampaign(state, startDate, endDate), [state, startDate, endDate])
   const modalOpen = state.dialog || state.contentModal
 
   return (
     <div className={`cp ${modalOpen ? 'cp--modal-open' : ''} ${className}`.trim()} data-hide-cursor data-no-sfx>
       <AppShell onNavigate={actions.backToList}>
         {state.view === 'list' ? (
-          <CampaignList onNew={actions.openDialog} onOpenNew={actions.openCampaign} newCampaign={newCampaign} />
+          <TrainingCampaigns embedded pinned={pinned} onCreate={actions.openDialog} onOpenPinned={actions.openCampaign} />
         ) : (
           <CampaignPage store={store} onBack={actions.backToList} />
         )}
