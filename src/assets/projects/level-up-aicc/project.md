@@ -2,7 +2,7 @@
 id: 6
 title: Level up AICC
 slug: level-up-aicc
-featuredOrder: 3
+featuredOrder: 2
 company: Adaptive Security
 protected: true
 date: "2 months · 2026"
