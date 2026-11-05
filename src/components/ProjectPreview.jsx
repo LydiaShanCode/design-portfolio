@@ -464,9 +464,14 @@ function ProjectPreview({ project, cardRect, originNode, onClose }) {
             ref={videoWrapRef}
             className={`project-preview-video-wrap${(isProtected && passwordPhase === 'idle') || !isProtected ? ' project-preview-video-wrap--hide-cursor' : ''}`}
             {...((isProtected && passwordPhase === 'idle') || !isProtected ? { 'data-hide-cursor': true } : {})}
+            style={video?.poster ? {
+              backgroundImage: `url("${video.poster}")`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center top',
+            } : undefined}
           >
             {video ? (
-              <Video media={video} preload="auto" className="project-preview-video" />
+              <Video media={video} playing preload="auto" className="project-preview-video" />
             ) : image ? (
               <Picture
                 image={image}

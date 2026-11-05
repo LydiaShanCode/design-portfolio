@@ -134,6 +134,7 @@ function applyPose(pose, g, els) {
   const insetX = lerp(g.insetX, 0, pose.open)
   const insetY = lerp(g.insetY, 0, pose.open)
   card.style.transform = transform
+  card.style.transformStyle = 'preserve-3d'
   card.style.clipPath = `inset(${insetY}px ${insetX}px round ${lerp(g.startRadius, g.finalRadius, pose.open)}px)`
   front.style.opacity = String(pose.front)
   shade.style.opacity = String(pose.shade)
@@ -154,6 +155,7 @@ function applyPose(pose, g, els) {
 function clearPose(els) {
   const { card, front, shade, cover } = els
   card.style.transform = ''
+  card.style.transformStyle = 'flat'
   card.style.clipPath = ''
   front.style.opacity = '0'
   shade.style.opacity = '0'
