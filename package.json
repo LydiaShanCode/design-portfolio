@@ -22,6 +22,7 @@
     "@gsap/react": "^2.1.2",
     "@vercel/analytics": "^2.0.1",
     "agentation": "^3.1.2",
+    "cuelume": "^0.2.8",
     "dialkit": "^2.1.0",
     "framer-motion": "^12.34.3",
     "gray-matter": "^4.0.3",
