@@ -2109,8 +2109,14 @@ button.footer-link {
 }
 
 .project-preview--open .project-preview-card {
-  transform: perspective(1200px) rotateY(0deg) scale(1);
   opacity: 1;
+}
+
+/* rotateY(0) is still a transform, and WebKit will not paint a video inside one.
+   The flip has finished by the time the card is open, so the settled card can be flat. */
+.project-preview--open:not(.project-preview--motion) .project-preview-card {
+  transform: none;
+  transform-style: flat;
 }
 
 .project-preview--flip-out .project-preview-card {
