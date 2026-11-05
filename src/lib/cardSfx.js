@@ -5,7 +5,7 @@ const STORAGE_KEY = 'card-sfx-params'
 const MIN_GAP_MS = 110
 
 export const CARD_SFX_DEFAULTS = {
-  volume: 0.85,
+  volume: 0.95,
   rate: 1,
   rateJitter: 0.03,
   lowpassHz: 6800,
@@ -41,8 +41,10 @@ function loadParams() {
       const value = parsed[key]
       if (typeof value === 'number' && Number.isFinite(value)) next[key] = value
     }
-    // The first shipped level was 0.35. Lift that exact take without touching a level set by hand.
-    if (Math.abs(next.volume - 0.35) < 0.001) next.volume = CARD_SFX_DEFAULTS.volume
+    // Earlier shipped levels were 0.35 and 0.85. Lift those exact takes without touching a level set by hand.
+    if (Math.abs(next.volume - 0.35) < 0.001 || Math.abs(next.volume - 0.85) < 0.001) {
+      next.volume = CARD_SFX_DEFAULTS.volume
+    }
     return next
   } catch {
     return { ...CARD_SFX_DEFAULTS }
