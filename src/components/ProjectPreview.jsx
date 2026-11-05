@@ -3,6 +3,7 @@ import { animate, useReducedMotion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import Picture from './Picture'
 import Video from './Video'
+import { play } from 'cuelume'
 import { lastPointer } from '../lib/pointer'
 import { useDesignVersion } from './design-versions/DesignVersionProvider'
 import {
@@ -298,6 +299,7 @@ function ProjectPreview({ project, cardRect, originNode, onClose }) {
     e.preventDefault()
     if (passwordValue === CORRECT_PASSWORD) {
       sessionStorage.setItem(sessionKey(slug), '1')
+      play('success', { theme: 'press' })
       setPasswordPhase('unlocked')
       resetMobileZoom()
       setTimeout(() => navigate(`/project/${slug}`), 600)

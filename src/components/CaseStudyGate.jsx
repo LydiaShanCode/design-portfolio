@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { play } from 'cuelume'
 
 const CORRECT_PASSWORD = 'design is awesome'
 
@@ -27,6 +28,7 @@ function CaseStudyGate({ slug, onUnlock, children }) {
     e.preventDefault()
     if (value === CORRECT_PASSWORD) {
       sessionStorage.setItem(sessionKey(slug), '1')
+      play('success', { theme: 'press' })
       setAlreadyUnlocked(true)
       onUnlock?.()
     } else {

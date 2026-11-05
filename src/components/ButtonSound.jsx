@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { play, setTheme, setVolume } from 'cuelume'
+import { play, setVolume } from 'cuelume'
 
 const CONTROL = 'button, [role="button"], a[href]'
 const SKIP = '.work-card, .column-card, .card-desk'
@@ -21,11 +21,11 @@ function controlFrom(target) {
 
 function ButtonSound() {
   useEffect(() => {
-    setTheme('press')
-    setVolume(0.8)
+    setVolume(1)
     const onClick = (event) => {
       if (!controlFrom(event.target)) return
       play('tap', {
+        theme: 'bubble',
         emphasis: 'normal',
         input: event.detail === 0 ? 'keyboard' : 'mouse',
       })
