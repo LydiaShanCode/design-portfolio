@@ -4,6 +4,7 @@ import Picture from './Picture'
 import Video from './Video'
 import ProjectPreview from './ProjectPreview'
 import { featuredProjects } from '../data/projectLoader'
+import { playCardSfx } from '../lib/cardSfx'
 import { withProjectAssets } from '../data/projectAssets'
 
 // Cards ride a horizontal drum; the radius is a multiple of the viewport height
@@ -122,7 +123,10 @@ function ColumnHome() {
     }
   }, [projects.length])
 
-  const handleSelect = useCallback((project, rect) => setSelected({ project, rect }), [])
+  const handleSelect = useCallback((project, rect) => {
+    playCardSfx()
+    setSelected({ project, rect })
+  }, [])
   const handleClose = useCallback(() => setSelected(null), [])
 
   return (

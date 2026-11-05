@@ -8,7 +8,8 @@ import Footer from './components/Footer'
 import WaterCanvas from './components/WaterCanvas'
 import PondCanvas from './components/PondCanvas'
 import CustomCursor from './components/CustomCursor'
-import ClickSfx from './components/ClickSfx'
+import CardSoundDesk from './components/CardSoundDesk'
+import ButtonSound from './components/ButtonSound'
 import HeroPlayground from './components/HeroPlayground'
 import ColumnHome from './components/ColumnHome'
 import { useMajorVersion } from './components/design-versions/DesignVersionProvider'
@@ -80,7 +81,8 @@ function App() {
       <Analytics />
       <div className="min-h-screen bg-[var(--color-page)]">
         <CustomCursor />
-        <ClickSfx />
+        <ButtonSound />
+        <CardSoundDesk />
         <SiteChrome>
           {pond ? <PondCanvas /> : <WaterCanvas />}
           <Navigation />
