@@ -2,7 +2,7 @@
 id: 7
 title: Core Workflows
 slug: core-workflows
-featuredOrder: 2
+featuredOrder: 1
 company: Adaptive Security
 protected: true
 date: "2 months · 2026"
