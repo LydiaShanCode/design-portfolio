@@ -40,6 +40,13 @@ function loadBuffer(audio, url) {
   return bufferCache.get(url)
 }
 
+/** Resolves with the decoded buffer, or null if it can't be read. */
+export function whenDecoded(url) {
+  const audio = getContext()
+  if (!audio) return Promise.resolve(null)
+  return loadBuffer(audio, url)
+}
+
 /** Downloads sounds now and decodes them once audio is unlocked. */
 export function preloadSounds(urls) {
   urls.forEach((url) => {
@@ -71,29 +78,41 @@ export function initSounds(urls) {
 }
 
 /**
- * Plays a short one-shot. Options: volume, lowpassHz, rateJitter (±fraction), fadeOut (seconds).
+ * Plays a short one-shot.
+ * volume, rate (playback), rateJitter (±fraction around rate),
+ * lowpassHz, lowpassQ, attack and fadeOut (seconds).
  */
-export async function playSound(url, { volume = 0.35, lowpassHz = null, rateJitter = 0, fadeOut = 0.08 } = {}) {
+export async function playSound(url, {
+  volume = 0.35,
+  rate = 1,
+  rateJitter = 0,
+  lowpassHz = null,
+  lowpassQ = 0.5,
+  attack = 0.001,
+  fadeOut = 0.08,
+} = {}) {
   const triggeredAt = performance.now()
   const audio = getContext()
-  if (!audio) return
+  if (!audio) return null
   if (audio.state === 'suspended') {
     await audio.resume().catch(() => {})
-    if (audio.state !== 'running') return
+    if (audio.state !== 'running') return null
   }
   const buffer = await loadBuffer(audio, url)
-  if (!buffer || performance.now() - triggeredAt > MAX_LATE_MS) return
+  if (!buffer || performance.now() - triggeredAt > MAX_LATE_MS) return null
 
   const t = audio.currentTime + START_LEAD
-  const rate = 1 - rateJitter + Math.random() * rateJitter * 2
-  const duration = buffer.duration / rate
-  const fadeOutAt = Math.max(0.001, duration - fadeOut)
+  const playback = Math.max(0.25, rate) * (1 - rateJitter + Math.random() * rateJitter * 2)
+  const duration = buffer.duration / playback
+  const attackTime = Math.min(Math.max(0.001, attack), duration * 0.45)
+  const release = Math.min(Math.max(0.005, fadeOut), Math.max(0.005, duration - attackTime))
+  const fadeOutAt = Math.max(attackTime, duration - release)
 
   const gain = audio.createGain()
   gain.gain.setValueAtTime(0, t)
-  gain.gain.linearRampToValueAtTime(volume, t + 0.001)
+  gain.gain.linearRampToValueAtTime(volume, t + attackTime)
   gain.gain.setValueAtTime(volume, t + fadeOutAt)
-  gain.gain.setTargetAtTime(0, t + fadeOutAt, fadeOut / 4)
+  gain.gain.setTargetAtTime(0, t + fadeOutAt, release / 4)
   gain.connect(audio.destination)
 
   let output = gain
@@ -101,15 +120,16 @@ export async function playSound(url, { volume = 0.35, lowpassHz = null, rateJitt
     const soften = audio.createBiquadFilter()
     soften.type = 'lowpass'
     soften.frequency.value = lowpassHz
-    soften.Q.value = 0.5
+    soften.Q.value = lowpassQ
     soften.connect(gain)
     output = soften
   }
 
   const source = audio.createBufferSource()
   source.buffer = buffer
-  source.playbackRate.value = rate
+  source.playbackRate.value = playback
   source.connect(output)
   source.start(t)
   source.stop(t + duration)
+  return { duration, buffer }
 }
