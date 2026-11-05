@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { play, setVolume } from 'cuelume'
 
 const CONTROL = 'button, [role="button"], a[href]'
-const SKIP = '.work-card, .column-card, .card-desk'
+const SKIP = '.work-card, .column-card'
 
 function controlFrom(target) {
   if (!(target instanceof Element)) return null
