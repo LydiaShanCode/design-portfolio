@@ -210,7 +210,16 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
     const mouthRect = mouthAnchorRef?.current?.getBoundingClientRect?.() || null
     const topSnapX = mouthRect ? mouthRect.left + mouthRect.width / 2 : fishRect.left + fishRect.width * 0.2
     const topSnapY = mouthRect ? mouthRect.top + mouthRect.height / 2 : fishRect.top + fishRect.height * 0.01
-    return { postcardRect, fishRect, topSnapX, topSnapY }
+    const reach = Math.max(24, postcardRect.height * 0.08)
+    const hit = mouthRect
+      ? {
+          left: topSnapX - reach,
+          right: topSnapX + reach,
+          top: topSnapY - reach,
+          bottom: topSnapY + reach,
+        }
+      : fishRect
+    return { postcardRect, hit, topSnapX, topSnapY }
   }, [fishRef, mouthAnchorRef])
 
   const checkCollisionWithFish = useCallback(() => {
@@ -218,13 +227,13 @@ function Postcard({ onReadyChange = null, fishRef = null, mouthAnchorRef = null,
     if (!formRef.current?.checkValidity()) return false
     const target = getSnapTarget()
     if (!target) return false
-    const { postcardRect, fishRect, topSnapX, topSnapY } = target
+    const { postcardRect, hit, topSnapX, topSnapY } = target
 
     const intersects =
-      postcardRect.left < fishRect.right &&
-      postcardRect.right > fishRect.left &&
-      postcardRect.top < fishRect.bottom &&
-      postcardRect.bottom > fishRect.top
+      postcardRect.left < hit.right &&
+      postcardRect.right > hit.left &&
+      postcardRect.top < hit.bottom &&
+      postcardRect.bottom > hit.top
 
     if (!intersects) return false
 
