@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useCallback, useRef, Children, isValidElement } from 'react'
 import { useParams } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import Markdown from 'react-markdown'
 import projectsFromMd, { featuredProjects } from '../data/projectLoader'
 import IterationsViewer from './IterationsViewer'
@@ -44,13 +44,32 @@ function toHeadingId(text) {
 
 const HIDDEN_PREFIX = '[hidden] '
 
+const IMAGE_IN_SECTION = /!\[[^\]]*\]\((?:<([^>]+)>|([^)\s]+))\)/g
+
+function firstSectionImage(body) {
+  IMAGE_IN_SECTION.lastIndex = 0
+  let match = IMAGE_IN_SECTION.exec(body)
+  while (match) {
+    const src = (match[1] || match[2] || '').trim()
+    if (src && !/\.(mp4|mov|webm|m4v)$/i.test(src)) return src
+    match = IMAGE_IN_SECTION.exec(body)
+  }
+  return null
+}
+
 function parseHeadings(content) {
   if (!content) return []
-  return [...content.matchAll(/^## (.+)$/gm)].map(([, raw]) => {
-    const label = raw.trim().startsWith(HIDDEN_PREFIX)
-      ? raw.trim().slice(HIDDEN_PREFIX.length)
-      : raw.trim()
-    return { id: toHeadingId(raw.trim()), label }
+  const marks = [...content.matchAll(/^## (.+)$/gm)]
+  return marks.map((mark, index) => {
+    const raw = mark[1].trim()
+    const label = raw.startsWith(HIDDEN_PREFIX) ? raw.slice(HIDDEN_PREFIX.length) : raw
+    const start = mark.index + mark[0].length
+    const end = marks[index + 1]?.index ?? content.length
+    return {
+      id: toHeadingId(raw),
+      label,
+      image: firstSectionImage(content.slice(start, end)),
+    }
   })
 }
 
@@ -61,52 +80,34 @@ function childrenToText(children) {
   return ''
 }
 
-const SPRING = { type: 'spring', stiffness: 380, damping: 28, mass: 1.1 }
-const BAR_SPRING = { type: 'spring', stiffness: 160, damping: 26, mass: 1 }
-const ACTIVE_WIDTH = 48
-const DECAY = 0.62
-const MIN_WIDTH = 6
-const COLOR_ACTIVE = '#001dd9'
-const COLOR_REST = '#1C1C1C'
+const LINE_SPRING = { type: 'spring', stiffness: 380, damping: 28, mass: 1.1 }
+const REST_WIDTHS = [18, 26, 14, 32, 20, 28, 16, 34, 22, 30]
+const HOVER_PEAK = 78
 
-function barWidth(distance) {
-  return Math.max(MIN_WIDTH, Math.round(ACTIVE_WIDTH * Math.pow(DECAY, distance)))
+function lineWidth(index, hoverIndex) {
+  const rest = REST_WIDTHS[index % REST_WIDTHS.length]
+  if (hoverIndex == null) return rest
+  const distance = Math.abs(index - hoverIndex)
+  if (distance === 0) return HOVER_PEAK
+  if (distance === 1) return rest + 14
+  if (distance === 2) return rest + 5
+  return rest
 }
 
-function barOpacity(distance) {
-  return Math.max(0.12, 0.32 * Math.pow(0.78, distance - 1))
+function sectionPreview(src, slug) {
+  if (!src) return null
+  const media = resolveProjectAsset(src, slug)
+  if (media.video) return null
+  if (media.image) return { image: media.image, placeholder: media.placeholder }
+  if (typeof media.src === 'string' && !media.src.startsWith('./')) return { image: media.src }
+  return null
 }
 
-const NON_NOUN_WORDS = new Set([
-  'a', 'an', 'the',
-  'was', 'is', 'are', 'were', 'be', 'been', 'being',
-  'has', 'have', 'had', 'did', 'do', 'does',
-  'can', 'could', 'will', 'would', 'should', 'may', 'might',
-  'it', 'its', 'they', 'we', 'you', 'i', 'he', 'she',
-  'this', 'that', 'these', 'those',
-  'and', 'or', 'but', 'nor', 'so',
-  'of', 'in', 'at', 'by', 'for', 'with', 'about', 'into', 'onto',
-  'never', 'always',
-])
-const ADJECTIVE_PREFIXES = ['mid-', 'pre-', 'post-', 'non-', 'anti-', 'cross-', 'inter-']
-
-function getFirstNoun(label) {
-  const words = label.split(/[\s:–—]+/).filter(Boolean)
-  for (const word of words) {
-    const clean = word.replace(/[^a-zA-Z-]/g, '')
-    const lower = clean.toLowerCase()
-    if (!lower) continue
-    if (NON_NOUN_WORDS.has(lower)) continue
-    if (ADJECTIVE_PREFIXES.some((p) => lower.startsWith(p))) continue
-    // skip superlative adjectives (e.g. "Biggest", "Largest") — length guard avoids "best", "rest"
-    if (lower.endsWith('est') && lower.length > 5) continue
-    return clean
-  }
-  return words[0]?.replace(/[^a-zA-Z]/g, '') || ''
-}
-
-function ProjectSideNav({ headings, visible }) {
+function ProjectSideNav({ headings, visible, slug }) {
   const [activeId, setActiveId] = useState(headings[0]?.id || '')
+  const [hoveredId, setHoveredId] = useState(null)
+  const reduceMotion = useReducedMotion()
+  const hoverIndex = headings.findIndex(({ id }) => id === hoveredId)
 
   useEffect(() => {
     if (!headings.length) return
@@ -123,37 +124,51 @@ function ProjectSideNav({ headings, visible }) {
     return () => observer.disconnect()
   }, [headings])
 
-  const activeIndex = headings.findIndex(({ id }) => id === activeId)
-
   return (
     <aside className={`project-page-sidenav${visible ? ' is-visible' : ''}`} aria-label="Page sections">
-      {headings.map(({ id, label }, i) => {
+      {headings.map(({ id, label, image }, i) => {
         const isActive = id === activeId
-        const distance = Math.abs(i - activeIndex)
-        const firstWord = getFirstNoun(label)
+        const isHot = id === hoveredId
+        const preview = isHot ? sectionPreview(image, slug) : null
         return (
           <button
             key={id}
-            className={`project-page-sidenav-item${isActive ? ' is-active' : ''}`}
+            className={`project-page-sidenav-item${isActive ? ' is-active' : ''}${isHot ? ' is-hot' : ''}`}
             onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+            onMouseEnter={() => setHoveredId(id)}
+            onMouseLeave={() => setHoveredId((current) => (current === id ? null : current))}
+            onFocus={() => setHoveredId(id)}
+            onBlur={() => setHoveredId((current) => (current === id ? null : current))}
             aria-label={label}
             data-hoverable
           >
-            <div className="project-page-sidenav-bar-row">
-              <motion.div
-                className="project-page-sidenav-bar"
-                animate={{
-                  width: isActive ? ACTIVE_WIDTH : barWidth(distance),
-                  opacity: isActive ? 1 : barOpacity(distance),
-                  backgroundColor: isActive ? COLOR_ACTIVE : COLOR_REST,
-                }}
-                transition={{
-                  width: BAR_SPRING,
-                  opacity: { duration: 0.35, ease: [0.22, 0.61, 0.36, 1] },
-                  backgroundColor: { duration: 0.3, ease: [0.22, 0.61, 0.36, 1] },
-                }}
-              />
-            </div>
+            <motion.span
+              className="project-page-sidenav-bar"
+              animate={{ width: lineWidth(i, hoverIndex === -1 ? null : hoverIndex) }}
+              transition={reduceMotion ? { duration: 0 } : LINE_SPRING}
+            />
+            <AnimatePresence>
+              {isHot && (
+                <motion.span
+                  className="project-page-sidenav-preview"
+                  initial={reduceMotion ? false : { opacity: 0, x: -6, y: '-50%' }}
+                  animate={{ opacity: 1, x: 0, y: '-50%' }}
+                  exit={reduceMotion ? undefined : { opacity: 0, x: -4, y: '-50%' }}
+                  transition={{ duration: 0.2, ease: [0.22, 0.61, 0.36, 1] }}
+                >
+                  {preview && (
+                    <Picture
+                      image={preview.image}
+                      placeholder={preview.placeholder}
+                      alt=""
+                      sizes="168px"
+                      className="project-page-sidenav-preview-img"
+                    />
+                  )}
+                  <span className="project-page-sidenav-preview-label">{label}</span>
+                </motion.span>
+              )}
+            </AnimatePresence>
           </button>
         )
       })}
@@ -567,7 +582,7 @@ function ProjectPage() {
           <CaseStudyGate slug={slug} onUnlock={() => setUnlocked(true)} />
         ) : (
           <div ref={layoutRef} className="project-page-layout">
-            {headings.length > 0 && <ProjectSideNav headings={headings} visible={sidenavVisible} />}
+            {headings.length > 0 && <ProjectSideNav headings={headings} visible={sidenavVisible} slug={slug} />}
             <div className="project-page-body">
               <div className="project-page-content">
                 {renderProjectContent(project.content, mdComponents,
