@@ -8,11 +8,18 @@ export const CARD_SFX_DEFAULTS = {
   volume: 0.95,
   rate: 1,
   rateJitter: 0.03,
-  lowpassHz: 6800,
-  lowpassQ: 0.5,
+  lowpassHz: 2000,
+  lowpassQ: 3.5,
   attack: 0.001,
-  fadeOut: 0.08,
+  fadeOut: 0.26,
 }
+
+// Takes that shipped before this mix. A saved copy of one of these becomes the mix above.
+const EARLIER_TAKES = [
+  { volume: 0.35, rate: 1, rateJitter: 0.03, lowpassHz: 6800, lowpassQ: 0.5, attack: 0.001, fadeOut: 0.08 },
+  { volume: 0.85, rate: 1, rateJitter: 0.03, lowpassHz: 6800, lowpassQ: 0.5, attack: 0.001, fadeOut: 0.08 },
+  { volume: 0.95, rate: 1, rateJitter: 0.03, lowpassHz: 6800, lowpassQ: 0.5, attack: 0.001, fadeOut: 0.08 },
+]
 
 export const CARD_SFX_RANGES = {
   volume: { min: 0, max: 1, step: 0.01, label: 'Level', format: (v) => `${Math.round(v * 100)}` },
@@ -41,11 +48,10 @@ function loadParams() {
       const value = parsed[key]
       if (typeof value === 'number' && Number.isFinite(value)) next[key] = value
     }
-    // Earlier shipped levels were 0.35 and 0.85. Lift those exact takes without touching a level set by hand.
-    if (Math.abs(next.volume - 0.35) < 0.001 || Math.abs(next.volume - 0.85) < 0.001) {
-      next.volume = CARD_SFX_DEFAULTS.volume
-    }
-    return next
+    const earlier = EARLIER_TAKES.some((take) =>
+      Object.keys(CARD_SFX_DEFAULTS).every((key) => Math.abs(next[key] - take[key]) < 0.001),
+    )
+    return earlier ? { ...CARD_SFX_DEFAULTS } : next
   } catch {
     return { ...CARD_SFX_DEFAULTS }
   }
