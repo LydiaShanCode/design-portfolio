@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#fafbfd" />
+  <title>Adaptive Security · Lydia Shan</title>
+  <!--
+    Direction
+    Product: Lydia Shan's Adaptive Security case studies, presented to hiring managers
+    Character: candid, exact, a little playful
+    World: her portfolio page, paper and blue ink, not a security operations center
+    Moments: display headlines, customer quotes, real figures, product chrome built in HTML
+    Signature: dotted pills, Adaptive lock mark
+
+    Craft passes follow unslop by Damir Sokolovsky (@heydamir), CC BY 4.0,
+    using this portfolio's tokens instead of a generic ramp.
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&family=Geist:wght@400;500&family=Geist+Mono:wght@400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../shared/deck.css" />
+</head>
+<body>
+  <a class="skip" href="#deck">Skip to slides</a>
+
+  <header class="top">
+    <div class="brand">
+      <a href="../index.html">
+      <svg class="brand-mark" viewBox="0 0 13 13" aria-hidden="true">
+        <path fill="#112CD8" d="M3.33 4.44h1.11v1.11H3.33V4.44zm0 1.11h1.11v1.11H3.33V5.55zm0 1.11h1.11v1.11H3.33V6.65zM6.65 3.33h1.11v1.11H6.65V3.33zm-1.11 0h1.11v1.11H5.55V3.33zm-1.11 0h1.11v1.11H4.44V3.33zm3.33 1.11h1.11v1.11H7.76V4.44zm0 1.11h1.11v1.11H7.76V5.55zm0 1.11h1.11v1.11H7.76V6.65zM6.65 7.76h1.11v1.11H6.65V7.76zm-1.11 0h1.11v1.11H5.55V7.76zm-1.11 0h1.11v1.11H4.44V7.76zM4.44 2.22h1.11v1.11H4.44V2.22zm0-1.11h1.11v1.11H4.44V1.11zM3.33 0h1.11v1.11H3.33V0zm0 1.11h1.11v1.11H3.33V1.11zm0 1.11h1.11v1.11H3.33V2.22zM2.22 1.11h1.11v1.11H2.22V1.11zm0 2.22h1.11v1.11H2.22V3.33zM1.11 2.22h1.11v1.11H1.11V2.22zm1.11 2.22h1.11v1.11H2.22V4.44zM1.11 4.44h1.11v1.11H1.11V4.44zm1.11 2.22h1.11v1.11H2.22V6.65zM1.11 6.65h1.11v1.11H1.11V6.65zM4.44 8.87h1.11v1.11H4.44V8.87zm0 1.11h1.11v1.11H4.44V9.98zM6.65 8.87h1.11v1.11H6.65V8.87zm0 1.11h1.11v1.11H6.65V9.98zM8.87 6.65h1.11v1.11H8.87V6.65zm1.11 0h1.11v1.11H9.98V6.65zM8.87 4.44h1.11v1.11H8.87V4.44zm1.11 0h1.11v1.11H9.98V4.44zM6.65 2.22h1.11v1.11H6.65V2.22zm0-1.11h1.11v1.11H6.65V1.11zM2.22 7.76h1.11v1.11H2.22V7.76zM1.11 8.87h1.11v1.11H1.11V8.87zM3.33 8.87h1.11v1.11H3.33V8.87zM2.22 9.98h1.11v1.11H2.22V9.98zM3.33 9.98h1.11v1.11H3.33V9.98zM1.11 7.76h1.11v1.11H1.11V7.76zM1.11 3.33h1.11v1.11H1.11V3.33zM7.76 8.87h1.11v1.11H7.76V8.87zM8.87 7.76h1.11v1.11H8.87V7.76zM7.76 9.98h1.11v1.11H7.76V9.98zM8.87 9.98h1.11v1.11H8.87V9.98zM9.98 7.76h1.11v1.11H9.98V7.76zM9.98 8.87h1.11v1.11H9.98V8.87zM7.76 2.22h1.11v1.11H7.76V2.22zM8.87 3.33h1.11v1.11H8.87V3.33zM9.98 3.33h1.11v1.11H9.98V3.33zM7.76 1.11h1.11v1.11H7.76V1.11zM8.87 1.11h1.11v1.11H8.87V1.11zM9.98 2.22h1.11v1.11H9.98V2.22zM0 3.33h1.11v1.11H0V3.33zM0 7.76h1.11v1.11H0V7.76zM3.33 11.09h1.11v1.11H3.33v-1.11zM7.76 0h1.11v1.11H7.76V0zM11.09 3.33h1.11v1.11h-1.11V3.33zm0 4.44h1.11v1.11h-1.11V7.76zM7.76 11.09h1.11v1.11H7.76v-1.11zM2.22 11.09h1.11v1.11H2.22v-1.11zM8.87 11.09h1.11v1.11H8.87v-1.11zM0 8.87h1.11v1.11H0V8.87zM0 2.22h1.11v1.11H0V2.22zM2.22 0h1.11v1.11H2.22V0zM8.87 0h1.11v1.11H8.87V0zM11.09 2.22h1.11v1.11h-1.11V2.22zm0 6.65h1.11v1.11h-1.11V8.87zM0 6.65h1.11v1.11H0V6.65zM0 4.44h1.11v1.11H0V4.44zM4.44 0h1.11v1.11H4.44V0zM6.65 0h1.11v1.11H6.65V0zM11.09 4.44h1.11v1.11h-1.11V4.44zm0 2.22h1.11v1.11h-1.11V6.65zM6.65 11.09h1.11v1.11H6.65v-1.11zM4.44 11.09h1.11v1.11H4.44v-1.11zM4.44 6.65h1.11v1.11H4.44V6.65zm0-2.22h1.11v1.11H4.44V4.44zM6.65 4.44h1.11v1.11H6.65V4.44zm0 2.22h1.11v1.11H6.65V6.65z"/>
+      </svg>
+      <span class="brand-name">Lydia Shan</span>
+      </a>
+    </div>
+    <div class="top-meta">
+      <svg class="lock" viewBox="0 0 28 28" aria-hidden="true">
+        <rect width="27.45" height="27.45" rx="13.73" fill="#112CD8"/>
+        <g transform="translate(14 14) scale(1.15) translate(-14 -14)">
+          <path d="M15.6 18.7H12.4C10.7 18.7 9.3 17.3 9.3 15.6V12.4C9.3 10.7 10.7 9.3 12.4 9.3H15.6C17.3 9.3 18.7 10.7 18.7 12.4V15.6" stroke="#FEFEFE" stroke-width="2.6" fill="none"/>
+          <rect x="11.8" y="11.8" width="4.4" height="4.4" rx="1.2" fill="#FEFEFE"/>
+          <rect x="17.2" y="17.2" width="2.9" height="2.9" rx="0.8" fill="#FEFEFE"/>
+        </g>
+      </svg>
+      Adaptive Security
+    </div>
+  </header>
+
+  <main class="deck" id="deck" tabindex="-1">
+
+    <section class="slide is-on" data-word="Title" data-notes="Open with the two bets. Do not walk the resume.">
+      <div class="inner">
+        <p class="kicker">Product design · Jul to Oct 2026</p>
+        <h1 class="display">Two bets.<br>How campaigns go live,<br>and how the training <em>gets made</em></h1>
+        <p class="lede">Four months at Adaptive Security. I led campaign creation research, shipped Test Send and compliance, then designed how far AI should drive the content editor.</p>
+        <div class="pills">
+          <span class="pill">Core Workflows</span>
+          <span class="pill">Level up AICC</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide wide" data-word="Adaptive" data-notes="Adaptive's buyer is the security admin. Employees are the audience of the training, not of the product.">
+      <div class="inner split">
+        <div class="split-copy">
+          <p class="kicker">The product</p>
+          <h2 class="display">Security admins run training they cannot see until it is already live</h2>
+          <p class="body">Adaptive sells phishing simulations and short modules every employee has to complete. Admins enroll people, pick modules, set due dates, and send the mail. The AI content creator now lets them generate those modules from a prompt.</p>
+          <p class="body">I joined in June. Two weeks later I was leading a greenfield campaign concept. Two months in I joined the AI content creator bet.</p>
+        </div>
+        <div class="app" aria-hidden="true">
+          <div class="app-bar">
+            <span class="app-dot"></span><span class="app-dot"></span><span class="app-dot"></span>
+            <div class="app-search">Search campaigns</div>
+          </div>
+          <div class="app-body">
+            <aside class="app-side">
+              <p>Adaptive</p>
+              <ul>
+                <li>Dashboard</li>
+                <li class="is-on">Training</li>
+                <li>Phishing</li>
+                <li>People</li>
+              </ul>
+            </aside>
+            <div class="app-main">
+              <article class="camp is-focus">
+                <div>
+                  <strong>Recognizing phishing email</strong>
+                  <em>Live · Aug 15 to Sep 14 · Social Engineering</em>
+                </div>
+                <span class="camp-meta"><i class="live"></i> 52% complete</span>
+              </article>
+              <article class="camp">
+                <div>
+                  <strong>New hire security basics</strong>
+                  <em>Scheduled · Sep 1 to Sep 30</em>
+                </div>
+                <span class="camp-meta">0 enrolled</span>
+              </article>
+              <article class="camp">
+                <div>
+                  <strong>TEST · Q3 training</strong>
+                  <em>Live · sent to the admin</em>
+                </div>
+                <span class="camp-meta">Throwaway</span>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-word="Bets" data-notes="Two separate bets. Same user.">
+      <div class="inner">
+        <p class="kicker">Scope</p>
+        <h2 class="display">Same admin. Two different kinds of risk.</h2>
+        <div class="stack">
+          <div class="row">
+            <b>Jul to Sep</b>
+            <span>Core Workflows. I led a greenfield campaign concept, then took Test Send and compliance from brief to launch, including production PRs.</span>
+          </div>
+          <div class="row">
+            <b>Sep to Oct</b>
+            <span>Level up AICC. Interactive blocks, the editing model in the frame builder, layouts, and narration. For much of it I worked directly in code.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-word="Campaigns" data-notes="Chapter title. Pause.">
+      <div class="inner">
+        <p class="chapter-no">01 · Core Workflows</p>
+        <h2 class="display">Launching a campaign<br>shouldn't feel risky</h2>
+      </div>
+    </section>
+
+    <section class="slide" data-word="Nervous" data-notes="These two numbers are why the bet existed. VP of Product at kickoff for the 80 percent.">
+      <div class="inner">
+        <p class="kicker">Why the bet existed</p>
+        <div class="figures">
+          <div class="fig">
+            <p class="fig-n">80<small>%</small></p>
+            <p class="fig-l">of people were already editing campaigns after they launched. Admins spotted something off and patched it live.</p>
+          </div>
+          <div class="fig fig--quiet">
+            <p class="fig-n">45<small>%</small></p>
+            <p class="fig-l">of orgs that launched a training campaign created an explicitly test-named one first, just to see what employees would get.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-word="Frictions" data-notes="Three problems. The first one is what Prototype A tried to fix. The other two became my shipped work.">
+      <div class="inner">
+        <p class="kicker">What I walked into</p>
+        <h2 class="display">Three reasons they launched scared</h2>
+        <div class="issues">
+          <div class="issue">
+            <span class="issue-name">A wizard that hides the whole picture</span>
+            <p>Settings were spread across steps, so admins never saw the campaign as one thing before it went live.</p>
+          </div>
+          <div class="issue">
+            <span class="issue-name">No way to preview the inbox</span>
+            <p>They could preview a module, not the email. So they built fake campaigns to find out.</p>
+          </div>
+          <div class="issue">
+            <span class="issue-name">One toggle, two jobs</span>
+            <p>Compliance quietly controlled whether results posted to tools like Drata or Vanta, and that setting stayed hidden until the toggle was on.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide wide" data-word="Prototype" data-notes="I asked engineering if build cost should shape the direction. They said no for early prototypes.">
+      <div class="inner split">
+        <div class="split-copy">
+          <p class="kicker">The split</p>
+          <h2 class="display">I built the one-pager. The team kept the wizard.</h2>
+          <p class="body">Prototype A dropped admins onto an empty campaign page. Every setting visible and editable in place. I built it in code so people could click a real flow.</p>
+          <p class="body">Prototype B kept the stepper and fixed its edges. Both tested well. The synthesis was blunt: there isn't a definitely better approach. The team kept the lower-risk change to a workflow customers already knew.</p>
+        </div>
+        <div class="toggle-compare" aria-hidden="true">
+          <div class="panel panel-lead">
+            <p class="panel-k">Prototype A · single page</p>
+            <p class="switch"><span>Audience</span><span>1,800 new hires</span></p>
+            <p class="switch" style="margin-top:12px"><span>Due</span><span>Sep 14</span></p>
+            <p class="switch" style="margin-top:12px"><span>Notifications</span><span>Email, day 0 / 7 / 14</span></p>
+            <p class="switch" style="margin-top:12px"><span>Compliance</span><span class="knob"></span></p>
+            <p class="hidden-note">Everything in view. Mark done was hard to find. Some settings fell below the fold.</p>
+          </div>
+          <div class="panel">
+            <p class="panel-k">Prototype B · stepper</p>
+            <p class="switch"><span>1 · Details</span><span>Done</span></p>
+            <p class="switch" style="margin-top:12px"><span>2 · Audience</span><span>This step</span></p>
+            <p class="switch" style="margin-top:12px"><span>3 · Notifications</span><span></span></p>
+            <p class="switch" style="margin-top:12px"><span>4 · Review</span><span></span></p>
+            <p class="hidden-note">Familiar. Still hid the whole campaign until the last step.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-word="Test" data-notes="An internal tester sent a full campaign to himself. A CISO asked for a simulator. The workaround polluted reporting.">
+      <div class="inner">
+        <blockquote class="quote">have an easy simulator mode</blockquote>
+        <p class="who">A CISO, in concept testing</p>
+        <p class="body">Participants kept inventing workarounds to see what employees would actually receive. Every throwaway campaign polluted the org's reporting. Neither prototype had solved this. It became the next brief.</p>
+      </div>
+    </section>
+
+    <section class="slide wide" data-word="Send" data-notes="I wanted one recipient picker. Eng pushed back on migration cost. We shipped two and logged the debt.">
+      <div class="inner split">
+        <div class="split-copy">
+          <p class="kicker">Test Send</p>
+          <h2 class="display">Send the real email, to yourself, before anyone else sees it</h2>
+          <p class="body">I wrote the brief and spec for speed, on a foundation that would last. The test uses the campaign's due dates. Each recipient gets it in their own language. I documented every notification macro so engineering and support worked from one list.</p>
+          <p class="body">I wanted a single recipient picker for training and phishing. Engineering pushed back on the migration cost, so we shipped two pickers and logged the consolidation. That was right for speed.</p>
+        </div>
+        <div class="modal-wrap" aria-hidden="true">
+          <div class="app">
+            <div class="app-bar"><span class="app-dot"></span><span class="app-dot"></span><span class="app-dot"></span></div>
+            <div class="app-body">
+              <aside class="app-side"></aside>
+              <div class="app-main">
+                <article class="camp"></article>
+                <article class="camp"></article>
+              </div>
+            </div>
+          </div>
+          <div class="modal">
+            <h3>Send a test</h3>
+            <p>Uses this campaign's cadence and each person's language</p>
+            <div class="field">you@company.com, infosec@company.com <span>· 2 of 10</span></div>
+            <button class="modal-go" tabindex="-1">Send test</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide wide" data-word="Toggle" data-notes="A teammate's query. 93 Vanta, 31 Drata, 24 BambooHR. I designed it, wrote both PRs, merged them, wrote the launch post.">
+      <div class="inner split">
+        <div class="split-copy">
+          <p class="kicker">Compliance</p>
+          <h2 class="display">41.3% had the toggle on. 5.4% had a postback.</h2>
+          <p class="body">The compliance toggle also sent results to the GRC tool. One CISO only found that out from our prototype. Engineering confirmed the link was a frontend-only restriction, so the two could be pulled apart.</p>
+          <p class="body">I split them. The tag became "Mark as Compliance for reporting." Postbacks got their own card. I designed it, wrote both PRs, merged them, and wrote the launch post.</p>
+        </div>
+        <div class="toggle-compare" aria-hidden="true">
+          <div class="panel">
+            <p class="panel-k">Before</p>
+            <div class="switch"><span>Compliance</span><span class="knob"></span></div>
+            <p class="hidden-note">Turning this on also posted results to Drata, Vanta, or BambooHR. Admins did not know.</p>
+          </div>
+          <div class="panel">
+            <p class="panel-k">After</p>
+            <div class="check"><i class="box"></i> Mark as Compliance for reporting</div>
+            <div class="postback">
+              <b>Post results to</b>
+              <span>No GRC tool connected. Results stay in Adaptive.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-word="Shipped" data-notes="Be honest. Conversation counts are not outcomes. The 45 percent baseline was not re-measured. Delivery issues rose.">
+      <div class="inner">
+        <p class="kicker">Was it a success</p>
+        <div class="figures">
+          <div class="fig">
+            <p class="fig-n">2,081</p>
+            <p class="fig-l">test sends in the first 60 days. 1,487 training, 594 phishing, from at least 33 and 25 companies. Weekly training tests went from 93 to 295 in five weeks.</p>
+          </div>
+          <div class="fig fig--quiet">
+            <p class="fig-n">5</p>
+            <p class="fig-l">customer conversations about setting up compliance or postbacks, down from 12 in the same 60-day window. Setup tickets went from 4 to 1.</p>
+          </div>
+        </div>
+        <p class="fig-note">None of this is a measured outcome I want to dress up. Nobody has re-measured the 45% test-named baseline. Delivery issues rose from 7 to 11, because a label cannot fix an integration. Threads asking to see the real inbox held flat, but support now answers them by pointing to Test Send.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-word="Lose" data-notes="Close the chapter on the principle, not the metric.">
+      <div class="inner">
+        <p class="kicker">Biggest learning</p>
+        <h2 class="display">A losing prototype<br>can still win</h2>
+        <p class="lede">I treated Prototype A like something I needed to ship. Looking back, its job was to make people say what they needed out loud. "Send me a test" and "what does this toggle do" only came up because they were clicking through something real.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-word="Modules" data-notes="Chapter title. Pause.">
+      <div class="inner">
+        <p class="chapter-no">02 · Level up AICC</p>
+        <h2 class="display">Training people<br>don't want to skip</h2>
+      </div>
+    </section>
+
+    <section class="slide" data-word="Control" data-notes="AICC is generate-then-edit. The pitch is speed. The work was control.">
+      <div class="inner">
+        <p class="kicker">The AI content creator</p>
+        <h2 class="display">The pitch is speed.<br>The catch is control.</h2>
+        <p class="lede">Admins generate a module from a prompt instead of picking from a library. Then they have to make it theirs. Fix a frame, add a quiz, match the brand. Without a design background.</p>
+        <p class="body">My scope was interactive blocks, the editing model in the frame builder, layouts, and narration. The biggest open question on the bet was how much the AI should drive.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-word="Brand" data-notes="I ran prompt iterations V10 to V19 and scored generations 5 to 9. Branding was the surprise. Interactivity was the trap.">
+      <div class="inner">
+        <p class="kicker">What the model was good at</p>
+        <blockquote class="quote">If it was all interactive, I think we'd turn off a number of users</blockquote>
+        <p class="who">Customer call, security admin</p>
+        <p class="body">The model was great at theming a module to a customer's brand. Interactivity was the trap. People were clear that training is not a game. The takeaway we carried forward: brand freely, interact sparingly.</p>
+      </div>
+    </section>
+
+    <section class="slide wide" data-word="Hybrid" data-notes="Five concept tests. Manufacturer, aviation, automotive software, an AI company, a tax-prep company. AI-only lost every time.">
+      <div class="inner split">
+        <div class="split-copy">
+          <p class="kicker">How much should AI drive</p>
+          <h2 class="display">I assumed freeform would win. Hybrid did.</h2>
+          <p class="body">I built a coded prototype of an agent-first frame builder and tested three editing modes with five security and training teams. AI-only lost every time. People liked what the AI made. They wanted the last word.</p>
+          <p class="body">A fully manual canvas brings back the blank-page problem AICC exists to solve. Hybrid was the clear winner. AI for the draft, small direct controls for the fixes.</p>
+        </div>
+        <div class="modes">
+          <div class="mode">
+            <span class="mode-name">
+              <svg viewBox="0 0 24 24"><path d="M12 3v3M8 8h8M7 21h10M9 11c0-2 1.5-3 3-3s3 1 3 3c0 2-3 2.5-3 5"/></svg>
+              AI-only
+            </span>
+            <p>Every change goes through a prompt. Lost every session.</p>
+          </div>
+          <div class="mode is-win">
+            <span class="mode-name">
+              <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 9h8M8 12h5"/></svg>
+              Hybrid
+            </span>
+            <p>AI does the heavy lifting. A side panel for small manual tweaks.</p>
+          </div>
+          <div class="mode">
+            <span class="mode-name">
+              <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+              Full freeform
+            </span>
+            <p>A manual canvas where admins can move anything. Brings the blank page back.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide wide" data-word="Block" data-notes="7 of 9 sessions. For the last session I moved Add block to the top.">
+      <div class="inner split">
+        <div class="split-copy">
+          <blockquote class="quote">add block doesn't mean anything</blockquote>
+          <p class="who">Concept test, session synthesis</p>
+          <p class="body">Finding "Add block" was the main friction in 7 of 9 sessions. People wanted the last word and could not find the control that gave it to them. Moving the entry to the top made it easier to find. I folded that, per-frame revert, and the naming feedback into a synthesis with the lead designer and PM.</p>
+        </div>
+        <div class="builder" aria-hidden="true">
+          <div class="builder-col">
+            <p>Frames</p>
+            <div class="frame-thumb is-on"></div>
+            <div class="frame-thumb"></div>
+            <div class="frame-thumb"></div>
+            <div class="frame-thumb"></div>
+          </div>
+          <div class="builder-col">
+            <p>Frame 2 · How it works</p>
+            <div class="canvas">Why preventing OAuth token theft via consent phishing matters at work</div>
+            <div class="field" style="margin-top:12px;text-align:center;color:var(--color-text-secondary)">Add content</div>
+          </div>
+          <div class="builder-col">
+            <p>Tweak</p>
+            <div class="prop"><span>Layout</span> Title + media</div>
+            <div class="prop"><span>Brand color</span> From company theme</div>
+            <div class="prop"><span>Revert</span> This frame only</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-word="Code" data-notes="11 merged PRs. Guided creation is a team launch. The layouts went to the content team.">
+      <div class="inner">
+        <p class="kicker">While the direction was still open</p>
+        <h2 class="display">I shipped the pieces I could, in code</h2>
+        <div class="stack">
+          <div class="row">
+            <b>Frame layouts</b>
+            <span>Nine templates in the backend contract and renderer. Six in the layout picker, built for the content team who asked for them.</span>
+          </div>
+          <div class="row">
+            <b>Guided creation</b>
+            <span>Seven visual polish PRs on the guided AICC flow in the days before it launched.</span>
+          </div>
+          <div class="row">
+            <b>Narration</b>
+            <span>Wireframes, a journey map, and coded prototypes that scoped the first milestone to the frame builder and settings.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-word="Funnel" data-notes="The brief's real target was less generic output. We do not have that number. Name it.">
+      <div class="inner">
+        <p class="kicker">Was it a success</p>
+        <div class="figures">
+          <div class="fig">
+            <p class="fig-n">1,105</p>
+            <p class="fig-l">guided sessions in the first 14 days after launch was announced, against 141 in the 18 days before, when the flow was live but quiet.</p>
+          </div>
+          <div class="fig fig--quiet">
+            <p class="fig-n">95<small>%</small></p>
+            <p class="fig-l">of people who submit a prompt still start an outline. Extra questions did not make them quit.</p>
+          </div>
+        </div>
+        <p class="fig-note">About 85% start creating a module and 77% see a finished one. Early feedback asked to keep prompting after a module was built. Nothing measures yet whether the output is less generic, which was the brief's real target. The quiz work was still open when I left.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-word="Handoff" data-notes="Close AICC on the handoff, not on the model.">
+      <div class="inner">
+        <p class="kicker">Biggest learning</p>
+        <h2 class="display">Control is a feature</h2>
+        <p class="lede">I treated the editing question like a slider from all AI to all manual, and assumed the answer sat at one end. Customers kept telling us it isn't a slider. They want the AI to do the boring 80% and their own hands on the last 20%.</p>
+        <p class="body">Designing for AI turned out to be mostly about designing the handoff back to the person, and making the thing they reach for impossible to miss.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-word="Keep" data-notes="Two principles. Stop. Do not add a third.">
+      <div class="inner pair">
+        <div>
+          <p class="kicker">What I take with me</p>
+          <h2 class="display">A bold prototype is for what it makes people tell you</h2>
+        </div>
+        <div>
+          <p class="kicker">&nbsp;</p>
+          <h2 class="display">The last 20% is the product</h2>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-word="Close" data-notes="Leave time. Email is on the slide.">
+      <div class="inner">
+        <p class="kicker">Lydia Shan · Product designer</p>
+        <h2 class="display">Two bets.<br>Two honest endings.</h2>
+        <p class="lede">lydiashan.c@gmail.com</p>
+        <div class="pills">
+          <span class="pill">Core Workflows</span>
+          <span class="pill">Level up AICC</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="foot">
+    <span id="count">01 / 22</span>
+    <kbd>← → · F · Esc · ?</kbd>
+  </div>
+  <div class="stepper" aria-label="Slide controls">
+    <button type="button" id="prev" aria-label="Previous slide">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M15 6 9 12l6 6"/></svg>
+    </button>
+    <button type="button" id="next" aria-label="Next slide">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
+  </div>
+  <div class="notes" id="notes"></div>
+
+  <div class="help" id="help" hidden>
+    <div class="help-card">
+      <h2>Keys</h2>
+      <div class="keys">
+        <div><b>→ · Space</b><span>Next slide</span></div>
+        <div><b>← · Backspace</b><span>Previous slide</span></div>
+        <div><b>Home · End</b><span>First or last</span></div>
+        <div><b>1–9</b><span>Jump toward that slide</span></div>
+        <div><b>F</b><span>Fullscreen</span></div>
+        <div><b>Esc · O</b><span>Overview</span></div>
+        <div><b>N</b><span>Speaker notes</span></div>
+        <div><b>?</b><span>This list</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overview" id="overview" hidden>
+    <div class="overview-card">
+      <h2>Slides</h2>
+      <div class="overview-grid" id="overview-grid"></div>
+    </div>
+  </div>
+
+  <script src="../shared/deck.js"></script>
+</body>
+</html>
