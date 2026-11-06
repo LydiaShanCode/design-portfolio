@@ -1,6 +1,6 @@
 ---
 id: 6
-title: Level up AICC
+title: Creating Security Awareness Training with AI
 slug: level-up-aicc
 featuredOrder: 2
 company: Adaptive Security
