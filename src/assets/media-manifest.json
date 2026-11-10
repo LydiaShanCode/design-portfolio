@@ -135,6 +135,22 @@
       "height": 958
     }
   },
+  "Playground-page/twitter-bookmarks/Twitter-bookmarks.mp4": {
+    "source": {
+      "width": 1150,
+      "height": 720,
+      "duration": 16.866667
+    },
+    "card": {
+      "width": 720,
+      "height": 450,
+      "av1": false
+    },
+    "hero": {
+      "width": 1150,
+      "height": 720
+    }
+  },
   "projects/shop-balance/Video 1.mov": {
     "source": {
       "width": 1268,
