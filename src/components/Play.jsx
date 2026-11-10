@@ -6,6 +6,7 @@ import { getVideo } from '../data/media'
 import { afterLoadIdle } from '../lib/afterLoad'
 
 const SHADER_SOURCE = 'Playground-page/shader-experiment-one/Shader-experiment-one.mov'
+const BOOKMARKS_SOURCE = 'Playground-page/twitter-bookmarks/Twitter-bookmarks.mp4'
 
 // Embedded apps fall apart at phone widths (and iOS sizes iframes inconsistently),
 // so narrow cards render the iframe at this width and scale it down as a thumbnail.
@@ -87,6 +88,17 @@ function Play() {
         modalVideo: getVideo(SHADER_SOURCE, 'hero'),
       },
       {
+        id: 'twitter-bookmarks',
+        title: 'Twitter Bookmarks',
+        year: '2026',
+        type: 'video',
+        size: 'full',
+        typeLabel: 'Data Visualization',
+        href: 'https://x.com/lydia_shann/status/2119152874550612298',
+        video: getVideo(BOOKMARKS_SOURCE, 'card'),
+        modalVideo: getVideo(BOOKMARKS_SOURCE, 'hero'),
+      },
+      {
         id: 'text-scrub',
         title: 'Text Scrub Animation',
         year: '2025',
@@ -161,6 +173,7 @@ function Play() {
           </div>
         )
       case 'shader-experiment':
+      case 'video':
         return (
           <div className="play-card-video">
             <Video media={item.video} />
@@ -168,12 +181,6 @@ function Play() {
         )
       case 'image':
         return <img src={item.previewSrc} alt={item.title} />
-      case 'video':
-        return (
-          <div className="play-placeholder">
-            <span>{item.previewNote || 'Video preview'}</span>
-          </div>
-        )
       case 'code':
         return (
           <pre className="play-code-preview">
@@ -208,6 +215,7 @@ function Play() {
           </div>
         )
       case 'shader-experiment':
+      case 'video':
         return (
           <div className="play-modal-shader">
             <Video media={item.modalVideo} preload="auto" className="play-modal-video" />
@@ -215,12 +223,6 @@ function Play() {
         )
       case 'image':
         return <img src={item.fullSrc || item.previewSrc} alt={item.title} />
-      case 'video':
-        return (
-          <div className="play-placeholder play-placeholder--modal">
-            <span>{item.previewNote || 'MP4 goes here'}</span>
-          </div>
-        )
       case 'code':
         return (
           <pre className="play-code-full">
@@ -255,7 +257,7 @@ function Play() {
     <section id="play" className="play-section">
       <div className="play-inner">
         <div className="play-grid">
-          {playItems.map((item, index) => (
+          {playItems.map((item) => (
             <button
               key={item.id}
               type="button"
