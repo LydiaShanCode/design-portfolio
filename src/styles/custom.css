@@ -634,14 +634,23 @@ body {
 .work-card-meta {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
   margin-top: 14px;
   margin-bottom: 18px;
   font-weight: 500;
   font-size: 16px;
 }
 
+.work-card-meta-name {
+  min-width: 0;
+  line-height: 1.25;
+}
+
 /* 70% keeps ~4.9:1 contrast on the white card; --color-text-muted is too faint at 16px */
 .work-card-meta-date {
+  flex-shrink: 0;
+  line-height: 1.25;
   color: color-mix(in srgb, var(--color-primary) 70%, transparent);
   font-weight: 400;
 }
