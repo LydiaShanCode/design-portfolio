@@ -97,7 +97,7 @@ export function DesignVersionMenu({ shortcut = DEFAULT_SHORTCUT, label = 'Versio
     if (!enabled) return
     const combo = { key, ctrl, meta, alt, shift }
     const onKeyDown = (e) => {
-      if (e.defaultPrevented || e.repeat || !matchesShortcut(e, combo)) return
+      if (e.repeat || !matchesShortcut(e, combo)) return
       if (isEditable(e.composedPath()[0] ?? e.target)) return
       e.preventDefault()
       if (openRef.current) close()
