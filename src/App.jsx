@@ -12,8 +12,9 @@ import ButtonSound from './components/ButtonSound'
 import CardSoundDesk from './components/CardSoundDesk'
 import HeroPlayground from './components/HeroPlayground'
 import ColumnHome from './components/ColumnHome'
+import WorkFirstHome from './components/work-first/WorkFirstHome'
 import { useMajorVersion } from './components/design-versions/DesignVersionProvider'
-import { HERO_PLAYGROUND_KEYS } from './data/designVersions'
+import { HERO_PLAYGROUND_KEYS, WORK_FIRST_KEYS } from './data/designVersions'
 import { Analytics } from '@vercel/analytics/react'
 
 const Play = lazy(() => import('./components/Play'))
@@ -25,6 +26,7 @@ const DevTools = import.meta.env.DEV ? lazy(() => import('./components/DevTools'
 function Home() {
   const major = useMajorVersion()
   if (major === 'column') return <ColumnHome />
+  if (WORK_FIRST_KEYS.includes(major)) return <WorkFirstHome layout={major} />
   return (
     <>
       {HERO_PLAYGROUND_KEYS.includes(major) ? <HeroPlayground version={major} /> : <Hero />}
@@ -61,11 +63,12 @@ function ScrollToTopOnNavigate() {
   return null
 }
 
-// The column home carries its own name and links, so the shared chrome steps aside there
+// The column and work-first homes carry their own name and links, so the shared chrome steps aside there
 function SiteChrome({ children }) {
   const major = useMajorVersion()
   const { pathname } = useLocation()
-  return major === 'column' && pathname === '/' ? null : children
+  const ownsChrome = major === 'column' || WORK_FIRST_KEYS.includes(major)
+  return ownsChrome && pathname === '/' ? null : children
 }
 
 function App() {
