@@ -59,7 +59,7 @@ function ProjectCard({
     >
       <div className="work-card-inner">
         <div className="work-card-header">
-          <span className="work-card-title">{title}</span>
+          <span className="work-card-title">{company}</span>
           {icon ? (
             <img className="work-card-icon" src={icon} alt="" aria-hidden="true" />
           ) : null}
@@ -93,7 +93,7 @@ function ProjectCard({
           </div>
         )}
         <div className="work-card-meta">
-          <span>{company}</span>
+          <span className="work-card-meta-name">{title}</span>
           {start ? <span className="work-card-meta-date">{start}</span> : null}
         </div>
         <ul className="work-card-highlights">
