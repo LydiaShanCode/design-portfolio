@@ -1820,6 +1820,7 @@ button.footer-link {
    sizes in cqi (postcard width) to scale with it instead of overflowing. */
 .postcard {
   position: relative;
+  z-index: 1;
   max-width: var(--max-w-postcard);
   width: 100%;
   container-type: inline-size;
@@ -2077,13 +2078,12 @@ button.footer-link {
 .footer-swim-fish {
   position: absolute;
   left: 50%;
-  bottom: -16vh;
-  width: clamp(260px, 44vw, 520px);
+  bottom: 0;
+  width: min(92%, 420px);
   height: auto;
   opacity: 0.95;
   pointer-events: none;
-  z-index: 1;
-  animation: footer-fish-rise 1.8s ease-out forwards;
+  animation: footer-fish-rise 1.8s var(--ease-dramatic) forwards;
 }
 
 .footer-swim-fish svg {
@@ -2098,29 +2098,23 @@ button.footer-link {
 
 @keyframes footer-fish-rise {
   0% {
-    transform: translateX(-50%) translateY(220%) rotate(82deg);
+    transform: translateX(-50%) translateY(280%) rotate(82deg);
     opacity: 0;
   }
   100% {
-    transform: translateX(-50%) translateY(120%) rotate(90deg);
+    transform: translateX(-50%) translateY(141%) rotate(90deg);
     opacity: 0.95;
   }
 }
 
 @keyframes footer-fish-dive {
   0% {
-    transform: translateX(-50%) translateY(120%) rotate(90deg);
+    transform: translateX(-50%) translateY(141%) rotate(90deg);
     opacity: 0.95;
   }
   100% {
-    transform: translateX(-55%) translateY(calc(120% + 70vh)) rotate(96deg);
+    transform: translateX(-55%) translateY(calc(141% + 70vh)) rotate(96deg);
     opacity: 0;
-  }
-}
-
-@media (max-width: 768px) {
-  .footer-swim-fish {
-    width: min(72vw, 360px);
   }
 }
 

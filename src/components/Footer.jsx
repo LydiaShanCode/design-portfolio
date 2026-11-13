@@ -152,6 +152,16 @@ function Footer() {
         </div>
         <div className="footer-right">
           <div className="footer-postcard-wrapper">
+            {showSwimFish && fishSvgWithAnchor && (
+              <div
+                key={fishRun}
+                ref={fishRef}
+                role="img"
+                aria-hidden="true"
+                className={`footer-swim-fish ${fishDiving ? 'footer-swim-fish--dive' : ''}`}
+                dangerouslySetInnerHTML={{ __html: fishSvgWithAnchor }}
+              />
+            )}
             <Postcard
               onReadyChange={handleReadyChange}
               fishRef={fishRef}
@@ -160,16 +170,6 @@ function Footer() {
               onSendFail={handleSendFail}
             />
           </div>
-          {showSwimFish && fishSvgWithAnchor && (
-            <div
-              key={fishRun}
-              ref={fishRef}
-              role="img"
-              aria-hidden="true"
-              className={`footer-swim-fish ${fishDiving ? 'footer-swim-fish--dive' : ''}`}
-              dangerouslySetInnerHTML={{ __html: fishSvgWithAnchor }}
-            />
-          )}
         </div>
       </div>
       <div className="footer-colophon">
