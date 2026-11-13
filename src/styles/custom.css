@@ -3318,6 +3318,7 @@ button.footer-link {
   margin-top: 120px;
   margin-bottom: 120px;
   opacity: 0;
+  z-index: 3;
   transition: opacity 0.5s var(--ease-smooth);
 }
 
@@ -3326,42 +3327,74 @@ button.footer-link {
 }
 
 .project-page-sidenav-item {
+  position: relative;
   display: flex;
   align-items: center;
   background: none;
   border: none;
-  padding: 5px 0;
+  padding: 6px 0;
   cursor: pointer;
 }
 
-.project-page-sidenav-item:hover .project-page-sidenav-bar {
-  opacity: 0.4 !important;
+.project-page-sidenav-item.is-hot {
+  z-index: 2;
 }
 
-.project-page-sidenav-bar-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.project-page-sidenav-item:focus-visible {
+  outline: 1px solid var(--color-primary);
+  outline-offset: 3px;
 }
 
 .project-page-sidenav-bar {
+  display: block;
   height: 2px;
-  border-radius: 9999px;
-  background: var(--color-text);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-text) 16%, var(--color-bg));
   flex-shrink: 0;
+  transition: background-color 200ms var(--ease-smooth);
 }
 
 .project-page-sidenav-item.is-active .project-page-sidenav-bar {
-  background: var(--color-primary);
+  background: color-mix(in srgb, var(--color-text) 46%, var(--color-bg));
 }
 
-.project-page-sidenav-word {
+.project-page-sidenav-item.is-hot .project-page-sidenav-bar {
+  background: color-mix(in srgb, var(--color-text) 72%, var(--color-bg));
+}
+
+.project-page-sidenav-preview {
+  position: absolute;
+  left: calc(100% + 14px);
+  top: 50%;
+  width: 168px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-chip);
+  text-align: left;
+  pointer-events: none;
+}
+
+.project-page-sidenav-preview-img {
+  display: block;
+  width: 100%;
+  height: 96px;
+  object-fit: cover;
+  border-radius: var(--radius-xs);
+  background: var(--color-surface);
+}
+
+.project-page-sidenav-preview-label {
   font-family: 'Geist', system-ui, sans-serif;
   font-size: 12px;
   font-weight: 500;
-  color: var(--color-primary);
-  white-space: nowrap;
-  line-height: 1;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
 }
 
 @media (max-width: 1080px) {
