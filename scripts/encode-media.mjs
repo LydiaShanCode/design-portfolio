@@ -29,6 +29,7 @@ const SOURCES = [
   { file: 'projects/level-up-aicc/Framebuilder video.mov', variants: ['card', 'hero'] },
   { file: 'projects/core-workflows/Core workflows.mov', variants: ['card', 'hero'] },
   { file: 'Playground-page/shader-experiment-one/Shader-experiment-one.mov', variants: ['card', 'hero'] },
+  { file: 'Playground-page/twitter-bookmarks/Twitter-bookmarks.mp4', variants: ['card', 'hero'] },
   { file: 'projects/shop-balance/Video 1.mov', variants: ['hero'] },
   { file: 'projects/shop-balance/video 2.MOV', variants: ['hero'] },
   { file: 'projects/shop-balance/video 3.MOV', variants: ['hero'] },
