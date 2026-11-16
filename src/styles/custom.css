@@ -4561,22 +4561,21 @@ button.work-card {
   pointer-events: none;
 }
 
+/* Framer Motion owns `transform` for the fan entrance; the hover lift uses the independent
+   `scale` property so the two never fight */
 .about-drawing {
-  --drawing-scale: 1;
   position: absolute;
   top: 10%;
   left: 50%;
   width: 260px;
   z-index: var(--fan-z);
   transform-origin: bottom center;
-  transform: rotate(var(--fan-rotate)) translate(var(--fan-x), var(--fan-y)) scale(var(--drawing-scale));
-  transition: transform 300ms var(--ease-smooth);
-  animation: about-drawing-fan 400ms var(--ease-dramatic) calc(150ms + var(--fan-delay)) backwards;
+  transition: scale 300ms var(--ease-smooth);
   pointer-events: auto;
 }
 
 .about-drawing:hover {
-  --drawing-scale: 1.04;
+  scale: 1.04;
   z-index: 9;
 }
 
@@ -4614,13 +4613,6 @@ button.work-card {
   animation: about-drawing-shimmer 1600ms ease-in-out infinite;
 }
 
-@keyframes about-drawing-fan {
-  from {
-    transform: rotate(0deg) translate(0px, 0px) scale(1);
-    opacity: 0;
-  }
-}
-
 @keyframes about-drawing-shimmer {
   from { background-position: 100% 0; }
   to { background-position: 0% 0; }
@@ -4647,12 +4639,7 @@ button.work-card {
   text-align: center;
   line-height: 1.4;
   letter-spacing: 0.02em;
-  animation: about-fade-in 400ms var(--ease-smooth) 500ms backwards;
   pointer-events: none;
-}
-
-@keyframes about-fade-in {
-  from { opacity: 0; }
 }
 
 /* Polaroid photo card */
@@ -4710,13 +4697,8 @@ button.work-card {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .about-drawing,
-  .about-drawings-label {
-    animation: none;
-  }
-
   .about-drawing:hover {
-    --drawing-scale: 1;
+    scale: none;
   }
 
   .about-drawing:hover .about-drawing-shine {

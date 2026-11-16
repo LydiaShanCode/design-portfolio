@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-
-// imagetools clamps requested widths to the intrinsic size, so small sources repeat the same width
-const dedupeSrcset = (srcset) =>
-  [...new Map(srcset.split(', ').map((entry) => [entry.split(' ').pop(), entry])).values()].join(', ')
+import { dedupeSrcset } from '../lib/srcset'
 
 /**
  * Renders `?responsive` imports (see vite.config.js) as <picture>. Plain URL strings

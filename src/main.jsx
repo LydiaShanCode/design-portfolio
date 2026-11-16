@@ -9,9 +9,11 @@ import { DesignVersionMenu } from './components/design-versions/DesignVersionMen
 import { MAJOR_VERSIONS } from './data/designVersions'
 import shippedDefaults from './data/designDefaults.json'
 import { startIntro } from './lib/intro'
+import { installAboutPreload } from './data/aboutImages'
 
 const loadVersionHistory = () => import('./data/versionHistory.json')
 
+installAboutPreload()
 startIntro()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
