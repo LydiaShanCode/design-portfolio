@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
+import { useRef } from 'react'
+import { motion, useReducedMotion, useSpring } from 'framer-motion'
 import Picture from './Picture'
 import photo from '../assets/about page/lydia.png?responsive&w=480;960'
 import drawing1 from '../assets/about page/Untitled.png?responsive&w=480;960'
@@ -10,7 +11,6 @@ import drawing6 from '../assets/about page/Untitled (6).png?responsive&w=480;960
 
 const drawings = [drawing3, drawing4, drawing2, drawing1, drawing5, drawing6]
 
-// Pre-set fan positions for each drawing
 const FAN_POSITIONS = [
   { rotate: '-24deg', translateX: '-200px', translateY: '-90px', zIndex: 6 },
   { rotate: '-18deg', translateX: '-280px', translateY: '-200px', zIndex: 2 },
@@ -20,77 +20,85 @@ const FAN_POSITIONS = [
   { rotate: '15deg',  translateX: '32px',  translateY: '90px', zIndex: 6 },
 ]
 
+const FAN_STAGGER_MS = 60
+const PHOTO_TILT_MAX = 10
+const TILT_SPRING = { type: 'spring', stiffness: 260, damping: 22, mass: 0.6 }
+
+function PhotoCard() {
+  const cardRef = useRef(null)
+  const reduceMotion = useReducedMotion()
+  const rotateX = useSpring(0, TILT_SPRING)
+  const rotateY = useSpring(0, TILT_SPRING)
+
+  const followPointer = (event) => {
+    const card = cardRef.current
+    if (!card) return
+    const { left, top, width, height } = card.getBoundingClientRect()
+    const x = Math.min(Math.max((event.clientX - left) / width, 0), 1)
+    const y = Math.min(Math.max((event.clientY - top) / height, 0), 1)
+    card.style.setProperty('--pointer-x', `${x * 100}%`)
+    card.style.setProperty('--pointer-y', `${y * 100}%`)
+    card.dataset.shimmer = 'true'
+    if (reduceMotion) return
+    rotateY.set((x - 0.5) * 2 * PHOTO_TILT_MAX)
+    rotateX.set(-(y - 0.5) * 2 * PHOTO_TILT_MAX)
+  }
+
+  const resetTilt = () => {
+    if (cardRef.current) delete cardRef.current.dataset.shimmer
+    rotateX.set(0)
+    rotateY.set(0)
+  }
+
+  return (
+    <motion.div
+      ref={cardRef}
+      className="about-photo-card"
+      style={{ rotateX, rotateY, transformPerspective: 800 }}
+      onPointerDown={followPointer}
+      onPointerMove={followPointer}
+      onPointerLeave={resetTilt}
+      onPointerCancel={resetTilt}
+      onPointerUp={(event) => event.pointerType !== 'mouse' && resetTilt()}
+    >
+      <Picture image={photo} sizes="320px" priority alt="Lydia" className="about-photo" />
+      <p className="about-photo-label">Hi, I'm Lydia</p>
+      <span className="about-photo-shine" aria-hidden="true" />
+    </motion.div>
+  )
+}
+
 function About() {
-  const [hovered, setHovered] = useState(false)
-  const [tapped, setTapped] = useState(false)
-  const active = hovered || tapped
-  const cardGroupRef = useRef(null)
-
-  useEffect(() => {
-    if (!tapped) return
-    const handleOutside = (e) => {
-      if (cardGroupRef.current && !cardGroupRef.current.contains(e.target)) {
-        setTapped(false)
-      }
-    }
-    document.addEventListener('touchstart', handleOutside)
-    document.addEventListener('mousedown', handleOutside)
-    return () => {
-      document.removeEventListener('touchstart', handleOutside)
-      document.removeEventListener('mousedown', handleOutside)
-    }
-  }, [tapped])
-
   return (
     <main className="about-page">
       <div className="about-content">
-        <div
-          ref={cardGroupRef}
-          className="about-card-group"
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          onClick={() => setTapped(t => !t)}
-        >
-          {/* Drawing fan — hidden beneath the card, fans out on hover */}
+        <div className="about-card-group">
           <div className="about-drawings" aria-hidden="true">
-            {drawings.map((src, i) => {
+            {drawings.map((image, i) => {
               const pos = FAN_POSITIONS[i]
               return (
-                <Picture
+                <div
                   key={i}
-                  image={src}
-                  sizes="260px"
-                  loading="eager"
-                  alt=""
                   className="about-drawing"
                   style={{
-                    transform: active
-                      ? `rotate(${pos.rotate}) translate(${pos.translateX}, ${pos.translateY})`
-                      : 'rotate(0deg) translate(0px, 0px)',
-                    opacity: active ? 1 : 0,
-                    zIndex: pos.zIndex,
-                    transitionDelay: '0ms',
+                    '--fan-rotate': pos.rotate,
+                    '--fan-x': pos.translateX,
+                    '--fan-y': pos.translateY,
+                    '--fan-z': pos.zIndex,
+                    '--fan-delay': `${i * FAN_STAGGER_MS}ms`,
+                    '--drawing-mask': `url("${image.img.src}")`,
                     ...(i === 4 && { width: '225px' }),
                   }}
-                />
+                >
+                  <Picture image={image} sizes="260px" loading="eager" alt="" className="about-drawing-img" />
+                  <span className="about-drawing-shine" />
+                </div>
               )
             })}
-            <p
-              className="about-drawings-label"
-              style={{
-                opacity: active ? 1 : 0,
-                transition: 'opacity 420ms var(--ease-dramatic)',
-              }}
-            >
-              some drawings I made
-            </p>
+            <p className="about-drawings-label">some drawings I made</p>
           </div>
 
-          {/* Polaroid photo card */}
-          <div className="about-photo-card">
-            <Picture image={photo} sizes="320px" priority alt="Lydia" className="about-photo" />
-            <p className="about-photo-label">Hi, I'm Lydia</p>
-          </div>
+          <PhotoCard />
         </div>
 
         <div className="about-bio">

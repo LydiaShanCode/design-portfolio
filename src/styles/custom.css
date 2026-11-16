@@ -4540,7 +4540,8 @@ button.work-card {
   flex-direction: column;
   align-items: center;
   gap: 56px;
-  padding-top: 32px;
+  /* Clears the drawing fan, which extends well above the photo card */
+  padding-top: 120px;
   padding-bottom: 32px;
 }
 
@@ -4553,7 +4554,7 @@ button.work-card {
   cursor: default;
 }
 
-/* Drawings layer — absolutely positioned, fans out behind the card */
+/* Drawings layer — fanned out behind the card */
 .about-drawings {
   position: absolute;
   inset: 0;
@@ -4561,17 +4562,68 @@ button.work-card {
 }
 
 .about-drawing {
+  --drawing-scale: 1;
   position: absolute;
   top: 10%;
   left: 50%;
   width: 260px;
-  height: auto;
+  z-index: var(--fan-z);
   transform-origin: bottom center;
-  transform: rotate(0deg) translate(0px, 0px);
-  opacity: 0;
-  transition: transform 420ms var(--ease-dramatic), opacity 320ms ease;
+  transform: rotate(var(--fan-rotate)) translate(var(--fan-x), var(--fan-y)) scale(var(--drawing-scale));
+  transition: transform 300ms var(--ease-smooth);
+  animation: about-drawing-fan 400ms var(--ease-dramatic) calc(150ms + var(--fan-delay)) backwards;
+  pointer-events: auto;
+}
+
+.about-drawing:hover {
+  --drawing-scale: 1.04;
+  z-index: 9;
+}
+
+.about-drawing-img {
+  display: block;
+  width: 100%;
+  height: auto;
   object-fit: contain;
   border-radius: var(--radius-sm);
+}
+
+/* Masked to the drawing's own alpha so only the pencil strokes catch the light */
+.about-drawing-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    color-mix(in srgb, var(--color-primary) 22%, transparent) 46%,
+    rgb(255 255 255 / 0.7) 50%,
+    color-mix(in srgb, var(--color-primary) 22%, transparent) 54%,
+    transparent 60%
+  );
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  -webkit-mask: var(--drawing-mask) center / 100% 100% no-repeat;
+  mask: var(--drawing-mask) center / 100% 100% no-repeat;
+  opacity: 0;
+  transition: opacity 200ms var(--ease-smooth);
+  pointer-events: none;
+}
+
+.about-drawing:hover .about-drawing-shine {
+  opacity: 1;
+  animation: about-drawing-shimmer 1600ms ease-in-out infinite;
+}
+
+@keyframes about-drawing-fan {
+  from {
+    transform: rotate(0deg) translate(0px, 0px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes about-drawing-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: 0% 0; }
 }
 
 .about-drawing--placeholder {
@@ -4590,21 +4642,26 @@ button.work-card {
   font-size: 8px;
   font-weight: 400;
   color: var(--color-text-muted);
-  opacity: 0;
   white-space: normal;
   width: 60px;
   text-align: center;
   line-height: 1.4;
   letter-spacing: 0.02em;
-  transition: opacity 300ms ease 240ms;
+  animation: about-fade-in 400ms var(--ease-smooth) 500ms backwards;
   pointer-events: none;
+}
+
+@keyframes about-fade-in {
+  from { opacity: 0; }
 }
 
 /* Polaroid photo card */
 .about-photo-card {
+  --pointer-x: 50%;
+  --pointer-y: 50%;
   position: relative;
   width: 100%;
-  background: #ffffff;
+  background: var(--color-bg);
   border-radius: var(--radius-lg);
   box-shadow: 0 8px 40px rgb(var(--shadow-tint) / 0.1), 0 2px 8px rgb(var(--shadow-tint) / 0.06);
   padding: 8px 8px 20px;
@@ -4612,6 +4669,60 @@ button.work-card {
   flex-direction: column;
   gap: 0;
   z-index: 10;
+  overflow: hidden;
+  transition: box-shadow 300ms var(--ease-smooth);
+}
+
+.about-photo-card[data-shimmer] {
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Glare follows the pointer; the blue band drifts the opposite way for a foil-like parallax */
+.about-photo-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(
+      circle at var(--pointer-x) var(--pointer-y),
+      rgb(255 255 255 / 0.35),
+      rgb(255 255 255 / 0) 55%
+    ),
+    linear-gradient(
+      115deg,
+      transparent 32%,
+      color-mix(in srgb, var(--color-primary) 12%, transparent) 43%,
+      rgb(255 255 255 / 0.3) 50%,
+      color-mix(in srgb, var(--color-primary) 12%, transparent) 57%,
+      transparent 68%
+    );
+  background-size: 100% 100%, 300% 300%;
+  background-position:
+    0 0,
+    calc(100% - var(--pointer-x)) calc(100% - var(--pointer-y));
+  opacity: 0;
+  transition: opacity 250ms var(--ease-smooth);
+  pointer-events: none;
+}
+
+.about-photo-card[data-shimmer] .about-photo-shine {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-drawing,
+  .about-drawings-label {
+    animation: none;
+  }
+
+  .about-drawing:hover {
+    --drawing-scale: 1;
+  }
+
+  .about-drawing:hover .about-drawing-shine {
+    animation: none;
+    background-position: 50% 0;
+  }
 }
 
 .about-photo {
