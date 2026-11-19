@@ -86,7 +86,6 @@ function PhotoCard() {
         alt="Lydia"
         className="about-photo"
       />
-      <p className="about-photo-label">Hi, I&apos;m Lydia</p>
       <span className="about-photo-shine" aria-hidden="true" />
     </motion.div>
   )

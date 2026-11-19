@@ -4539,7 +4539,8 @@ button.work-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 56px;
+  /* The lower drawings hang ~100px below the photo card */
+  gap: 100px;
   /* Clears the drawing fan, which extends well above the photo card */
   padding-top: 120px;
   padding-bottom: 32px;
@@ -4646,12 +4647,13 @@ button.work-card {
 .about-photo-card {
   --pointer-x: 50%;
   --pointer-y: 50%;
+  --photo-frame: 4px;
   position: relative;
   width: 100%;
   background: var(--color-bg);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
   box-shadow: 0 8px 40px rgb(var(--shadow-tint) / 0.1), 0 2px 8px rgb(var(--shadow-tint) / 0.06);
-  padding: 8px 8px 20px;
+  padding: var(--photo-frame);
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -4711,29 +4713,17 @@ button.work-card {
   width: 100%;
   height: 290px;
   object-fit: cover;
-  border-radius: calc(var(--radius-lg) - 6px);
+  /* Concentric with the card's corner */
+  border-radius: calc(var(--radius-sm) - var(--photo-frame));
   display: block;
   min-height: 0;
 }
 
 .about-photo--placeholder {
   background: rgba(0, 29, 217, 0.06);
-  border-radius: calc(var(--radius-lg) - 6px);
+  border-radius: calc(var(--radius-sm) - var(--photo-frame));
   flex: 1;
   min-height: 0;
-}
-
-.about-photo-label {
-  font-family: 'Geist', system-ui, sans-serif;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  letter-spacing: -0.5px;
-  color: var(--color-primary);
-  text-align: left;
-  margin-top: 10px;
-  line-height: 1;
-  padding-left: 2px;
 }
 
 /* Bio */
